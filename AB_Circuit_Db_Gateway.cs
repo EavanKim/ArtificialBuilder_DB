@@ -1,0 +1,1470 @@
+using ArtificialBuilder.Models;
+using ArtificialBuilder.Requests;
+using ArtificialBuilder_EDP;
+using ArtificialBuilder_EDP.Components;
+using ArtificialBuilder_EDP.Core;
+using ArtificialBuilder_EDP.Core.Messaging;
+using EDPFW;
+using System;
+using System.Collections.Generic;
+
+namespace ArtificialBuilder
+{
+    /// <summary>
+    /// 활성 circuit DB에 대한 요청을 메시지 브로커 토픽으로 받아 백엔드 호출로 변환하는 게이트웨이.
+    /// 토픽: AB_Circuit_Db_Topics.ActiveCircuit.
+    /// EDP 컴포넌트로 등록되며 OnAttach 시점에 브로커 구독.
+    /// 옛 AB_Circuit_Db 인스턴스(AB_Db_Component.Instance.Circuit)를 그대로 사용 — 점진 마이그레이션 단계.
+    /// </summary>
+    public class AB_Circuit_Db_Gateway : ArtificialBuilder_EDP.Core.AB_Component
+    {
+        private IAB_Message_Broker? m_broker;
+        private AB_Subscription_Token? m_sub;
+
+        /// <inheritdoc/>
+        public override void OnAttach()
+        {
+            try
+            {
+                m_broker = ArtificialBuilder_EDP.Core.AB_Engine.Get<AB_In_Memory_Broker>();
+                m_sub = m_broker.Subscribe(AB_Circuit_Db_Topics.ActiveCircuit, HandleMessage);
+            }
+            catch (Exception ex)
+            {
+                AB_Log.Error("CircuitGw", $"OnAttach 실패: {ex.Message}");
+            }
+        }
+
+        /// <inheritdoc/>
+        public override void OnDetach()
+        {
+            try
+            {
+                if (m_broker != null && m_sub != null)
+                    m_broker.Unsubscribe(m_sub);
+            }
+            catch { }
+        }
+
+        private async void HandleMessage(AB_Message _msg)
+        {
+            // 응답 메시지(자기 자신이 publish한)는 무시
+            if (_msg.IsResponse) return;
+
+            try
+            {
+                var circuit = AB_Board.Circuit;
+
+                switch (_msg)
+                {
+                    case AB_Get_All_Characters_Request req:
+                    {
+                        var data = await CharactersGetAllAsync();
+                        m_broker?.Publish(new AB_Get_All_Characters_Response
+                        {
+                            CorrelationId = req.CorrelationId,
+                            Data = data
+                        });
+                        break;
+                    }
+                    case AB_Get_Character_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        AB_Character_Model? data = dbId == 0 ? null
+                            : await AB_Board.Db.GetByIdAsync<AB_Character_Model>(dbId, req.Id);
+                        m_broker?.Publish(new AB_Get_Character_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Add_Character_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            await AB_Board.Db.AddAsync(dbId, req.Character);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Add_Character_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Save_Character_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            AB_Board.Db.Update(dbId, req.Character);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Save_Character_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Delete_Character_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            AB_Board.Db.Remove(dbId, req.Character);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Delete_Character_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Get_All_Relationships_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        List<AB_Character_Relationship_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            var all = await AB_Board.Db.GetAllAsync<AB_Character_Relationship_Model>(dbId);
+                            data.AddRange(all);
+                        }
+                        m_broker?.Publish(new AB_Get_All_Relationships_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_All_Locations_Request req:
+                    {
+                        var data = await LocationsGetAllAsync();
+                        m_broker?.Publish(new AB_Get_All_Locations_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_All_Location_Connections_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        List<AB_Location_Connection_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            var all = await AB_Board.Db.GetAllAsync<AB_Location_Connection_Model>(dbId);
+                            data.AddRange(all);
+                        }
+                        m_broker?.Publish(new AB_Get_All_Location_Connections_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_All_Relation_Colors_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        List<AB_Relation_Color_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            var all = await AB_Board.Db.GetAllAsync<AB_Relation_Color_Model>(dbId);
+                            data.AddRange(all);
+                        }
+                        m_broker?.Publish(new AB_Get_All_Relation_Colors_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Add_Relation_Color_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            await AB_Board.Db.AddAsync(dbId, req.Color);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Add_Relation_Color_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Save_Relation_Color_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            AB_Board.Db.Update(dbId, req.Color);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Save_Relation_Color_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Delete_Relation_Color_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            AB_Board.Db.Remove(dbId, req.Color);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Delete_Relation_Color_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Get_All_Windows_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        List<AB_Response_Window_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            var all = await AB_Board.Db.GetAllAsync<AB_Response_Window_Model>(dbId);
+                            data.AddRange(all);
+                        }
+                        m_broker?.Publish(new AB_Get_All_Windows_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_Window_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        AB_Response_Window_Model? data = dbId == 0 ? null
+                            : await AB_Board.Db.GetByIdAsync<AB_Response_Window_Model>(dbId, req.Id);
+                        m_broker?.Publish(new AB_Get_Window_Response
+                        {
+                            CorrelationId = req.CorrelationId,
+                            Data = data,
+                            IsOk = data != null
+                        });
+                        break;
+                    }
+                    case AB_Add_Window_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            await AB_Board.Db.AddAsync(dbId, req.Window);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Add_Window_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Save_Window_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            req.Window.UpdatedAt_ = DateTime.UtcNow;
+                            AB_Board.Db.Update(dbId, req.Window);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Save_Window_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Delete_Window_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            var window = await AB_Board.Db.GetByIdAsync<AB_Response_Window_Model>(dbId, req.Id);
+                            if (window != null)
+                            {
+                                AB_Board.Db.Remove(dbId, window);
+                                await AB_Board.Db.SaveChangesAsync(dbId);
+                            }
+                        }
+                        m_broker?.Publish(new AB_Delete_Window_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    // ==================== WindowComponents ====================
+                    case AB_Get_Window_Components_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        List<AB_Window_Component_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            string wid = req.WindowId;
+                            var found = await AB_Board.Db.FindAsync<AB_Window_Component_Model>(dbId, _c => _c.WindowId_ == wid);
+                            data.AddRange(found);
+                        }
+                        m_broker?.Publish(new AB_Get_Window_Components_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_All_Window_Components_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        List<AB_Window_Component_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            var all = await AB_Board.Db.GetAllAsync<AB_Window_Component_Model>(dbId);
+                            data.AddRange(all);
+                        }
+                        m_broker?.Publish(new AB_Get_All_Window_Components_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Add_Window_Component_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            await AB_Board.Db.AddAsync(dbId, req.Component);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Add_Window_Component_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Save_Window_Component_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            req.Component.UpdatedAt_ = DateTime.UtcNow;
+                            AB_Board.Db.Update(dbId, req.Component);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Save_Window_Component_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Delete_Window_Component_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            var entity = await AB_Board.Db.GetByIdAsync<AB_Window_Component_Model>(dbId, req.Id);
+                            if (entity != null)
+                            {
+                                AB_Board.Db.Remove(dbId, entity);
+                                await AB_Board.Db.SaveChangesAsync(dbId);
+                            }
+                        }
+                        m_broker?.Publish(new AB_Delete_Window_Component_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Delete_Window_Components_By_Window_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        int deleted = 0;
+                        if (dbId != 0)
+                        {
+                            string wid = req.WindowId;
+                            var found = await AB_Board.Db.FindAsync<AB_Window_Component_Model>(dbId, _c => _c.WindowId_ == wid);
+                            foreach (var c in found)
+                            {
+                                AB_Board.Db.Remove(dbId, c);
+                                deleted++;
+                            }
+                            if (deleted > 0) await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Delete_Window_Components_By_Window_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0, DeletedCount = deleted });
+                        break;
+                    }
+                    // ==================== H. Vec ====================
+                    case AB_Is_Vec_Initialized_Request req:
+                    {
+                        var vs = circuit.VecStore;
+                        bool init = vs != null && circuit.VecHandle != 0 && vs.IsInitialized(circuit.VecHandle);
+                        m_broker?.Publish(new AB_Is_Vec_Initialized_Response
+                        { CorrelationId = req.CorrelationId, Initialized = init });
+                        break;
+                    }
+                    case AB_Get_Vec_Total_Row_Count_Request req:
+                    {
+                        var vs = circuit.VecStore;
+                        int cnt = 0;
+                        if (vs != null && circuit.VecHandle != 0)
+                        {
+                            try { cnt = vs.GetTotalRowCount(circuit.VecHandle); } catch { }
+                        }
+                        m_broker?.Publish(new AB_Get_Vec_Total_Row_Count_Response
+                        { CorrelationId = req.CorrelationId, Count = cnt });
+                        break;
+                    }
+                    case AB_Clear_All_Vec_Request req:
+                    {
+                        var vs = circuit.VecStore;
+                        if (vs != null && circuit.VecHandle != 0)
+                        {
+                            try { vs.ClearAll(circuit.VecHandle); } catch { }
+                        }
+                        m_broker?.Publish(new AB_Clear_All_Vec_Response
+                        { CorrelationId = req.CorrelationId, Success = true });
+                        break;
+                    }
+                    case AB_Search_Lore_Vec_Request req:
+                    {
+                        var vs = circuit.VecStore;
+                        var raw = vs == null ? new() : vs.SearchLore(circuit.VecHandle, req.Query, req.TopK);
+                        var hits = new List<AB_Vec_Hit>(raw.Count);
+                        foreach (var (id, dist) in raw) hits.Add(new AB_Vec_Hit { Id = id, Distance = dist });
+                        m_broker?.Publish(new AB_Search_Lore_Vec_Response
+                        { CorrelationId = req.CorrelationId, Hits = hits });
+                        break;
+                    }
+                    case AB_Search_Chat_Vec_Request req:
+                    {
+                        // 채팅 임베딩은 페르소나 DB 소관 — PersonaDbProxy 경유
+                        var hits = await AB_Persona_Db_Proxy.I.SearchChatAsync(req.Query, req.TopK, req.ExcludeSessionId);
+                        m_broker?.Publish(new AB_Search_Chat_Vec_Response
+                        { CorrelationId = req.CorrelationId, Hits = hits });
+                        break;
+                    }
+                    case AB_Search_CData_Vec_Request req:
+                    {
+                        var vs = circuit.VecStore;
+                        var raw = vs == null ? new() : vs.SearchCData(circuit.VecHandle, req.Query, req.TopK);
+                        var hits = new List<AB_Vec_Hit>(raw.Count);
+                        foreach (var (id, dist) in raw) hits.Add(new AB_Vec_Hit { Id = id, Distance = dist });
+                        m_broker?.Publish(new AB_Search_CData_Vec_Response
+                        { CorrelationId = req.CorrelationId, Hits = hits });
+                        break;
+                    }
+                    case AB_Insert_Lore_Embedding_Request req:
+                    {
+                        circuit.VecStore?.InsertLoreEmbedding(circuit.VecHandle, req.LoreId, req.Embedding);
+                        m_broker?.Publish(new AB_Insert_Lore_Embedding_Response
+                        { CorrelationId = req.CorrelationId, Success = true });
+                        break;
+                    }
+                    case AB_Delete_Lore_Embedding_Request req:
+                    {
+                        circuit.VecStore?.DeleteLoreEmbedding(circuit.VecHandle, req.LoreId);
+                        m_broker?.Publish(new AB_Delete_Lore_Embedding_Response
+                        { CorrelationId = req.CorrelationId, Success = true });
+                        break;
+                    }
+                    case AB_Insert_Chat_Embedding_Request req:
+                    {
+                        await AB_Persona_Db_Proxy.I.InsertChatEmbeddingAsync(req.SessionId, req.NodeId,
+                            req.TurnIndex, req.RefreshIndex, req.EmissionOrder, req.Embedding);
+                        m_broker?.Publish(new AB_Insert_Chat_Embedding_Response
+                        { CorrelationId = req.CorrelationId, Success = true });
+                        break;
+                    }
+                    case AB_Delete_Chat_Embeddings_By_Session_Request req:
+                    {
+                        await AB_Persona_Db_Proxy.I.DeleteChatEmbeddingsBySessionAsync(req.SessionId);
+                        m_broker?.Publish(new AB_Delete_Chat_Embeddings_By_Session_Response
+                        { CorrelationId = req.CorrelationId, Success = true });
+                        break;
+                    }
+                    case AB_Delete_Chat_Embedding_By_Record_Request req:
+                    {
+                        await AB_Persona_Db_Proxy.I.DeleteChatEmbeddingByRecordAsync(req.SessionId, req.NodeId,
+                            req.TurnIndex, req.RefreshIndex, req.EmissionOrder);
+                        m_broker?.Publish(new AB_Delete_Chat_Embedding_By_Record_Response
+                        { CorrelationId = req.CorrelationId, Success = true });
+                        break;
+                    }
+                    case AB_Get_Chat_Embeddings_By_Session_Request req:
+                    {
+                        var data = await AB_Persona_Db_Proxy.I.GetChatEmbeddingsBySessionAsync(req.SessionId);
+                        m_broker?.Publish(new AB_Get_Chat_Embeddings_By_Session_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Insert_CData_Embedding_Request req:
+                    {
+                        circuit.VecStore?.InsertCDataEmbedding(circuit.VecHandle, req.CDataId, req.Embedding);
+                        m_broker?.Publish(new AB_Insert_CData_Embedding_Response
+                        { CorrelationId = req.CorrelationId, Success = true });
+                        break;
+                    }
+                    case AB_Open_Vec_File_Request req:
+                    {
+                        // .vec 파일은 InitializeVec 시점에 생성. Open 은 로그만 — Lifecycle 에 가까움.
+                        if (circuit.Handle != 0 && !string.IsNullOrEmpty(circuit.ActiveName))
+                            AB_Log.Debug("Vec", $"Vec file: circuit/{circuit.ActiveName}.vec");
+                        m_broker?.Publish(new AB_Open_Vec_File_Response
+                        { CorrelationId = req.CorrelationId, Success = true });
+                        break;
+                    }
+                    case AB_Rename_Vec_File_Request req:
+                    {
+                        bool ok = RenameVecFile(req.OldName, req.NewName);
+                        m_broker?.Publish(new AB_Rename_Vec_File_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Delete_Circuit_File_Request req:
+                    {
+                        // [[db-access]] — DB 파일 IO 는 Gateway 에서. 활성 핸들이면 close 먼저.
+                        bool ok = false;
+                        string? err = null;
+                        try
+                        {
+                            var activeCircuit = AB_Board.Circuit;
+                            if (activeCircuit.Handle != 0 && activeCircuit.ActiveName == req.Name)
+                            {
+                                await activeCircuit.CloseAsync();
+                            }
+                            string? circuitPath = AB_Circuit_Db.FindCircuitFile(req.Name);
+                            if (circuitPath != null && File.Exists(circuitPath))
+                            {
+                                File.Delete(circuitPath);
+                            }
+                            string vecPath = Path.Combine("circuit", $"{req.Name}.vec");
+                            if (File.Exists(vecPath)) File.Delete(vecPath);
+                            ok = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            err = ex.Message;
+                            AB_Log.Warn("CircuitGw", $"DeleteCircuitFile 실패 name={req.Name}: {ex.Message}");
+                        }
+                        m_broker?.Publish(new AB_Delete_Circuit_File_Response
+                        { CorrelationId = req.CorrelationId, Success = ok, Error = err });
+                        break;
+                    }
+                    // =================================================
+                    case AB_Get_All_Session_Data_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        List<AB_Character_Data_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            string sid = req.SessionId;
+                            var all = await AB_Board.Db.FindAsync<AB_Character_Data_Model>(dbId, _d => _d.SessionId_ == sid);
+                            data.AddRange(all);
+                        }
+                        m_broker?.Publish(new AB_Get_All_Session_Data_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_All_Data_Categories_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        List<AB_Data_Category_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            var all = await AB_Board.Db.GetAllAsync<AB_Data_Category_Model>(dbId);
+                            data.AddRange(all);
+                        }
+                        m_broker?.Publish(new AB_Get_All_Data_Categories_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Delete_Session_Data_Request req:
+                    {
+                        bool ok = await CharacterDataDeleteBySessionAsync(req.SessionId);
+                        m_broker?.Publish(new AB_Delete_Session_Data_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Delete_Character_Data_By_Message_Request req:
+                    {
+                        bool ok = await CharacterDataDeleteByMessageAsync(req.MessageId);
+                        m_broker?.Publish(new AB_Delete_Character_Data_By_Message_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Delete_Character_Data_From_Message_Request req:
+                    {
+                        bool ok = await CharacterDataDeleteFromMessageAsync(req.FromMessageId);
+                        m_broker?.Publish(new AB_Delete_Character_Data_From_Message_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Copy_Circuit_Data_To_Session_Request req:
+                    {
+                        bool ok = await CharacterDataCopyCircuitToSessionAsync(req.SessionId);
+                        m_broker?.Publish(new AB_Copy_Circuit_Data_To_Session_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Get_Character_Data_By_Category_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        List<AB_Character_Data_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            string cid = req.CharacterId;
+                            string? sid = req.SessionId;
+                            string catId = req.CategoryId;
+                            var all = await AB_Board.Db.FindAsync<AB_Character_Data_Model>(dbId,
+                                _d => _d.CharacterId_ == cid && _d.SessionId_ == sid && _d.CategoryId_ == catId);
+                            data.AddRange(all);
+                        }
+                        m_broker?.Publish(new AB_Get_Character_Data_By_Category_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Upsert_Character_Data_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            var item = new AB_Character_Data_Model
+                            {
+                                CharacterId_ = req.CharacterId,
+                                SessionId_ = req.SessionId,
+                                CategoryId_ = req.CategoryId,
+                                FieldName_ = req.FieldName,
+                                FieldValue_ = req.FieldValue,
+                                Narrative_ = req.Narrative,
+                                Source_ = req.Source,
+                                MessageId_ = req.MessageId
+                            };
+                            await AB_Board.Db.AddAsync(dbId, item);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Upsert_Character_Data_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Delete_Character_Data_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            var item = await AB_Board.Db.GetByIdAsync<AB_Character_Data_Model>(dbId, req.Id);
+                            if (item != null)
+                            {
+                                AB_Board.Db.Remove(dbId, item);
+                                await AB_Board.Db.SaveChangesAsync(dbId);
+                            }
+                        }
+                        m_broker?.Publish(new AB_Delete_Character_Data_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Add_Data_Category_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            await AB_Board.Db.AddAsync(dbId, req.Category);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Add_Data_Category_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Get_All_Patterns_Request req:
+                    {
+                        var data = await PatternsGetAllAsync();
+                        m_broker?.Publish(new AB_Get_All_Patterns_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_All_Lore_Entries_Request req:
+                    {
+                        var data = await LoreGetAllAsync();
+                        m_broker?.Publish(new AB_Get_All_Lore_Entries_Response
+                        {
+                            CorrelationId = req.CorrelationId,
+                            Data = data
+                        });
+                        break;
+                    }
+                    case AB_Get_Lore_Entry_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        AB_Lore_Entry_Model? data = dbId == 0 ? null
+                            : await AB_Board.Db.GetByIdAsync<AB_Lore_Entry_Model>(dbId, req.Id);
+                        m_broker?.Publish(new AB_Get_Lore_Entry_Response
+                        {
+                            CorrelationId = req.CorrelationId,
+                            Data = data
+                        });
+                        break;
+                    }
+                    case AB_Add_Lore_Entry_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            await AB_Board.Db.AddAsync(dbId, req.Entry);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Add_Lore_Entry_Response
+                        {
+                            CorrelationId = req.CorrelationId,
+                            Success = dbId != 0
+                        });
+                        break;
+                    }
+                    case AB_Save_Lore_Entry_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            req.Entry.UpdatedAt_ = DateTime.UtcNow;
+                            AB_Board.Db.Update(dbId, req.Entry);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Save_Lore_Entry_Response
+                        {
+                            CorrelationId = req.CorrelationId,
+                            Success = dbId != 0
+                        });
+                        break;
+                    }
+                    case AB_Delete_Lore_Entry_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            AB_Board.Db.Remove(dbId, req.Entry);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Delete_Lore_Entry_Response
+                        {
+                            CorrelationId = req.CorrelationId,
+                            Success = dbId != 0
+                        });
+                        break;
+                    }
+                    case AB_Find_Matching_Lore_Request req:
+                    {
+                        var data = await LoreFindMatchingAsync(req.Text);
+                        m_broker?.Publish(new AB_Find_Matching_Lore_Response
+                        {
+                            CorrelationId = req.CorrelationId,
+                            Data = data
+                        });
+                        break;
+                    }
+                    case AB_Get_Circuit_Settings_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        AB_Circuit_Settings_Model? data = dbId == 0 ? null
+                            : await AB_Board.Db.GetByIdAsync<AB_Circuit_Settings_Model>(dbId, "settings");
+                        m_broker?.Publish(new AB_Get_Circuit_Settings_Response
+                        {
+                            CorrelationId = req.CorrelationId,
+                            Data = data,
+                            IsOk = data != null,
+                            Error = data != null ? null : (dbId == 0 ? "no active circuit" : "settings load failed")
+                        });
+                        break;
+                    }
+                    case AB_Save_Settings_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            AB_Board.Db.Update(dbId, req.Settings);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Save_Settings_Response
+                        {
+                            CorrelationId = req.CorrelationId,
+                            Success = dbId != 0
+                        });
+                        break;
+                    }
+                    case AB_Add_Settings_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            await AB_Board.Db.AddAsync(dbId, req.Settings);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Add_Settings_Response
+                        {
+                            CorrelationId = req.CorrelationId,
+                            Success = dbId != 0
+                        });
+                        break;
+                    }
+                    case AB_Get_All_Asset_Metadata_Request req:
+                    {
+                        var data = await AssetsGetAllMetadataAsync();
+                        m_broker?.Publish(new AB_Get_All_Asset_Metadata_Response
+                        {
+                            CorrelationId = req.CorrelationId,
+                            Data = data
+                        });
+                        break;
+                    }
+                    case AB_Get_All_Assets_Request req:
+                    {
+                        var data = await AssetsGetAllAsync();
+                        m_broker?.Publish(new AB_Get_All_Assets_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_Asset_Data_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        byte[]? data = null;
+                        if (dbId != 0)
+                        {
+                            var found = await AB_Board.Db.FindAsync<AB_Circuit_Asset_Model>(dbId, _a => _a.Id_ == req.AssetId);
+                            data = found.FirstOrDefault()?.Data_;
+                        }
+                        m_broker?.Publish(new AB_Get_Asset_Data_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_Asset_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        AB_Circuit_Asset_Model? data = dbId == 0 ? null
+                            : await AB_Board.Db.GetByIdAsync<AB_Circuit_Asset_Model>(dbId, req.Id);
+                        m_broker?.Publish(new AB_Get_Asset_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_Asset_By_Name_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        AB_Circuit_Asset_Model? data = null;
+                        if (dbId != 0)
+                        {
+                            var found = await AB_Board.Db.FindAsync<AB_Circuit_Asset_Model>(dbId, _a => _a.Name_ == req.Name);
+                            data = found.FirstOrDefault();
+                        }
+                        m_broker?.Publish(new AB_Get_Asset_By_Name_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Add_Asset_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            await AB_Board.Db.AddAsync(dbId, req.Asset);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Add_Asset_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Add_Assets_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            await AB_Board.Db.AddRangeAsync(dbId, req.Assets);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Add_Assets_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0, AddedCount = req.Assets.Count });
+                        break;
+                    }
+                    case AB_Delete_Asset_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            AB_Board.Db.Remove(dbId, req.Asset);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Delete_Asset_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Find_Assets_By_Path_Prefix_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        List<AB_Circuit_Asset_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            var all = await AB_Board.Db.GetAllAsync<AB_Circuit_Asset_Model>(dbId);
+                            foreach (var a in all)
+                            {
+                                if (a.Name_.StartsWith(req.Prefix, StringComparison.OrdinalIgnoreCase))
+                                    data.Add(a);
+                            }
+                        }
+                        m_broker?.Publish(new AB_Find_Assets_By_Path_Prefix_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_All_Ui_Templates_Request req:
+                    {
+                        var data = await UiTemplatesGetAllAsync();
+                        m_broker?.Publish(new AB_Get_All_Ui_Templates_Response
+                        {
+                            CorrelationId = req.CorrelationId,
+                            Data = data
+                        });
+                        break;
+                    }
+                    case AB_Add_Ui_Template_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            await AB_Board.Db.AddAsync(dbId, req.Template);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Add_Ui_Template_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Save_Ui_Template_Request req:
+                    {
+                        int dbId = ActiveDbId;
+                        if (dbId != 0)
+                        {
+                            AB_Board.Db.Update(dbId, req.Template);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                        }
+                        m_broker?.Publish(new AB_Save_Ui_Template_Response
+                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        break;
+                    }
+                    case AB_Delete_Ui_Template_Request req:
+                    {
+                        bool ok = await UiTemplateDeleteAsync(req.Template);
+                        m_broker?.Publish(new AB_Delete_Ui_Template_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Set_Active_Ui_Template_Request req:
+                    {
+                        bool ok = await UiTemplateSetActiveAsync(req.TemplateId);
+                        m_broker?.Publish(new AB_Set_Active_Ui_Template_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Get_Active_Ui_Template_Request req:
+                    {
+                        var data = await UiTemplateGetActiveAsync();
+                        m_broker?.Publish(new AB_Get_Active_Ui_Template_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string detail = ex.Message;
+                Exception? inner = ex.InnerException;
+                while (inner != null)
+                {
+                    detail += $" <- {inner.GetType().Name}: {inner.Message}";
+                    inner = inner.InnerException;
+                }
+                AB_Log.Error("CircuitGw", $"{_msg.GetType().Name} 처리 실패: {detail}");
+                // 모든 미처리 요청에 대해 범용 에러 응답 발행 (timeout 방지)
+                PublishFallbackError(_msg, detail);
+                // write 계열은 추가 구체 응답 발행
+                switch (_msg)
+                {
+                    case AB_Save_Settings_Request sreq:
+                        m_broker?.Publish(new AB_Save_Settings_Response
+                        {
+                            CorrelationId = sreq.CorrelationId,
+                            Success = false,
+                            Error = ex.Message
+                        });
+                        break;
+                    case AB_Add_Settings_Request areq:
+                        m_broker?.Publish(new AB_Add_Settings_Response
+                        {
+                            CorrelationId = areq.CorrelationId,
+                            Success = false,
+                            Error = ex.Message
+                        });
+                        break;
+                    case AB_Add_Lore_Entry_Request aLore:
+                        m_broker?.Publish(new AB_Add_Lore_Entry_Response
+                        { CorrelationId = aLore.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Save_Lore_Entry_Request sLore:
+                        m_broker?.Publish(new AB_Save_Lore_Entry_Response
+                        { CorrelationId = sLore.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Lore_Entry_Request dLore:
+                        m_broker?.Publish(new AB_Delete_Lore_Entry_Response
+                        { CorrelationId = dLore.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Add_Asset_Request aA:
+                        m_broker?.Publish(new AB_Add_Asset_Response
+                        { CorrelationId = aA.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Add_Assets_Request aAs:
+                        m_broker?.Publish(new AB_Add_Assets_Response
+                        { CorrelationId = aAs.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Asset_Request dA:
+                        m_broker?.Publish(new AB_Delete_Asset_Response
+                        { CorrelationId = dA.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Add_Character_Request aChar:
+                        m_broker?.Publish(new AB_Add_Character_Response
+                        { CorrelationId = aChar.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Save_Character_Request sChar:
+                        m_broker?.Publish(new AB_Save_Character_Response
+                        { CorrelationId = sChar.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Character_Request dChar:
+                        m_broker?.Publish(new AB_Delete_Character_Response
+                        { CorrelationId = dChar.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Add_Relation_Color_Request aRC:
+                        m_broker?.Publish(new AB_Add_Relation_Color_Response
+                        { CorrelationId = aRC.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Save_Relation_Color_Request sRC:
+                        m_broker?.Publish(new AB_Save_Relation_Color_Response
+                        { CorrelationId = sRC.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Relation_Color_Request dRC:
+                        m_broker?.Publish(new AB_Delete_Relation_Color_Response
+                        { CorrelationId = dRC.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Add_Ui_Template_Request aUt:
+                        m_broker?.Publish(new AB_Add_Ui_Template_Response
+                        { CorrelationId = aUt.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Save_Ui_Template_Request sUt:
+                        m_broker?.Publish(new AB_Save_Ui_Template_Response
+                        { CorrelationId = sUt.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Ui_Template_Request dUt:
+                        m_broker?.Publish(new AB_Delete_Ui_Template_Response
+                        { CorrelationId = dUt.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Set_Active_Ui_Template_Request setUt:
+                        m_broker?.Publish(new AB_Set_Active_Ui_Template_Response
+                        { CorrelationId = setUt.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Session_Data_Request dSd:
+                        m_broker?.Publish(new AB_Delete_Session_Data_Response
+                        { CorrelationId = dSd.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Character_Data_By_Message_Request dCdbm:
+                        m_broker?.Publish(new AB_Delete_Character_Data_By_Message_Response
+                        { CorrelationId = dCdbm.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Character_Data_From_Message_Request dCdfm:
+                        m_broker?.Publish(new AB_Delete_Character_Data_From_Message_Response
+                        { CorrelationId = dCdfm.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Copy_Circuit_Data_To_Session_Request cpd:
+                        m_broker?.Publish(new AB_Copy_Circuit_Data_To_Session_Response
+                        { CorrelationId = cpd.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Upsert_Character_Data_Request uCd:
+                        m_broker?.Publish(new AB_Upsert_Character_Data_Response
+                        { CorrelationId = uCd.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Character_Data_Request dCd:
+                        m_broker?.Publish(new AB_Delete_Character_Data_Response
+                        { CorrelationId = dCd.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Add_Data_Category_Request aDc:
+                        m_broker?.Publish(new AB_Add_Data_Category_Response
+                        { CorrelationId = aDc.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Add_Window_Request aW:
+                        m_broker?.Publish(new AB_Add_Window_Response
+                        { CorrelationId = aW.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Save_Window_Request sW:
+                        m_broker?.Publish(new AB_Save_Window_Response
+                        { CorrelationId = sW.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Window_Request dW:
+                        m_broker?.Publish(new AB_Delete_Window_Response
+                        { CorrelationId = dW.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Add_Window_Component_Request aWc:
+                        m_broker?.Publish(new AB_Add_Window_Component_Response
+                        { CorrelationId = aWc.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Save_Window_Component_Request sWc:
+                        m_broker?.Publish(new AB_Save_Window_Component_Response
+                        { CorrelationId = sWc.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Window_Component_Request dWc:
+                        m_broker?.Publish(new AB_Delete_Window_Component_Response
+                        { CorrelationId = dWc.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Window_Components_By_Window_Request dWcw:
+                        m_broker?.Publish(new AB_Delete_Window_Components_By_Window_Response
+                        { CorrelationId = dWcw.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    // ---- Vec write 계열 실패 응답 ----
+                    case AB_Clear_All_Vec_Request cav:
+                        m_broker?.Publish(new AB_Clear_All_Vec_Response
+                        { CorrelationId = cav.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Insert_Lore_Embedding_Request ile:
+                        m_broker?.Publish(new AB_Insert_Lore_Embedding_Response
+                        { CorrelationId = ile.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Lore_Embedding_Request dle:
+                        m_broker?.Publish(new AB_Delete_Lore_Embedding_Response
+                        { CorrelationId = dle.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Insert_Chat_Embedding_Request ice:
+                        m_broker?.Publish(new AB_Insert_Chat_Embedding_Response
+                        { CorrelationId = ice.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Chat_Embeddings_By_Session_Request dcebs:
+                        m_broker?.Publish(new AB_Delete_Chat_Embeddings_By_Session_Response
+                        { CorrelationId = dcebs.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Chat_Embedding_By_Record_Request dcebr:
+                        m_broker?.Publish(new AB_Delete_Chat_Embedding_By_Record_Response
+                        { CorrelationId = dcebr.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Insert_CData_Embedding_Request icde:
+                        m_broker?.Publish(new AB_Insert_CData_Embedding_Response
+                        { CorrelationId = icde.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Open_Vec_File_Request ovf:
+                        m_broker?.Publish(new AB_Open_Vec_File_Response
+                        { CorrelationId = ovf.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Rename_Vec_File_Request rvf:
+                        m_broker?.Publish(new AB_Rename_Vec_File_Response
+                        { CorrelationId = rvf.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                    case AB_Delete_Circuit_File_Request dcf:
+                        m_broker?.Publish(new AB_Delete_Circuit_File_Response
+                        { CorrelationId = dcf.CorrelationId, Success = false, Error = ex.Message });
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// catch 블록에서 호출 — 매칭되는 Response 타입으로 에러 응답 발행 (timeout 방지).
+        /// </summary>
+        private void PublishFallbackError(AB_Message _req, string _error)
+        {
+            try
+            {
+                AB_Message? resp = _req switch
+                {
+                    AB_Get_Circuit_Settings_Request r => new AB_Get_Circuit_Settings_Response
+                    { CorrelationId = r.CorrelationId, IsOk = false, Error = _error },
+                    AB_Get_All_Characters_Request r => new AB_Get_All_Characters_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_Character_Request r => new AB_Get_Character_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_All_Lore_Entries_Request r => new AB_Get_All_Lore_Entries_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_Lore_Entry_Request r => new AB_Get_Lore_Entry_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_All_Windows_Request r => new AB_Get_All_Windows_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_Window_Request r => new AB_Get_Window_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_Window_Components_Request r => new AB_Get_Window_Components_Response
+                    { CorrelationId = r.CorrelationId, Error = _error },
+                    AB_Get_All_Window_Components_Request r => new AB_Get_All_Window_Components_Response
+                    { CorrelationId = r.CorrelationId, Error = _error },
+                    AB_Get_All_Assets_Request r => new AB_Get_All_Assets_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_Asset_Request r => new AB_Get_Asset_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_Asset_By_Name_Request r => new AB_Get_Asset_By_Name_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_Asset_Data_Request r => new AB_Get_Asset_Data_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_All_Asset_Metadata_Request r => new AB_Get_All_Asset_Metadata_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_All_Relationships_Request r => new AB_Get_All_Relationships_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_All_Locations_Request r => new AB_Get_All_Locations_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_All_Location_Connections_Request r => new AB_Get_All_Location_Connections_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_All_Relation_Colors_Request r => new AB_Get_All_Relation_Colors_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_All_Patterns_Request r => new AB_Get_All_Patterns_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_All_Ui_Templates_Request r => new AB_Get_All_Ui_Templates_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_Active_Ui_Template_Request r => new AB_Get_Active_Ui_Template_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_All_Data_Categories_Request r => new AB_Get_All_Data_Categories_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_All_Session_Data_Request r => new AB_Get_All_Session_Data_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_Character_Data_By_Category_Request r => new AB_Get_Character_Data_By_Category_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Find_Matching_Lore_Request r => new AB_Find_Matching_Lore_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Find_Assets_By_Path_Prefix_Request r => new AB_Find_Assets_By_Path_Prefix_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Is_Vec_Initialized_Request r => new AB_Is_Vec_Initialized_Response
+                    { CorrelationId = r.CorrelationId },
+                    AB_Get_Vec_Total_Row_Count_Request r => new AB_Get_Vec_Total_Row_Count_Response
+                    { CorrelationId = r.CorrelationId },
+                    _ => null
+                };
+                if (resp != null)
+                    m_broker?.Publish(resp);
+            }
+            catch { }
+        }
+
+        // --- Lore 헬퍼 (Engine 직결) ---
+
+        private static int ActiveDbId
+        {
+            get { return AB_Board.Circuit.Handle; }
+        }
+
+        private static async System.Threading.Tasks.Task<List<AB_Lore_Entry_Model>> LoreGetAllAsync()
+        {
+            List<AB_Lore_Entry_Model> result = new();
+            int dbId = ActiveDbId;
+            if (dbId == 0) return result;
+            var all = await AB_Board.Db.GetAllAsync<AB_Lore_Entry_Model>(dbId);
+            result.AddRange(all);
+            result.Sort(CompareLoreByPriorityThenName);
+            return result;
+        }
+
+        private static async System.Threading.Tasks.Task<List<AB_Lore_Entry_Model>> LoreFindMatchingAsync(string _text)
+        {
+            List<AB_Lore_Entry_Model> result = new();
+            int dbId = ActiveDbId;
+            if (dbId == 0) return result;
+            var all = await AB_Board.Db.GetAllAsync<AB_Lore_Entry_Model>(dbId);
+            string textLower = _text.ToLowerInvariant();
+            foreach (AB_Lore_Entry_Model entry in all)
+            {
+                if (!entry.Enabled_) continue;
+                string[] keywords = entry.Keywords_.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                foreach (string keyword in keywords)
+                {
+                    if (textLower.Contains(keyword.ToLowerInvariant()))
+                    {
+                        result.Add(entry);
+                        break;
+                    }
+                }
+            }
+            result.Sort(CompareLoreByPriorityThenName);
+            return result;
+        }
+
+        private static int CompareLoreByPriorityThenName(AB_Lore_Entry_Model _a, AB_Lore_Entry_Model _b)
+        {
+            int cmp = _a.Priority_.CompareTo(_b.Priority_);
+            if (cmp != 0) return cmp;
+            return string.Compare(_a.Name_, _b.Name_, StringComparison.Ordinal);
+        }
+
+        // --- Character/Location 헬퍼 ---
+
+        private static async System.Threading.Tasks.Task<List<AB_Character_Model>> CharactersGetAllAsync()
+        {
+            List<AB_Character_Model> result = new();
+            int dbId = ActiveDbId;
+            if (dbId == 0) return result;
+            var all = await AB_Board.Db.GetAllAsync<AB_Character_Model>(dbId);
+            result.AddRange(all);
+            result.Sort(CompareCharacterBySortOrderThenName);
+            return result;
+        }
+
+        private static async System.Threading.Tasks.Task<List<AB_Location_Model>> LocationsGetAllAsync()
+        {
+            List<AB_Location_Model> result = new();
+            int dbId = ActiveDbId;
+            if (dbId == 0) return result;
+            var all = await AB_Board.Db.GetAllAsync<AB_Location_Model>(dbId);
+            result.AddRange(all);
+            result.Sort(CompareLocationByName);
+            return result;
+        }
+
+        private static int CompareCharacterBySortOrderThenName(AB_Character_Model _a, AB_Character_Model _b)
+        {
+            int cmp = _a.SortOrder_.CompareTo(_b.SortOrder_);
+            if (cmp != 0) return cmp;
+            return string.Compare(_a.Name_, _b.Name_, StringComparison.Ordinal);
+        }
+
+        private static int CompareLocationByName(AB_Location_Model _a, AB_Location_Model _b)
+        {
+            return string.Compare(_a.Name_, _b.Name_, StringComparison.Ordinal);
+        }
+
+        // --- Pattern / UiTemplate 헬퍼 ---
+
+        private static async System.Threading.Tasks.Task<List<AB_Pattern_Config_Model>> PatternsGetAllAsync()
+        {
+            List<AB_Pattern_Config_Model> result = new();
+            int dbId = ActiveDbId;
+            if (dbId == 0) return result;
+            var all = await AB_Board.Db.GetAllAsync<AB_Pattern_Config_Model>(dbId);
+            result.AddRange(all);
+            result.Sort(ComparePatternByType);
+            return result;
+        }
+
+        private static async System.Threading.Tasks.Task<List<AB_Circuit_Ui_Template_Model>> UiTemplatesGetAllAsync()
+        {
+            List<AB_Circuit_Ui_Template_Model> result = new();
+            int dbId = ActiveDbId;
+            if (dbId == 0) return result;
+            var all = await AB_Board.Db.GetAllAsync<AB_Circuit_Ui_Template_Model>(dbId);
+            result.AddRange(all);
+            result.Sort(CompareUiTemplateBySortOrder);
+            return result;
+        }
+
+        private static async System.Threading.Tasks.Task<bool> UiTemplateDeleteAsync(AB_Circuit_Ui_Template_Model _template)
+        {
+            int dbId = ActiveDbId;
+            if (dbId == 0) return false;
+            var all = await AB_Board.Db.GetAllAsync<AB_Circuit_Ui_Template_Model>(dbId);
+            int count = 0;
+            foreach (var _ in all) { count++; if (count > 1) break; }
+            if (count <= 1) return false;
+            AB_Board.Db.Remove(dbId, _template);
+            await AB_Board.Db.SaveChangesAsync(dbId);
+            return true;
+        }
+
+        private static async System.Threading.Tasks.Task<bool> UiTemplateSetActiveAsync(string _templateId)
+        {
+            int dbId = ActiveDbId;
+            if (dbId == 0) return false;
+            var all = await AB_Board.Db.GetAllAsync<AB_Circuit_Ui_Template_Model>(dbId);
+            foreach (AB_Circuit_Ui_Template_Model t in all)
+            {
+                t.IsActive_ = (t.Id_ == _templateId);
+                AB_Board.Db.Update(dbId, t);
+            }
+            await AB_Board.Db.SaveChangesAsync(dbId);
+            return true;
+        }
+
+        private static async System.Threading.Tasks.Task<AB_Circuit_Ui_Template_Model?> UiTemplateGetActiveAsync()
+        {
+            int dbId = ActiveDbId;
+            if (dbId == 0) return null;
+            var all = await AB_Board.Db.GetAllAsync<AB_Circuit_Ui_Template_Model>(dbId);
+            AB_Circuit_Ui_Template_Model? active = null;
+            AB_Circuit_Ui_Template_Model? first = null;
+            foreach (AB_Circuit_Ui_Template_Model t in all)
+            {
+                if (first == null) first = t;
+                if (t.IsActive_) { active = t; break; }
+            }
+            return active ?? first;
+        }
+
+        private static int ComparePatternByType(AB_Pattern_Config_Model _a, AB_Pattern_Config_Model _b)
+        {
+            return string.Compare(_a.PatternType_, _b.PatternType_, StringComparison.Ordinal);
+        }
+
+        private static int CompareUiTemplateBySortOrder(AB_Circuit_Ui_Template_Model _a, AB_Circuit_Ui_Template_Model _b)
+        {
+            return _a.SortOrder_.CompareTo(_b.SortOrder_);
+        }
+
+        // --- Vec 파일 헬퍼 ---
+
+        private static bool RenameVecFile(string _oldName, string _newName)
+        {
+            if (string.IsNullOrEmpty(_oldName) || string.IsNullOrEmpty(_newName)) return false;
+            if (_oldName == _newName) return true;
+            string oldPath = System.IO.Path.Combine("circuit", $"{_oldName}.vec");
+            string newPath = System.IO.Path.Combine("circuit", $"{_newName}.vec");
+            if (!System.IO.File.Exists(oldPath)) return false;
+            if (System.IO.File.Exists(newPath)) return false;
+            try
+            {
+                System.IO.File.Move(oldPath, newPath);
+                AB_Log.Debug("Vec", $"Vec file renamed: {oldPath} → {newPath}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                AB_Log.Error("Vec", $"Vec file rename failed: {ex.Message}");
+                return false;
+            }
+        }
+
+        // --- Asset 헬퍼 ---
+
+        private static async System.Threading.Tasks.Task<List<AB_Circuit_Asset_Model>> AssetsGetAllAsync()
+        {
+            List<AB_Circuit_Asset_Model> result = new();
+            int dbId = ActiveDbId;
+            if (dbId == 0) return result;
+            var all = await AB_Board.Db.GetAllAsync<AB_Circuit_Asset_Model>(dbId);
+            result.AddRange(all);
+            result.Sort(CompareAssetByName);
+            return result;
+        }
+
+        private static async System.Threading.Tasks.Task<List<AB_Circuit_Asset_Model>> AssetsGetAllMetadataAsync()
+        {
+            List<AB_Circuit_Asset_Model> result = new();
+            int dbId = ActiveDbId;
+            if (dbId == 0) return result;
+            result = await AB_Board.Db.SelectAsync<AB_Circuit_Asset_Model, AB_Circuit_Asset_Model>(
+                dbId, _a => new AB_Circuit_Asset_Model
+                {
+                    Id_ = _a.Id_,
+                    Name_ = _a.Name_,
+                    FileName_ = _a.FileName_,
+                    AssetType_ = _a.AssetType_,
+                    MimeType_ = _a.MimeType_,
+                    FileSize_ = _a.FileSize_,
+                    CreatedAt_ = _a.CreatedAt_
+                });
+            result.Sort(CompareAssetByName);
+            return result;
+        }
+
+        private static int CompareAssetByName(AB_Circuit_Asset_Model _a, AB_Circuit_Asset_Model _b)
+        {
+            return string.Compare(_a.Name_, _b.Name_, StringComparison.Ordinal);
+        }
+
+        // --- CharacterData 삭제 헬퍼 ---
+
+        private static async System.Threading.Tasks.Task<bool> CharacterDataDeleteBySessionAsync(string _sessionId)
+        {
+            int dbId = ActiveDbId;
+            if (dbId == 0) return false;
+            var data = await AB_Board.Db.FindAsync<AB_Character_Data_Model>(dbId, _d => _d.SessionId_ == _sessionId);
+            foreach (var d in data) AB_Board.Db.Remove(dbId, d);
+            await AB_Board.Db.SaveChangesAsync(dbId);
+            return true;
+        }
+
+        private static async System.Threading.Tasks.Task<bool> CharacterDataDeleteByMessageAsync(long _messageId)
+        {
+            int dbId = ActiveDbId;
+            if (dbId == 0) return false;
+            var data = await AB_Board.Db.FindAsync<AB_Character_Data_Model>(dbId, _d => _d.MessageId_ == _messageId);
+            foreach (var d in data) AB_Board.Db.Remove(dbId, d);
+            await AB_Board.Db.SaveChangesAsync(dbId);
+            return true;
+        }
+
+        private static async System.Threading.Tasks.Task<bool> CharacterDataDeleteFromMessageAsync(long _fromMessageId)
+        {
+            int dbId = ActiveDbId;
+            if (dbId == 0) return false;
+            var data = await AB_Board.Db.FindAsync<AB_Character_Data_Model>(dbId,
+                _d => _d.MessageId_ != null && _d.MessageId_ >= _fromMessageId);
+            foreach (var d in data) AB_Board.Db.Remove(dbId, d);
+            await AB_Board.Db.SaveChangesAsync(dbId);
+            return true;
+        }
+
+        private static async System.Threading.Tasks.Task<bool> CharacterDataCopyCircuitToSessionAsync(string _sessionId)
+        {
+            int dbId = ActiveDbId;
+            if (dbId == 0) return false;
+            var circuitData = await AB_Board.Db.FindAsync<AB_Character_Data_Model>(dbId, _d => _d.SessionId_ == null);
+            foreach (var d in circuitData)
+            {
+                await AB_Board.Db.AddAsync(dbId, new AB_Character_Data_Model
+                {
+                    CharacterId_ = d.CharacterId_,
+                    SessionId_ = _sessionId,
+                    CategoryId_ = d.CategoryId_,
+                    FieldName_ = d.FieldName_,
+                    FieldValue_ = d.FieldValue_,
+                    Narrative_ = d.Narrative_,
+                    Source_ = d.Source_
+                });
+            }
+            await AB_Board.Db.SaveChangesAsync(dbId);
+            return true;
+        }
+    }
+}

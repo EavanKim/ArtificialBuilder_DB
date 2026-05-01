@@ -1,0 +1,255 @@
+using ArtificialBuilder.Models;
+using ArtificialBuilder.Requests;
+using ArtificialBuilder_EDP;
+using ArtificialBuilder_EDP.Components;
+using ArtificialBuilder_EDP.Core.Messaging;
+using EDPFW;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ArtificialBuilder
+{
+    /// <summary>
+    /// 전역 App DB 게이트웨이. 브로커 토픽 db.app 구독, EDP_Db_Engine(AB_Board.Db) 직결 호출.
+    /// AB_Board.App.Handle 0 인 경우(미초기화) 빈/false 응답.
+    /// </summary>
+    public class AB_App_Db_Gateway : ArtificialBuilder_EDP.Core.AB_Component
+    {
+        private IAB_Message_Broker? m_broker;
+        private AB_Subscription_Token? m_sub;
+        private EDP_Db_Engine m_engine => AB_Board.Db;
+
+        /// <inheritdoc/>
+        public override void OnAttach()
+        {
+            try
+            {
+                m_broker = ArtificialBuilder_EDP.Core.AB_Engine.Get<AB_In_Memory_Broker>();
+                m_sub = m_broker.Subscribe(AB_App_Db_Topics.App, HandleMessage);
+            }
+            catch (Exception ex)
+            {
+                AB_Log.Error("AppGw", $"OnAttach 실패: {ex.Message}");
+            }
+        }
+
+        /// <inheritdoc/>
+        public override void OnDetach()
+        {
+            try
+            {
+                if (m_broker != null && m_sub != null)
+                    m_broker.Unsubscribe(m_sub);
+            }
+            catch { }
+        }
+
+        private static int Handle => AB_Board.App?.Handle ?? 0;
+
+        private async void HandleMessage(AB_Message _msg)
+        {
+            if (_msg.IsResponse) return;
+
+            try
+            {
+                int handle = Handle;
+
+                switch (_msg)
+                {
+                    // ============================================================
+                    // ModelConfig
+                    // ============================================================
+                    case AB_Get_All_Models_Request req:
+                    {
+                        List<AB_Model_Config_Model> data = new();
+                        if (handle != 0)
+                        {
+                            var all = await m_engine.GetAllAsync<AB_Model_Config_Model>(handle);
+                            data = all.ToList();
+                        }
+                        m_broker?.Publish(new AB_Get_All_Models_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_Model_By_Id_Request req:
+                    {
+                        AB_Model_Config_Model? data = null;
+                        bool isOk = false;
+                        if (handle != 0)
+                        {
+                            var found = await m_engine.FindAsync<AB_Model_Config_Model>(handle, _m => _m.Id_ == req.Id);
+                            data = found.FirstOrDefault();
+                            isOk = data != null;
+                        }
+                        m_broker?.Publish(new AB_Get_Model_By_Id_Response
+                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        break;
+                    }
+                    case AB_Add_Model_Request req:
+                    {
+                        if (handle != 0)
+                        {
+                            await m_engine.AddAsync(handle, req.Model);
+                            await m_engine.SaveChangesAsync(handle);
+                        }
+                        m_broker?.Publish(new AB_Add_Model_Response
+                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        break;
+                    }
+                    case AB_Update_Model_Request req:
+                    {
+                        if (handle != 0)
+                        {
+                            m_engine.Update(handle, req.Model);
+                            await m_engine.SaveChangesAsync(handle);
+                        }
+                        m_broker?.Publish(new AB_Update_Model_Response
+                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        break;
+                    }
+                    case AB_Delete_Model_Request req:
+                    {
+                        if (handle != 0)
+                        {
+                            m_engine.Remove(handle, req.Model);
+                            await m_engine.SaveChangesAsync(handle);
+                        }
+                        m_broker?.Publish(new AB_Delete_Model_Response
+                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        break;
+                    }
+
+                    // ============================================================
+                    // UiTemplate (글로벌)
+                    // ============================================================
+                    case AB_Get_All_App_Ui_Templates_Request req:
+                    {
+                        List<AB_Ui_Template_Model> data = new();
+                        if (handle != 0)
+                        {
+                            var all = await m_engine.GetAllAsync<AB_Ui_Template_Model>(handle);
+                            data = all.ToList();
+                        }
+                        m_broker?.Publish(new AB_Get_All_App_Ui_Templates_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_App_Ui_Template_By_Id_Request req:
+                    {
+                        AB_Ui_Template_Model? data = null;
+                        bool isOk = false;
+                        if (handle != 0)
+                        {
+                            data = await m_engine.GetByIdAsync<AB_Ui_Template_Model>(handle, req.Id);
+                            isOk = data != null;
+                        }
+                        m_broker?.Publish(new AB_Get_App_Ui_Template_By_Id_Response
+                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        break;
+                    }
+                    case AB_Add_App_Ui_Template_Request req:
+                    {
+                        if (handle != 0)
+                        {
+                            await m_engine.AddAsync(handle, req.Template);
+                            await m_engine.SaveChangesAsync(handle);
+                        }
+                        m_broker?.Publish(new AB_Add_App_Ui_Template_Response
+                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        break;
+                    }
+                    case AB_Update_App_Ui_Template_Request req:
+                    {
+                        if (handle != 0)
+                        {
+                            m_engine.Update(handle, req.Template);
+                            await m_engine.SaveChangesAsync(handle);
+                        }
+                        m_broker?.Publish(new AB_Update_App_Ui_Template_Response
+                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        break;
+                    }
+                    case AB_Delete_App_Ui_Template_Request req:
+                    {
+                        if (handle != 0)
+                        {
+                            m_engine.Remove(handle, req.Template);
+                            await m_engine.SaveChangesAsync(handle);
+                        }
+                        m_broker?.Publish(new AB_Delete_App_Ui_Template_Response
+                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        break;
+                    }
+
+                    // ============================================================
+                    // Pipeline (레거시)
+                    // ============================================================
+                    case AB_Get_All_Pipelines_Request req:
+                    {
+                        List<AB_Pipeline_Model> data = new();
+                        if (handle != 0)
+                        {
+                            var all = await m_engine.GetAllAsync<AB_Pipeline_Model>(handle);
+                            data = all.ToList();
+                        }
+                        m_broker?.Publish(new AB_Get_All_Pipelines_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_Pipeline_By_Id_Request req:
+                    {
+                        AB_Pipeline_Model? data = null;
+                        bool isOk = false;
+                        if (handle != 0)
+                        {
+                            data = await m_engine.GetByIdAsync<AB_Pipeline_Model>(handle, req.Id);
+                            isOk = data != null;
+                        }
+                        m_broker?.Publish(new AB_Get_Pipeline_By_Id_Response
+                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        break;
+                    }
+                    case AB_Add_Pipeline_Request req:
+                    {
+                        if (handle != 0)
+                        {
+                            await m_engine.AddAsync(handle, req.Pipeline);
+                            await m_engine.SaveChangesAsync(handle);
+                        }
+                        m_broker?.Publish(new AB_Add_Pipeline_Response
+                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        break;
+                    }
+                    case AB_Update_Pipeline_Request req:
+                    {
+                        if (handle != 0)
+                        {
+                            m_engine.Update(handle, req.Pipeline);
+                            await m_engine.SaveChangesAsync(handle);
+                        }
+                        m_broker?.Publish(new AB_Update_Pipeline_Response
+                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        break;
+                    }
+                    case AB_Delete_Pipeline_Request req:
+                    {
+                        if (handle != 0)
+                        {
+                            m_engine.Remove(handle, req.Pipeline);
+                            await m_engine.SaveChangesAsync(handle);
+                        }
+                        m_broker?.Publish(new AB_Delete_Pipeline_Response
+                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AB_Log.Error("AppGw", $"HandleMessage 실패: {ex.Message}");
+            }
+        }
+    }
+}
