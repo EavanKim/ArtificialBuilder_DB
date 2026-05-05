@@ -22,15 +22,15 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
             try
             {
                 Step("빈 DB 윈도우 생성 (컴포넌트 0)");
-                var win = new AB_Response_Window_Model { Name_ = "test_empty" };
+                var win = new AB_Response_Ui_Window_Model { Name_ = "test_empty" };
                 await AB_Circuit_Db_Proxy.I.AddWindowAsync(win);
 
                 Step("EnsureDefaultComponentsAsync 호출");
                 await AB_Window_Component_Seeding.EnsureDefaultComponentsAsync();
 
                 Step("window_components 조회 + 구성 검증");
-                List<AB_Window_Component_Model> comps = await AB_Circuit_Db_Proxy.I.GetAllWindowComponentsAsync();
-                List<AB_Window_Component_Model> forWin = new();
+                List<AB_Response_Ui_Component_Model> comps = await AB_Circuit_Db_Proxy.I.GetAllWindowComponentsAsync();
+                List<AB_Response_Ui_Component_Model> forWin = new();
                 foreach (var c in comps)
                 {
                     if (c.WindowId_ == win.Id_) forWin.Add(c);
@@ -85,14 +85,14 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 Log("1차.Windows.Count", count1);
                 Assert("1차 결과 4 윈도우 (chat.json — back + 3)", count1 == 4, $"got {count1}");
 
-                List<AB_Response_Window_Model> dbAfter1 = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
+                List<AB_Response_Ui_Window_Model> dbAfter1 = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
                 Log("DB.windows.Count 1차 후", dbAfter1.Count);
 
                 Step("2차 ApplyCircuitDefAsync(chat) — 멱등 확인");
                 var applied2 = await AB_Window_Component_Seeding.ApplyCircuitDefAsync("chat");
                 Log("2차.Windows.Count", applied2.Windows.Count);
 
-                List<AB_Response_Window_Model> dbAfter2 = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
+                List<AB_Response_Ui_Window_Model> dbAfter2 = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
                 Log("DB.windows.Count 2차 후", dbAfter2.Count);
                 Assert("DB 중복 생성 없음", dbAfter2.Count == dbAfter1.Count, $"1차 {dbAfter1.Count} → 2차 {dbAfter2.Count}, 재호출이 중복 생성하면 멱등 위반");
 
@@ -127,7 +127,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 var applied = await AB_Window_Component_Seeding.ApplyCircuitDefAsync("chat");
 
                 Step("DB windowIds");
-                List<AB_Response_Window_Model> db = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
+                List<AB_Response_Ui_Window_Model> db = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
                 var ids = new List<string>();
                 foreach (var w in db) ids.Add(w.Id_);
                 Log("db.windowIds", string.Join(",", ids));

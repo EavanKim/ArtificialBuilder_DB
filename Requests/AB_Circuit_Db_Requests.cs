@@ -517,17 +517,17 @@ namespace ArtificialBuilder.Requests
     public class AB_Get_All_Windows_Request : AB_Message
     {
         /// <summary>토픽.</summary>
-        public AB_Get_All_Windows_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Get_All_Windows_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
     /// <summary>응답.</summary>
     public class AB_Get_All_Windows_Response : AB_Message
     {
         /// <summary>결과.</summary>
-        public List<AB_Response_Window_Model> Data = new();
+        public List<AB_Response_Ui_Window_Model> Data = new();
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽.</summary>
-        public AB_Get_All_Windows_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Get_All_Windows_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     /// <summary>응답 윈도우 단건 조회 요청.</summary>
@@ -536,28 +536,28 @@ namespace ArtificialBuilder.Requests
         /// <summary>윈도우 ID.</summary>
         public string Id = "";
         /// <summary>토픽.</summary>
-        public AB_Get_Window_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Get_Window_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
     /// <summary>응답.</summary>
     public class AB_Get_Window_Response : AB_Message
     {
         /// <summary>결과 (없으면 null).</summary>
-        public AB_Response_Window_Model? Data;
+        public AB_Response_Ui_Window_Model? Data;
         /// <summary>존재 여부.</summary>
         public bool IsOk;
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽.</summary>
-        public AB_Get_Window_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Get_Window_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     /// <summary>응답 윈도우 추가 요청.</summary>
     public class AB_Add_Window_Request : AB_Message
     {
         /// <summary>대상.</summary>
-        public AB_Response_Window_Model Window = new();
+        public AB_Response_Ui_Window_Model Window = new();
         /// <summary>토픽.</summary>
-        public AB_Add_Window_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Add_Window_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
     /// <summary>응답.</summary>
     public class AB_Add_Window_Response : AB_Message
@@ -567,16 +567,16 @@ namespace ArtificialBuilder.Requests
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽.</summary>
-        public AB_Add_Window_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Add_Window_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     /// <summary>응답 윈도우 갱신 요청.</summary>
     public class AB_Save_Window_Request : AB_Message
     {
         /// <summary>대상.</summary>
-        public AB_Response_Window_Model Window = new();
+        public AB_Response_Ui_Window_Model Window = new();
         /// <summary>토픽.</summary>
-        public AB_Save_Window_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Save_Window_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
     /// <summary>응답.</summary>
     public class AB_Save_Window_Response : AB_Message
@@ -586,7 +586,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽.</summary>
-        public AB_Save_Window_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Save_Window_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     /// <summary>응답 윈도우 삭제 요청.</summary>
@@ -595,7 +595,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>윈도우 ID.</summary>
         public string Id = "";
         /// <summary>토픽.</summary>
-        public AB_Delete_Window_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Delete_Window_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
     /// <summary>응답.</summary>
     public class AB_Delete_Window_Response : AB_Message
@@ -605,7 +605,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽.</summary>
-        public AB_Delete_Window_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Delete_Window_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     // --- WindowComponents — AB_Window 조립 컴포넌트 CRUD ---
@@ -616,43 +616,43 @@ namespace ArtificialBuilder.Requests
         /// <summary>부모 윈도우 ID.</summary>
         public string WindowId = "";
         /// <summary>토픽.</summary>
-        public AB_Get_Window_Components_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Get_Window_Components_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
     /// <summary>응답.</summary>
     public class AB_Get_Window_Components_Response : AB_Message
     {
         /// <summary>결과.</summary>
-        public List<AB_Window_Component_Model> Data = new();
+        public List<AB_Response_Ui_Component_Model> Data = new();
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽.</summary>
-        public AB_Get_Window_Components_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Get_Window_Components_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     /// <summary>전 윈도우의 컴포넌트 통합 조회 요청.</summary>
     public class AB_Get_All_Window_Components_Request : AB_Message
     {
         /// <summary>토픽.</summary>
-        public AB_Get_All_Window_Components_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Get_All_Window_Components_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
     /// <summary>응답.</summary>
     public class AB_Get_All_Window_Components_Response : AB_Message
     {
         /// <summary>결과.</summary>
-        public List<AB_Window_Component_Model> Data = new();
+        public List<AB_Response_Ui_Component_Model> Data = new();
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽.</summary>
-        public AB_Get_All_Window_Components_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Get_All_Window_Components_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     /// <summary>윈도우 컴포넌트 추가 요청.</summary>
     public class AB_Add_Window_Component_Request : AB_Message
     {
         /// <summary>대상.</summary>
-        public AB_Window_Component_Model Component = new();
+        public AB_Response_Ui_Component_Model Component = new();
         /// <summary>토픽.</summary>
-        public AB_Add_Window_Component_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Add_Window_Component_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
     /// <summary>응답.</summary>
     public class AB_Add_Window_Component_Response : AB_Message
@@ -662,16 +662,16 @@ namespace ArtificialBuilder.Requests
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽.</summary>
-        public AB_Add_Window_Component_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Add_Window_Component_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     /// <summary>윈도우 컴포넌트 갱신 요청.</summary>
     public class AB_Save_Window_Component_Request : AB_Message
     {
         /// <summary>대상.</summary>
-        public AB_Window_Component_Model Component = new();
+        public AB_Response_Ui_Component_Model Component = new();
         /// <summary>토픽.</summary>
-        public AB_Save_Window_Component_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Save_Window_Component_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
     /// <summary>응답.</summary>
     public class AB_Save_Window_Component_Response : AB_Message
@@ -681,7 +681,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽.</summary>
-        public AB_Save_Window_Component_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Save_Window_Component_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     /// <summary>윈도우 컴포넌트 삭제 요청.</summary>
@@ -690,7 +690,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>삭제 대상 컴포넌트 ID.</summary>
         public string Id = "";
         /// <summary>토픽.</summary>
-        public AB_Delete_Window_Component_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Delete_Window_Component_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
     /// <summary>응답.</summary>
     public class AB_Delete_Window_Component_Response : AB_Message
@@ -700,7 +700,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽.</summary>
-        public AB_Delete_Window_Component_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Delete_Window_Component_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     /// <summary>윈도우의 전 컴포넌트 cascade 삭제 (DeleteWindow 동반).</summary>
@@ -709,7 +709,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>부모 윈도우 ID.</summary>
         public string WindowId = "";
         /// <summary>토픽.</summary>
-        public AB_Delete_Window_Components_By_Window_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Delete_Window_Components_By_Window_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
     /// <summary>응답.</summary>
     public class AB_Delete_Window_Components_By_Window_Response : AB_Message
@@ -721,7 +721,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽.</summary>
-        public AB_Delete_Window_Components_By_Window_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Delete_Window_Components_By_Window_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     // --- GetAllLoreEntries ---
@@ -1120,18 +1120,18 @@ namespace ArtificialBuilder.Requests
     public class AB_Get_All_Ui_Templates_Request : AB_Message
     {
         /// <summary>토픽 자동 설정 생성자.</summary>
-        public AB_Get_All_Ui_Templates_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Get_All_Ui_Templates_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
 
     /// <summary>UI 템플릿 목록 응답.</summary>
     public class AB_Get_All_Ui_Templates_Response : AB_Message
     {
         /// <summary>결과 템플릿 리스트.</summary>
-        public List<AB_Circuit_Ui_Template_Model> Data = new();
+        public List<AB_Response_Ui_Template_Model> Data = new();
         /// <summary>오류 메시지.</summary>
         public string? Error;
         /// <summary>토픽 자동 설정 생성자.</summary>
-        public AB_Get_All_Ui_Templates_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Get_All_Ui_Templates_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     // --- AddUiTemplate ---
@@ -1140,9 +1140,9 @@ namespace ArtificialBuilder.Requests
     public class AB_Add_Ui_Template_Request : AB_Message
     {
         /// <summary>대상 템플릿.</summary>
-        public AB_Circuit_Ui_Template_Model Template = new();
+        public AB_Response_Ui_Template_Model Template = new();
         /// <summary>토픽 자동 설정.</summary>
-        public AB_Add_Ui_Template_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Add_Ui_Template_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
 
     /// <summary>UI 템플릿 추가 응답.</summary>
@@ -1153,7 +1153,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽 자동 설정.</summary>
-        public AB_Add_Ui_Template_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Add_Ui_Template_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     // --- SaveUiTemplate ---
@@ -1162,9 +1162,9 @@ namespace ArtificialBuilder.Requests
     public class AB_Save_Ui_Template_Request : AB_Message
     {
         /// <summary>대상 템플릿.</summary>
-        public AB_Circuit_Ui_Template_Model Template = new();
+        public AB_Response_Ui_Template_Model Template = new();
         /// <summary>토픽 자동 설정.</summary>
-        public AB_Save_Ui_Template_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Save_Ui_Template_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
 
     /// <summary>UI 템플릿 저장 응답.</summary>
@@ -1175,7 +1175,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽 자동 설정.</summary>
-        public AB_Save_Ui_Template_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Save_Ui_Template_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     // --- DeleteUiTemplate ---
@@ -1184,9 +1184,9 @@ namespace ArtificialBuilder.Requests
     public class AB_Delete_Ui_Template_Request : AB_Message
     {
         /// <summary>대상 템플릿.</summary>
-        public AB_Circuit_Ui_Template_Model Template = new();
+        public AB_Response_Ui_Template_Model Template = new();
         /// <summary>토픽 자동 설정.</summary>
-        public AB_Delete_Ui_Template_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Delete_Ui_Template_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
 
     /// <summary>UI 템플릿 삭제 응답.</summary>
@@ -1197,7 +1197,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽 자동 설정.</summary>
-        public AB_Delete_Ui_Template_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Delete_Ui_Template_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     // --- SetActiveUiTemplate ---
@@ -1208,7 +1208,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>활성화할 템플릿 ID.</summary>
         public string TemplateId = "";
         /// <summary>토픽 자동 설정.</summary>
-        public AB_Set_Active_Ui_Template_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Set_Active_Ui_Template_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
 
     /// <summary>활성 UI 템플릿 설정 응답.</summary>
@@ -1219,7 +1219,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽 자동 설정.</summary>
-        public AB_Set_Active_Ui_Template_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Set_Active_Ui_Template_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     // --- GetActiveUiTemplate ---
@@ -1228,18 +1228,18 @@ namespace ArtificialBuilder.Requests
     public class AB_Get_Active_Ui_Template_Request : AB_Message
     {
         /// <summary>토픽 자동 설정.</summary>
-        public AB_Get_Active_Ui_Template_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+        public AB_Get_Active_Ui_Template_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
 
     /// <summary>활성 UI 템플릿 조회 응답.</summary>
     public class AB_Get_Active_Ui_Template_Response : AB_Message
     {
         /// <summary>활성 템플릿 (없으면 null).</summary>
-        public AB_Circuit_Ui_Template_Model? Data;
+        public AB_Response_Ui_Template_Model? Data;
         /// <summary>오류.</summary>
         public string? Error;
         /// <summary>토픽 자동 설정.</summary>
-        public AB_Get_Active_Ui_Template_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+        public AB_Get_Active_Ui_Template_Response() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; IsResponse = true; }
     }
 
     // ====================================================================

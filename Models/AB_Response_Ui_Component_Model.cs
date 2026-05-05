@@ -2,17 +2,16 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-// TODO[db-three-way-split]: sub 3 폐기 + sub 2 신설. 본 모델 → Response UI DB 의 AB_Response_Ui_Component_Model 로 이전. plan: docs/plans/doing/db-three-way-split/2-response-ui-db-schema.md
 namespace ArtificialBuilder.Models
 {
     /// <summary>
-    /// AB_Window 에 부착된 단일 컴포넌트의 DB 저장 형태.
-    /// 하나의 response_windows 행에 대해 N 개 row 가 존재 (Frame/Layout/Depth + 성격들).
-    /// ComponentType_ 은 AB_Window_Component_Kind 의 카탈로그 태그 (frame/layout/depth/message/image/3d).
+    /// Response UI Window 에 부착된 단일 Component (Response UI DB per-response-ui).
+    /// 한 response_ui_windows 행에 대해 N 개 row (Frame/Layout/Depth + 출력 레이어).
+    /// ComponentType_ = AB_Window_Component_Kind 카탈로그 태그 (frame/layout/depth/message/image/3d).
     /// 컴포넌트 고유 설정은 ConfigJson_ 에 직렬화.
     /// </summary>
-    [Table("window_components")]
-    public class AB_Window_Component_Model
+    [Table("response_ui_components")]
+    public class AB_Response_Ui_Component_Model
     {
         private string m_id_ = Guid.NewGuid().ToString();
         [Key]

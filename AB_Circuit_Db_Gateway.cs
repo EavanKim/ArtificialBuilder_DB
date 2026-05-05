@@ -8,14 +8,13 @@ using EDPFW;
 using System;
 using System.Collections.Generic;
 
-// TODO[db-three-way-split]: sub 4 — AB_Db_Manager internal helper 강등 또는 통합. plan: docs/plans/doing/db-three-way-split/4-db-manager.md
 namespace ArtificialBuilder
 {
     /// <summary>
     /// 활성 circuit DB에 대한 요청을 메시지 브로커 토픽으로 받아 백엔드 호출로 변환하는 게이트웨이.
     /// 토픽: AB_Circuit_Db_Topics.ActiveCircuit.
     /// EDP 컴포넌트로 등록되며 OnAttach 시점에 브로커 구독.
-    /// 옛 AB_Circuit_Db 인스턴스(AB_Db_Component.Instance.Circuit)를 그대로 사용 — 점진 마이그레이션 단계.
+    /// 옛 AB_Circuit_Db 인스턴스(AB_Db_Manager.Instance.Circuit)를 그대로 사용 — 점진 마이그레이션 단계.
     /// </summary>
     public class AB_Circuit_Db_Gateway : ArtificialBuilder_EDP.Core.AB_Component
     {
@@ -193,161 +192,6 @@ namespace ArtificialBuilder
                         }
                         m_broker?.Publish(new AB_Delete_Relation_Color_Response
                         { CorrelationId = req.CorrelationId, Success = dbId != 0 });
-                        break;
-                    }
-                    case AB_Get_All_Windows_Request req:
-                    {
-                        int dbId = ActiveDbId;
-                        List<AB_Response_Window_Model> data = new();
-                        if (dbId != 0)
-                        {
-                            var all = await AB_Board.Db.GetAllAsync<AB_Response_Window_Model>(dbId);
-                            data.AddRange(all);
-                        }
-                        m_broker?.Publish(new AB_Get_All_Windows_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
-                        break;
-                    }
-                    case AB_Get_Window_Request req:
-                    {
-                        int dbId = ActiveDbId;
-                        AB_Response_Window_Model? data = dbId == 0 ? null
-                            : await AB_Board.Db.GetByIdAsync<AB_Response_Window_Model>(dbId, req.Id);
-                        m_broker?.Publish(new AB_Get_Window_Response
-                        {
-                            CorrelationId = req.CorrelationId,
-                            Data = data,
-                            IsOk = data != null
-                        });
-                        break;
-                    }
-                    case AB_Add_Window_Request req:
-                    {
-                        int dbId = ActiveDbId;
-                        if (dbId != 0)
-                        {
-                            await AB_Board.Db.AddAsync(dbId, req.Window);
-                            await AB_Board.Db.SaveChangesAsync(dbId);
-                        }
-                        m_broker?.Publish(new AB_Add_Window_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
-                        break;
-                    }
-                    case AB_Save_Window_Request req:
-                    {
-                        int dbId = ActiveDbId;
-                        if (dbId != 0)
-                        {
-                            req.Window.UpdatedAt_ = DateTime.UtcNow;
-                            AB_Board.Db.Update(dbId, req.Window);
-                            await AB_Board.Db.SaveChangesAsync(dbId);
-                        }
-                        m_broker?.Publish(new AB_Save_Window_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
-                        break;
-                    }
-                    case AB_Delete_Window_Request req:
-                    {
-                        int dbId = ActiveDbId;
-                        if (dbId != 0)
-                        {
-                            var window = await AB_Board.Db.GetByIdAsync<AB_Response_Window_Model>(dbId, req.Id);
-                            if (window != null)
-                            {
-                                AB_Board.Db.Remove(dbId, window);
-                                await AB_Board.Db.SaveChangesAsync(dbId);
-                            }
-                        }
-                        m_broker?.Publish(new AB_Delete_Window_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
-                        break;
-                    }
-                    // ==================== WindowComponents ====================
-                    case AB_Get_Window_Components_Request req:
-                    {
-                        int dbId = ActiveDbId;
-                        List<AB_Window_Component_Model> data = new();
-                        if (dbId != 0)
-                        {
-                            string wid = req.WindowId;
-                            var found = await AB_Board.Db.FindAsync<AB_Window_Component_Model>(dbId, _c => _c.WindowId_ == wid);
-                            data.AddRange(found);
-                        }
-                        m_broker?.Publish(new AB_Get_Window_Components_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
-                        break;
-                    }
-                    case AB_Get_All_Window_Components_Request req:
-                    {
-                        int dbId = ActiveDbId;
-                        List<AB_Window_Component_Model> data = new();
-                        if (dbId != 0)
-                        {
-                            var all = await AB_Board.Db.GetAllAsync<AB_Window_Component_Model>(dbId);
-                            data.AddRange(all);
-                        }
-                        m_broker?.Publish(new AB_Get_All_Window_Components_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
-                        break;
-                    }
-                    case AB_Add_Window_Component_Request req:
-                    {
-                        int dbId = ActiveDbId;
-                        if (dbId != 0)
-                        {
-                            await AB_Board.Db.AddAsync(dbId, req.Component);
-                            await AB_Board.Db.SaveChangesAsync(dbId);
-                        }
-                        m_broker?.Publish(new AB_Add_Window_Component_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
-                        break;
-                    }
-                    case AB_Save_Window_Component_Request req:
-                    {
-                        int dbId = ActiveDbId;
-                        if (dbId != 0)
-                        {
-                            req.Component.UpdatedAt_ = DateTime.UtcNow;
-                            AB_Board.Db.Update(dbId, req.Component);
-                            await AB_Board.Db.SaveChangesAsync(dbId);
-                        }
-                        m_broker?.Publish(new AB_Save_Window_Component_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
-                        break;
-                    }
-                    case AB_Delete_Window_Component_Request req:
-                    {
-                        int dbId = ActiveDbId;
-                        if (dbId != 0)
-                        {
-                            var entity = await AB_Board.Db.GetByIdAsync<AB_Window_Component_Model>(dbId, req.Id);
-                            if (entity != null)
-                            {
-                                AB_Board.Db.Remove(dbId, entity);
-                                await AB_Board.Db.SaveChangesAsync(dbId);
-                            }
-                        }
-                        m_broker?.Publish(new AB_Delete_Window_Component_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
-                        break;
-                    }
-                    case AB_Delete_Window_Components_By_Window_Request req:
-                    {
-                        int dbId = ActiveDbId;
-                        int deleted = 0;
-                        if (dbId != 0)
-                        {
-                            string wid = req.WindowId;
-                            var found = await AB_Board.Db.FindAsync<AB_Window_Component_Model>(dbId, _c => _c.WindowId_ == wid);
-                            foreach (var c in found)
-                            {
-                                AB_Board.Db.Remove(dbId, c);
-                                deleted++;
-                            }
-                            if (deleted > 0) await AB_Board.Db.SaveChangesAsync(dbId);
-                        }
-                        m_broker?.Publish(new AB_Delete_Window_Components_By_Window_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0, DeletedCount = deleted });
                         break;
                     }
                     // ==================== H. Vec ====================
@@ -865,61 +709,6 @@ namespace ArtificialBuilder
                         { CorrelationId = req.CorrelationId, Data = data });
                         break;
                     }
-                    case AB_Get_All_Ui_Templates_Request req:
-                    {
-                        var data = await UiTemplatesGetAllAsync();
-                        m_broker?.Publish(new AB_Get_All_Ui_Templates_Response
-                        {
-                            CorrelationId = req.CorrelationId,
-                            Data = data
-                        });
-                        break;
-                    }
-                    case AB_Add_Ui_Template_Request req:
-                    {
-                        int dbId = ActiveDbId;
-                        if (dbId != 0)
-                        {
-                            await AB_Board.Db.AddAsync(dbId, req.Template);
-                            await AB_Board.Db.SaveChangesAsync(dbId);
-                        }
-                        m_broker?.Publish(new AB_Add_Ui_Template_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
-                        break;
-                    }
-                    case AB_Save_Ui_Template_Request req:
-                    {
-                        int dbId = ActiveDbId;
-                        if (dbId != 0)
-                        {
-                            AB_Board.Db.Update(dbId, req.Template);
-                            await AB_Board.Db.SaveChangesAsync(dbId);
-                        }
-                        m_broker?.Publish(new AB_Save_Ui_Template_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
-                        break;
-                    }
-                    case AB_Delete_Ui_Template_Request req:
-                    {
-                        bool ok = await UiTemplateDeleteAsync(req.Template);
-                        m_broker?.Publish(new AB_Delete_Ui_Template_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
-                        break;
-                    }
-                    case AB_Set_Active_Ui_Template_Request req:
-                    {
-                        bool ok = await UiTemplateSetActiveAsync(req.TemplateId);
-                        m_broker?.Publish(new AB_Set_Active_Ui_Template_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
-                        break;
-                    }
-                    case AB_Get_Active_Ui_Template_Request req:
-                    {
-                        var data = await UiTemplateGetActiveAsync();
-                        m_broker?.Publish(new AB_Get_Active_Ui_Template_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
-                        break;
-                    }
                 }
             }
             catch (Exception ex)
@@ -1001,22 +790,6 @@ namespace ArtificialBuilder
                         m_broker?.Publish(new AB_Delete_Relation_Color_Response
                         { CorrelationId = dRC.CorrelationId, Success = false, Error = ex.Message });
                         break;
-                    case AB_Add_Ui_Template_Request aUt:
-                        m_broker?.Publish(new AB_Add_Ui_Template_Response
-                        { CorrelationId = aUt.CorrelationId, Success = false, Error = ex.Message });
-                        break;
-                    case AB_Save_Ui_Template_Request sUt:
-                        m_broker?.Publish(new AB_Save_Ui_Template_Response
-                        { CorrelationId = sUt.CorrelationId, Success = false, Error = ex.Message });
-                        break;
-                    case AB_Delete_Ui_Template_Request dUt:
-                        m_broker?.Publish(new AB_Delete_Ui_Template_Response
-                        { CorrelationId = dUt.CorrelationId, Success = false, Error = ex.Message });
-                        break;
-                    case AB_Set_Active_Ui_Template_Request setUt:
-                        m_broker?.Publish(new AB_Set_Active_Ui_Template_Response
-                        { CorrelationId = setUt.CorrelationId, Success = false, Error = ex.Message });
-                        break;
                     case AB_Delete_Session_Data_Request dSd:
                         m_broker?.Publish(new AB_Delete_Session_Data_Response
                         { CorrelationId = dSd.CorrelationId, Success = false, Error = ex.Message });
@@ -1044,34 +817,6 @@ namespace ArtificialBuilder
                     case AB_Add_Data_Category_Request aDc:
                         m_broker?.Publish(new AB_Add_Data_Category_Response
                         { CorrelationId = aDc.CorrelationId, Success = false, Error = ex.Message });
-                        break;
-                    case AB_Add_Window_Request aW:
-                        m_broker?.Publish(new AB_Add_Window_Response
-                        { CorrelationId = aW.CorrelationId, Success = false, Error = ex.Message });
-                        break;
-                    case AB_Save_Window_Request sW:
-                        m_broker?.Publish(new AB_Save_Window_Response
-                        { CorrelationId = sW.CorrelationId, Success = false, Error = ex.Message });
-                        break;
-                    case AB_Delete_Window_Request dW:
-                        m_broker?.Publish(new AB_Delete_Window_Response
-                        { CorrelationId = dW.CorrelationId, Success = false, Error = ex.Message });
-                        break;
-                    case AB_Add_Window_Component_Request aWc:
-                        m_broker?.Publish(new AB_Add_Window_Component_Response
-                        { CorrelationId = aWc.CorrelationId, Success = false, Error = ex.Message });
-                        break;
-                    case AB_Save_Window_Component_Request sWc:
-                        m_broker?.Publish(new AB_Save_Window_Component_Response
-                        { CorrelationId = sWc.CorrelationId, Success = false, Error = ex.Message });
-                        break;
-                    case AB_Delete_Window_Component_Request dWc:
-                        m_broker?.Publish(new AB_Delete_Window_Component_Response
-                        { CorrelationId = dWc.CorrelationId, Success = false, Error = ex.Message });
-                        break;
-                    case AB_Delete_Window_Components_By_Window_Request dWcw:
-                        m_broker?.Publish(new AB_Delete_Window_Components_By_Window_Response
-                        { CorrelationId = dWcw.CorrelationId, Success = false, Error = ex.Message });
                         break;
                     // ---- Vec write 계열 실패 응답 ----
                     case AB_Clear_All_Vec_Request cav:
@@ -1137,14 +882,6 @@ namespace ArtificialBuilder
                     { CorrelationId = r.CorrelationId },
                     AB_Get_Lore_Entry_Request r => new AB_Get_Lore_Entry_Response
                     { CorrelationId = r.CorrelationId },
-                    AB_Get_All_Windows_Request r => new AB_Get_All_Windows_Response
-                    { CorrelationId = r.CorrelationId },
-                    AB_Get_Window_Request r => new AB_Get_Window_Response
-                    { CorrelationId = r.CorrelationId },
-                    AB_Get_Window_Components_Request r => new AB_Get_Window_Components_Response
-                    { CorrelationId = r.CorrelationId, Error = _error },
-                    AB_Get_All_Window_Components_Request r => new AB_Get_All_Window_Components_Response
-                    { CorrelationId = r.CorrelationId, Error = _error },
                     AB_Get_All_Assets_Request r => new AB_Get_All_Assets_Response
                     { CorrelationId = r.CorrelationId },
                     AB_Get_Asset_Request r => new AB_Get_Asset_Response
@@ -1164,10 +901,6 @@ namespace ArtificialBuilder
                     AB_Get_All_Relation_Colors_Request r => new AB_Get_All_Relation_Colors_Response
                     { CorrelationId = r.CorrelationId },
                     AB_Get_All_Patterns_Request r => new AB_Get_All_Patterns_Response
-                    { CorrelationId = r.CorrelationId },
-                    AB_Get_All_Ui_Templates_Request r => new AB_Get_All_Ui_Templates_Response
-                    { CorrelationId = r.CorrelationId },
-                    AB_Get_Active_Ui_Template_Request r => new AB_Get_Active_Ui_Template_Response
                     { CorrelationId = r.CorrelationId },
                     AB_Get_All_Data_Categories_Request r => new AB_Get_All_Data_Categories_Response
                     { CorrelationId = r.CorrelationId },
@@ -1276,7 +1009,7 @@ namespace ArtificialBuilder
             return string.Compare(_a.Name_, _b.Name_, StringComparison.Ordinal);
         }
 
-        // --- Pattern / UiTemplate 헬퍼 ---
+        // --- Pattern 헬퍼 ---
 
         private static async System.Threading.Tasks.Task<List<AB_Pattern_Config_Model>> PatternsGetAllAsync()
         {
@@ -1289,67 +1022,9 @@ namespace ArtificialBuilder
             return result;
         }
 
-        private static async System.Threading.Tasks.Task<List<AB_Circuit_Ui_Template_Model>> UiTemplatesGetAllAsync()
-        {
-            List<AB_Circuit_Ui_Template_Model> result = new();
-            int dbId = ActiveDbId;
-            if (dbId == 0) return result;
-            var all = await AB_Board.Db.GetAllAsync<AB_Circuit_Ui_Template_Model>(dbId);
-            result.AddRange(all);
-            result.Sort(CompareUiTemplateBySortOrder);
-            return result;
-        }
-
-        private static async System.Threading.Tasks.Task<bool> UiTemplateDeleteAsync(AB_Circuit_Ui_Template_Model _template)
-        {
-            int dbId = ActiveDbId;
-            if (dbId == 0) return false;
-            var all = await AB_Board.Db.GetAllAsync<AB_Circuit_Ui_Template_Model>(dbId);
-            int count = 0;
-            foreach (var _ in all) { count++; if (count > 1) break; }
-            if (count <= 1) return false;
-            AB_Board.Db.Remove(dbId, _template);
-            await AB_Board.Db.SaveChangesAsync(dbId);
-            return true;
-        }
-
-        private static async System.Threading.Tasks.Task<bool> UiTemplateSetActiveAsync(string _templateId)
-        {
-            int dbId = ActiveDbId;
-            if (dbId == 0) return false;
-            var all = await AB_Board.Db.GetAllAsync<AB_Circuit_Ui_Template_Model>(dbId);
-            foreach (AB_Circuit_Ui_Template_Model t in all)
-            {
-                t.IsActive_ = (t.Id_ == _templateId);
-                AB_Board.Db.Update(dbId, t);
-            }
-            await AB_Board.Db.SaveChangesAsync(dbId);
-            return true;
-        }
-
-        private static async System.Threading.Tasks.Task<AB_Circuit_Ui_Template_Model?> UiTemplateGetActiveAsync()
-        {
-            int dbId = ActiveDbId;
-            if (dbId == 0) return null;
-            var all = await AB_Board.Db.GetAllAsync<AB_Circuit_Ui_Template_Model>(dbId);
-            AB_Circuit_Ui_Template_Model? active = null;
-            AB_Circuit_Ui_Template_Model? first = null;
-            foreach (AB_Circuit_Ui_Template_Model t in all)
-            {
-                if (first == null) first = t;
-                if (t.IsActive_) { active = t; break; }
-            }
-            return active ?? first;
-        }
-
         private static int ComparePatternByType(AB_Pattern_Config_Model _a, AB_Pattern_Config_Model _b)
         {
             return string.Compare(_a.PatternType_, _b.PatternType_, StringComparison.Ordinal);
-        }
-
-        private static int CompareUiTemplateBySortOrder(AB_Circuit_Ui_Template_Model _a, AB_Circuit_Ui_Template_Model _b)
-        {
-            return _a.SortOrder_.CompareTo(_b.SortOrder_);
         }
 
         // --- Vec 파일 헬퍼 ---

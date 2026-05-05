@@ -7,8 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-// TODO[db-three-way-split]: sub 4 — AB_Db_Manager 흡수. Persona DB schema 보존 (사용자 정본 = 별도 그대로). 용도/의미 변경만 — chat 메시지 = 로직 히스토리 동의어. plan: docs/plans/doing/db-three-way-split/4-db-manager.md
-// TODO[db-three-way-split]: sub 5 — PERSONA_DB_* DDO 헤더 옵저버. plan: docs/plans/doing/db-three-way-split/5-message-queue.md
 namespace ArtificialBuilder
 {
     /// <summary>

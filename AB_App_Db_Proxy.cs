@@ -7,8 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-// TODO[db-three-way-split]: sub 4 — AB_Db_Manager 흡수. App DB = 글로벌 메타. **로직과 무관** (사용자 정본 [[app-logic-separation]]). plan: docs/plans/doing/db-three-way-split/4-db-manager.md
-// TODO[db-three-way-split]: sub 5 — APP_DB_* DDO 헤더 옵저버. plan: docs/plans/doing/db-three-way-split/5-message-queue.md
 namespace ArtificialBuilder
 {
     /// <summary>

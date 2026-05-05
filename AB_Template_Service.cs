@@ -49,27 +49,27 @@ namespace ArtificialBuilder
         // ===== Circuit 템플릿 (CircuitDb) =====
 
         /// <summary>Circuit 템플릿 전체 조회 (게이트웨이 경유).</summary>
-        public async Task<List<AB_Circuit_Ui_Template_Model>> GetAllCircuitAsync()
+        public async Task<List<AB_Response_Ui_Template_Model>> GetAllCircuitAsync()
         {
             return await AB_Circuit_Db_Proxy.I.GetAllUiTemplatesAsync();
         }
 
         /// <summary>Circuit 템플릿 추가.</summary>
-        public async Task AddCircuitAsync(AB_Circuit_Ui_Template_Model _template)
+        public async Task AddCircuitAsync(AB_Response_Ui_Template_Model _template)
         {
             await AB_Circuit_Db_Proxy.I.AddUiTemplateAsync(_template);
             Emit(new Template_List_Changed());
         }
 
         /// <summary>Circuit 템플릿 저장.</summary>
-        public async Task SaveCircuitAsync(AB_Circuit_Ui_Template_Model _template)
+        public async Task SaveCircuitAsync(AB_Response_Ui_Template_Model _template)
         {
             await AB_Circuit_Db_Proxy.I.SaveUiTemplateAsync(_template);
             Emit(new Template_List_Changed());
         }
 
         /// <summary>Circuit 템플릿 삭제. 마지막 템플릿이면 false 반환.</summary>
-        public async Task<bool> DeleteCircuitAsync(AB_Circuit_Ui_Template_Model _template)
+        public async Task<bool> DeleteCircuitAsync(AB_Response_Ui_Template_Model _template)
         {
             return await AB_Circuit_Db_Proxy.I.DeleteUiTemplateAsync(_template);
         }
@@ -81,7 +81,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>Circuit 활성 템플릿 조회.</summary>
-        public async Task<AB_Circuit_Ui_Template_Model?> GetActiveCircuitAsync()
+        public async Task<AB_Response_Ui_Template_Model?> GetActiveCircuitAsync()
         {
             return await AB_Circuit_Db_Proxy.I.GetActiveUiTemplateAsync();
         }
@@ -93,7 +93,7 @@ namespace ArtificialBuilder
             if (sourceResult.IsOk)
             {
                 var source = sourceResult.Data;
-                AB_Circuit_Ui_Template_Model imported = new AB_Circuit_Ui_Template_Model
+                AB_Response_Ui_Template_Model imported = new AB_Response_Ui_Template_Model
                 {
                     Name_ = source.Name_,
                     DisplayMode_ = source.DisplayMode_,

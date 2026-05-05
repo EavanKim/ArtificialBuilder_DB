@@ -1,0 +1,72 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ArtificialBuilder.Models
+{
+    /// <summary>서킷이 호스팅하는 Logic 인스턴스 (Logic UUID 참조 + 그래프 좌표). plan: docs/plans/doing/db-three-way-split/3-circuit-db-simplify.md</summary>
+    [Table("circuit_hosted_logics")]
+    public class AB_Circuit_Hosted_Logic_Model
+    {
+        private string m_id_ = Guid.NewGuid().ToString();
+        [Key]
+        [Column("id")]
+        public string Id_
+        {
+            get { return m_id_; }
+            set { m_id_ = value; }
+        }
+
+        /// <summary>호스팅 대상 Logic 의 UUID (Logic DB 참조).</summary>
+        private string m_logicUuid_ = "";
+        [Required]
+        [Column("logic_uuid")]
+        public string LogicUuid_
+        {
+            get { return m_logicUuid_; }
+            set { m_logicUuid_ = value; }
+        }
+
+        /// <summary>서킷 안 사용 키 (중복 체크).</summary>
+        private string m_useKey_ = "";
+        [Required]
+        [Column("use_key")]
+        public string UseKey_
+        {
+            get { return m_useKey_; }
+            set { m_useKey_ = value; }
+        }
+
+        private double m_graphX_ = 0;
+        [Column("graph_x")]
+        public double GraphX_
+        {
+            get { return m_graphX_; }
+            set { m_graphX_ = value; }
+        }
+
+        private double m_graphY_ = 0;
+        [Column("graph_y")]
+        public double GraphY_
+        {
+            get { return m_graphY_; }
+            set { m_graphY_ = value; }
+        }
+
+        private DateTime m_createdAt_ = DateTime.UtcNow;
+        [Column("created_at")]
+        public DateTime CreatedAt_
+        {
+            get { return m_createdAt_; }
+            set { m_createdAt_ = value; }
+        }
+
+        private DateTime m_updatedAt_ = DateTime.UtcNow;
+        [Column("updated_at")]
+        public DateTime UpdatedAt_
+        {
+            get { return m_updatedAt_; }
+            set { m_updatedAt_ = value; }
+        }
+    }
+}

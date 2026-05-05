@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../ArtificialBuilder_Common/ArtificialBuilder.Common.csproj" />
+    <ProjectReference Include="../ArtificialBuilder_DDO/ArtificialBuilder.DDO.csproj" />
     <ProjectReference Include="../../framework/EDPFW/EDPFW.csproj" />
     <ProjectReference Include="../../framework/EDPFW_DB/EDPFW.DB.csproj" />
   </ItemGroup>

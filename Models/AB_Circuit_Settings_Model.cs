@@ -430,7 +430,7 @@ namespace ArtificialBuilder.Models
         // --- Chat view 바인딩 ---
 
         /// <summary>
-        /// 기본 채팅 창으로 쓰일 AB_Response_Window_Model.Id_.
+        /// 기본 채팅 창으로 쓰일 AB_Response_Ui_Window_Model.Id_.
         /// [[project_display_binding_principle]] — chat view 필터 기준 window ID.
         /// Circuit 생성 시 기본 "메시지 영역" 윈도우 ID 자동 세팅.
         /// </summary>

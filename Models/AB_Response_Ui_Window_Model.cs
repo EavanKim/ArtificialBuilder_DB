@@ -2,16 +2,14 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-// TODO[db-three-way-split]: sub 3 폐기 + sub 2 신설. 본 모델 → Response UI DB 의 AB_Response_Ui_Window_Model 로 이전. UUID + 표시 이름 분리. plan: docs/plans/doing/db-three-way-split/2-response-ui-db-schema.md
 namespace ArtificialBuilder.Models
 {
     /// <summary>
-    /// 응답 윈도우 설정. Circuit DB에 저장되어 Circuit과 함께 배포됨.
-    /// 노드 에디터의 End 노드 + Response UI 바인딩이 WindowId로 참조.
-    /// 성격/프레임/레이아웃/뎁스는 window_components (AB_Window_Component_Model) 에 저장.
+    /// Response UI 의 Window 정의 (Response UI DB per-response-ui SQLite). 노드 에디터의 End 노드 + Response UI 바인딩이 WindowId 로 참조.
+    /// 성격/프레임/레이아웃/뎁스는 response_ui_components (AB_Response_Ui_Component_Model) 에 저장.
     /// </summary>
-    [Table("response_windows")]
-    public class AB_Response_Window_Model
+    [Table("response_ui_windows")]
+    public class AB_Response_Ui_Window_Model
     {
         private string m_id_ = Guid.NewGuid().ToString();
         [Key]

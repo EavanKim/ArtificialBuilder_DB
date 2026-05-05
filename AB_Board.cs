@@ -5,7 +5,7 @@ namespace ArtificialBuilder_EDP
 {
     /// <summary>
     /// 칠판 데이터 관리자 static facade. 모든 데이터 접근의 단일 진입점.
-    /// Core.AB_Engine.Get&lt;AB_Db_Component&gt;().Instance.Persona → AB_Board.Persona
+    /// Core.AB_Engine.Get&lt;AB_Db_Manager&gt;().Instance.Persona → AB_Board.Persona
     /// </summary>
     public static class AB_Board
     {
@@ -33,5 +33,11 @@ namespace ArtificialBuilder_EDP
 
         /// <summary>앱 DB.</summary>
         public static AB_App_Db App => g_db!.App;
+
+        /// <summary>Logic DB ([[app-logic-separation]] — 노드 정보만).</summary>
+        public static AB_Logic_Db Logic => g_db!.Logic;
+
+        /// <summary>Response UI DB ([[app-logic-separation]] — 화면 구성).</summary>
+        public static AB_Response_Ui_Db ResponseUi => g_db!.ResponseUi;
     }
 }

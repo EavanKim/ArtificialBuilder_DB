@@ -4,12 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ArtificialBuilder.Models
 {
-    /// <summary>
-    /// 전역 UI 템플릿 (app.db, 모든 Circuit의 시작 라이브러리).
-    /// Circuit 인스턴스 단위 활성/정렬 컬럼이 필요한 경우 <see cref="AB_Response_Ui_Template_Model"/> 사용.
-    /// </summary>
-    [Table("ui_templates")]
-    public class AB_Ui_Template_Model
+    /// <summary>Logic 안 sub-logic 참조 (다른 Logic 의 UUID — "로직 내 로직" 재귀 정합). plan: docs/plans/doing/db-three-way-split/1-logic-db-schema.md</summary>
+    [Table("logic_sub_logics")]
+    public class AB_Logic_Sub_Logic_Model
     {
         private string m_id_ = Guid.NewGuid().ToString();
         [Key]
@@ -20,28 +17,30 @@ namespace ArtificialBuilder.Models
             set { m_id_ = value; }
         }
 
-        private string m_name_ = "";
-        [Column("name")]
-        public string Name_
+        private string m_subLogicUuid_ = "";
+        [Required]
+        [Column("sub_logic_uuid")]
+        public string SubLogicUuid_
         {
-            get { return m_name_; }
-            set { m_name_ = value; }
+            get { return m_subLogicUuid_; }
+            set { m_subLogicUuid_ = value; }
         }
 
-        private string m_displayMode_ = "chat";
-        [Column("display_mode")]
-        public string DisplayMode_
+        private string m_useKey_ = "";
+        [Required]
+        [Column("use_key")]
+        public string UseKey_
         {
-            get { return m_displayMode_; }
-            set { m_displayMode_ = value; }
+            get { return m_useKey_; }
+            set { m_useKey_ = value; }
         }
 
-        private string? m_xmlContent_;
-        [Column("xml_content")]
-        public string? XmlContent_
+        private int m_orderIndex_ = 0;
+        [Column("order_index")]
+        public int OrderIndex_
         {
-            get { return m_xmlContent_; }
-            set { m_xmlContent_ = value; }
+            get { return m_orderIndex_; }
+            set { m_orderIndex_ = value; }
         }
 
         private DateTime m_createdAt_ = DateTime.UtcNow;

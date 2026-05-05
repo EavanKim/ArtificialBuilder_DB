@@ -32,7 +32,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 Log("initial.Count", initialCount);
 
                 Step("Add window");
-                var w = new AB_Response_Window_Model { Name_ = "test_w" };
+                var w = new AB_Response_Ui_Window_Model { Name_ = "test_w" };
                 var addResp = await broker.PublishAndWaitAsync<AB_Add_Window_Response>(
                     new AB_Add_Window_Request { Window = w }, TimeSpan.FromSeconds(5));
                 Assert("Add 성공", addResp.Success, addResp.Error ?? "");

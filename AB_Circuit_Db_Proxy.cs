@@ -7,13 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-// TODO[db-three-way-split]: sub 4 — AB_Db_Manager 로 흡수. 외부 직접 호출 (`AB_Circuit_Db_Proxy.I.*`) 폐기. internal helper 강등 또는 통합. plan: docs/plans/doing/db-three-way-split/4-db-manager.md
-// TODO[db-three-way-split]: sub 5 — 외부 호출 = DDO publish 만. CIRCUIT_DB_* 헤더 옵저버. plan: docs/plans/doing/db-three-way-split/5-message-queue.md
 namespace ArtificialBuilder
 {
     /// <summary>
     /// 기존 호출처 호환을 위한 얇은 프록시. 메시지 브로커 + AB_Circuit_Db_Gateway 경유 호출.
-    /// AB_Db_Component.Instance.Circuit.X() 같은 직접 호출과 동일한 시그니처를 노출하되
+    /// AB_Db_Manager.Instance.Circuit.X() 같은 직접 호출과 동일한 시그니처를 노출하되
     /// 내부적으로 publish/await 사이클을 거쳐 트랜잭셔널 보장 + 향후 컨텍스트 라우팅 진입점.
     ///
     /// 사용:
@@ -104,7 +102,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>응답 윈도우 전체.</summary>
-        public async Task<List<AB_Response_Window_Model>> GetAllWindowsAsync()
+        public async Task<List<AB_Response_Ui_Window_Model>> GetAllWindowsAsync()
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Windows_Response>(
                 new AB_Get_All_Windows_Request(), DefaultTimeout);
@@ -112,17 +110,17 @@ namespace ArtificialBuilder
         }
 
         /// <summary>응답 윈도우 단건 조회.</summary>
-        public async Task<AB_Db_Result<AB_Response_Window_Model>> GetWindowAsync(string _id)
+        public async Task<AB_Db_Result<AB_Response_Ui_Window_Model>> GetWindowAsync(string _id)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Window_Response>(
                 new AB_Get_Window_Request { Id = _id }, DefaultTimeout);
             return resp.IsOk && resp.Data != null
-                ? AB_Db_Result<AB_Response_Window_Model>.Ok(resp.Data)
-                : AB_Db_Result<AB_Response_Window_Model>.NotFound();
+                ? AB_Db_Result<AB_Response_Ui_Window_Model>.Ok(resp.Data)
+                : AB_Db_Result<AB_Response_Ui_Window_Model>.NotFound();
         }
 
         /// <summary>응답 윈도우 추가.</summary>
-        public async Task<bool> AddWindowAsync(AB_Response_Window_Model _window)
+        public async Task<bool> AddWindowAsync(AB_Response_Ui_Window_Model _window)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Window_Response>(
                 new AB_Add_Window_Request { Window = _window }, DefaultTimeout);
@@ -130,7 +128,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>응답 윈도우 갱신.</summary>
-        public async Task<bool> SaveWindowAsync(AB_Response_Window_Model _window)
+        public async Task<bool> SaveWindowAsync(AB_Response_Ui_Window_Model _window)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Save_Window_Response>(
                 new AB_Save_Window_Request { Window = _window }, DefaultTimeout);
@@ -146,7 +144,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>특정 윈도우의 컴포넌트 전체 조회.</summary>
-        public async Task<List<AB_Window_Component_Model>> GetWindowComponentsAsync(string _windowId)
+        public async Task<List<AB_Response_Ui_Component_Model>> GetWindowComponentsAsync(string _windowId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Window_Components_Response>(
                 new AB_Get_Window_Components_Request { WindowId = _windowId }, DefaultTimeout);
@@ -154,7 +152,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>전 윈도우의 컴포넌트 통합 조회.</summary>
-        public async Task<List<AB_Window_Component_Model>> GetAllWindowComponentsAsync()
+        public async Task<List<AB_Response_Ui_Component_Model>> GetAllWindowComponentsAsync()
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Window_Components_Response>(
                 new AB_Get_All_Window_Components_Request(), DefaultTimeout);
@@ -162,7 +160,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>윈도우 컴포넌트 추가.</summary>
-        public async Task<bool> AddWindowComponentAsync(AB_Window_Component_Model _component)
+        public async Task<bool> AddWindowComponentAsync(AB_Response_Ui_Component_Model _component)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Window_Component_Response>(
                 new AB_Add_Window_Component_Request { Component = _component }, DefaultTimeout);
@@ -170,7 +168,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>윈도우 컴포넌트 갱신.</summary>
-        public async Task<bool> SaveWindowComponentAsync(AB_Window_Component_Model _component)
+        public async Task<bool> SaveWindowComponentAsync(AB_Response_Ui_Component_Model _component)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Save_Window_Component_Response>(
                 new AB_Save_Window_Component_Request { Component = _component }, DefaultTimeout);
@@ -470,7 +468,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>활성 circuit의 UI 템플릿 목록.</summary>
-        public async Task<List<AB_Circuit_Ui_Template_Model>> GetAllUiTemplatesAsync()
+        public async Task<List<AB_Response_Ui_Template_Model>> GetAllUiTemplatesAsync()
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Ui_Templates_Response>(
                 new AB_Get_All_Ui_Templates_Request(), DefaultTimeout);
@@ -478,7 +476,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>UI 템플릿 추가.</summary>
-        public async Task<bool> AddUiTemplateAsync(AB_Circuit_Ui_Template_Model _template)
+        public async Task<bool> AddUiTemplateAsync(AB_Response_Ui_Template_Model _template)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Ui_Template_Response>(
                 new AB_Add_Ui_Template_Request { Template = _template }, DefaultTimeout);
@@ -486,7 +484,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>UI 템플릿 저장.</summary>
-        public async Task<bool> SaveUiTemplateAsync(AB_Circuit_Ui_Template_Model _template)
+        public async Task<bool> SaveUiTemplateAsync(AB_Response_Ui_Template_Model _template)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Save_Ui_Template_Response>(
                 new AB_Save_Ui_Template_Request { Template = _template }, DefaultTimeout);
@@ -494,7 +492,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>UI 템플릿 삭제.</summary>
-        public async Task<bool> DeleteUiTemplateAsync(AB_Circuit_Ui_Template_Model _template)
+        public async Task<bool> DeleteUiTemplateAsync(AB_Response_Ui_Template_Model _template)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Ui_Template_Response>(
                 new AB_Delete_Ui_Template_Request { Template = _template }, DefaultTimeout);
@@ -510,7 +508,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>활성 UI 템플릿 조회.</summary>
-        public async Task<AB_Circuit_Ui_Template_Model?> GetActiveUiTemplateAsync()
+        public async Task<AB_Response_Ui_Template_Model?> GetActiveUiTemplateAsync()
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Active_Ui_Template_Response>(
                 new AB_Get_Active_Ui_Template_Request(), DefaultTimeout);

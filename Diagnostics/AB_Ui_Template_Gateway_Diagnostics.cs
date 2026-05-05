@@ -32,8 +32,8 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 Log("initial.Count", initialCount);
 
                 Step("Add 2 templates");
-                var t1 = new AB_Circuit_Ui_Template_Model { Name_ = "tpl_a", SortOrder_ = 100 };
-                var t2 = new AB_Circuit_Ui_Template_Model { Name_ = "tpl_b", SortOrder_ = 101 };
+                var t1 = new AB_Response_Ui_Template_Model { Name_ = "tpl_a", SortOrder_ = 100 };
+                var t2 = new AB_Response_Ui_Template_Model { Name_ = "tpl_b", SortOrder_ = 101 };
                 var addResp1 = await broker.PublishAndWaitAsync<AB_Add_Ui_Template_Response>(
                     new AB_Add_Ui_Template_Request { Template = t1 }, TimeSpan.FromSeconds(5));
                 Assert("Add t1 성공", addResp1.Success, addResp1.Error ?? "");

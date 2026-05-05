@@ -90,7 +90,7 @@ namespace ArtificialBuilder
     public struct Template_List_Changed
     {
         /// <summary>전체 템플릿 목록 (현재 미사용 - 수신자 재조회 방식).</summary>
-        public List<AB_Circuit_Ui_Template_Model> Templates_;
+        public List<AB_Response_Ui_Template_Model> Templates_;
     }
 
     // --- 로어 ---

@@ -2,15 +2,14 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-// TODO[db-three-way-split]: sub 3 폐기 + sub 2 신설. 본 모델 → Response UI DB 의 AB_Response_Ui_Template_Model 로 이전. plan: docs/plans/doing/db-three-way-split/2-response-ui-db-schema.md
 namespace ArtificialBuilder.Models
 {
     /// <summary>
-    /// Circuit 전용 UI 템플릿 (circuit.db, Circuit별 활성/정렬 포함).
+    /// Response UI 전용 XML 템플릿 (Response UI DB per-response-ui SQLite, 활성/정렬 포함).
     /// 전역 시작 라이브러리는 <see cref="AB_Ui_Template_Model"/> 참조.
     /// </summary>
-    [Table("circuit_ui_templates")]
-    public class AB_Circuit_Ui_Template_Model
+    [Table("response_ui_templates")]
+    public class AB_Response_Ui_Template_Model
     {
         private string m_id_ = Guid.NewGuid().ToString();
         [Key]

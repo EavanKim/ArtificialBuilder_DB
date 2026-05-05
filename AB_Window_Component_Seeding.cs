@@ -9,7 +9,7 @@ using ArtificialBuilder_EDP.Core.UI.Window;
 namespace ArtificialBuilder
 {
     /// <summary>
-    /// AB_Window 의 DB 표현(AB_Response_Window_Model + AB_Window_Component_Model 묶음)을
+    /// AB_Window 의 DB 표현(AB_Response_Ui_Window_Model + AB_Response_Ui_Component_Model 묶음)을
     /// Circuit 정의(Resources/Circuits/{circuitType}.json) 에서 생성하는 헬퍼.
     /// Circuit 정의는 ResourceBuilder 가 resources.abr 의 "circuit" 카테고리로 패킹합니다.
     /// </summary>
@@ -18,7 +18,7 @@ namespace ArtificialBuilder
         /// <summary>ApplyCircuitDefAsync 반환 — 생성된 윈도우 + canvas envelope + primary chat id.</summary>
         public class Apply_Result
         {
-            public List<AB_Response_Window_Model> Windows { get; set; } = new();
+            public List<AB_Response_Ui_Window_Model> Windows { get; set; } = new();
             public string EnvelopeJson { get; set; } = "";
             public string? PrimaryChatWindowId { get; set; }
         }
@@ -30,10 +30,10 @@ namespace ArtificialBuilder
         /// </summary>
         public static async Task EnsureDefaultComponentsAsync()
         {
-            List<AB_Response_Window_Model> windows = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
+            List<AB_Response_Ui_Window_Model> windows = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
             if (windows.Count == 0) return;
 
-            List<AB_Window_Component_Model> allComps = await AB_Circuit_Db_Proxy.I.GetAllWindowComponentsAsync();
+            List<AB_Response_Ui_Component_Model> allComps = await AB_Circuit_Db_Proxy.I.GetAllWindowComponentsAsync();
             var hasComps = new HashSet<string>();
             foreach (var c in allComps) hasComps.Add(c.WindowId_);
 
@@ -90,10 +90,10 @@ namespace ArtificialBuilder
             var envelopeWindows = new List<Window_Layout_Data>();
             foreach (var entry in circuitDef.Windows)
             {
-                AB_Response_Window_Model? window = await FindWindowByNameAsync(entry.Name);
+                AB_Response_Ui_Window_Model? window = await FindWindowByNameAsync(entry.Name);
                 if (window == null)
                 {
-                    window = new AB_Response_Window_Model
+                    window = new AB_Response_Ui_Window_Model
                     {
                         Name_ = entry.Name,
                         Position_ = entry.Position,
@@ -118,7 +118,7 @@ namespace ArtificialBuilder
                     foreach (var compEntry in entry.Components)
                     {
                         string configJson = SerializeComponentConfig(compEntry);
-                        await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Window_Component_Model
+                        await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Response_Ui_Component_Model
                         {
                             WindowId_ = window.Id_,
                             ComponentType_ = compEntry.Type,
@@ -181,8 +181,8 @@ namespace ArtificialBuilder
         {
             var circuitDef = new AB_Circuit_Def { CircuitType = _circuitType };
 
-            List<AB_Response_Window_Model> windows = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
-            List<AB_Window_Component_Model> comps = await AB_Circuit_Db_Proxy.I.GetAllWindowComponentsAsync();
+            List<AB_Response_Ui_Window_Model> windows = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
+            List<AB_Response_Ui_Component_Model> comps = await AB_Circuit_Db_Proxy.I.GetAllWindowComponentsAsync();
 
             // envelope (캔버스 비율 배치) 는 settings.WindowLayout_ 에 저장되어 있음
             Window_Layout_Envelope? envelope = null;
@@ -201,25 +201,25 @@ namespace ArtificialBuilder
             if (settingsR.IsOk && !string.IsNullOrEmpty(settingsR.Data.PrimaryChatWindowId_))
             {
                 string pid = settingsR.Data.PrimaryChatWindowId_!;
-                foreach (AB_Response_Window_Model w in windows)
+                foreach (AB_Response_Ui_Window_Model w in windows)
                 {
                     if (w.Id_ == pid) { circuitDef.PrimaryChatWindowName = w.Name_; break; }
                 }
             }
 
             // windowId → components 그룹핑
-            Dictionary<string, List<AB_Window_Component_Model>> compsByWindow = new();
-            foreach (AB_Window_Component_Model c in comps)
+            Dictionary<string, List<AB_Response_Ui_Component_Model>> compsByWindow = new();
+            foreach (AB_Response_Ui_Component_Model c in comps)
             {
                 if (!compsByWindow.TryGetValue(c.WindowId_, out var list))
                 {
-                    list = new List<AB_Window_Component_Model>();
+                    list = new List<AB_Response_Ui_Component_Model>();
                     compsByWindow[c.WindowId_] = list;
                 }
                 list.Add(c);
             }
 
-            foreach (AB_Response_Window_Model w in windows)
+            foreach (AB_Response_Ui_Window_Model w in windows)
             {
                 AB_Circuit_Def_Window entry = new()
                 {
@@ -249,7 +249,7 @@ namespace ArtificialBuilder
                 // 성격 컴포넌트만 (frame/layout/depth 자동 부착이므로 제외)
                 if (compsByWindow.TryGetValue(w.Id_, out var list))
                 {
-                    foreach (AB_Window_Component_Model c in list)
+                    foreach (AB_Response_Ui_Component_Model c in list)
                     {
                         string type = c.ComponentType_;
                         if (type == "frame" || type == "layout" || type == "depth") continue;
@@ -280,8 +280,8 @@ namespace ArtificialBuilder
         /// </summary>
         public static async Task ReplaceWithCircuitDefAsync(AB_Circuit_Def _circuitDef)
         {
-            List<AB_Response_Window_Model> existing = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
-            foreach (AB_Response_Window_Model w in existing)
+            List<AB_Response_Ui_Window_Model> existing = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
+            foreach (AB_Response_Ui_Window_Model w in existing)
             {
                 await AB_Circuit_Db_Proxy.I.DeleteWindowComponentsByWindowAsync(w.Id_);
                 await AB_Circuit_Db_Proxy.I.DeleteWindowAsync(w.Id_);
@@ -293,7 +293,7 @@ namespace ArtificialBuilder
 
             foreach (AB_Circuit_Def_Window entry in _circuitDef.Windows)
             {
-                AB_Response_Window_Model window = new()
+                AB_Response_Ui_Window_Model window = new()
                 {
                     Name_ = entry.Name,
                     Position_ = entry.Position,
@@ -313,7 +313,7 @@ namespace ArtificialBuilder
                 foreach (AB_Circuit_Def_Component compEntry in entry.Components)
                 {
                     string configJson = SerializeComponentConfig(compEntry);
-                    await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Window_Component_Model
+                    await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Response_Ui_Component_Model
                     {
                         WindowId_ = window.Id_,
                         ComponentType_ = compEntry.Type,
@@ -364,7 +364,7 @@ namespace ArtificialBuilder
         /// </summary>
         private static async Task AddFrameLayoutDepthAsync(string _windowId, string _title, string _position, int _sortOrder, AB_Circuit_Def_Layout? _layout = null)
         {
-            await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Window_Component_Model
+            await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Response_Ui_Component_Model
             {
                 WindowId_ = _windowId, ComponentType_ = "frame", SortOrder_ = 0,
                 ConfigJson_ = JsonSerializer.Serialize(new Frame_Config { Title = _title })
@@ -381,12 +381,12 @@ namespace ArtificialBuilder
             {
                 FillDefaultRatios(layoutCfg, _position);
             }
-            await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Window_Component_Model
+            await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Response_Ui_Component_Model
             {
                 WindowId_ = _windowId, ComponentType_ = "layout", SortOrder_ = 0,
                 ConfigJson_ = JsonSerializer.Serialize(layoutCfg)
             });
-            await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Window_Component_Model
+            await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Response_Ui_Component_Model
             {
                 WindowId_ = _windowId, ComponentType_ = "depth", SortOrder_ = 0,
                 ConfigJson_ = JsonSerializer.Serialize(new Depth_Config())
@@ -474,9 +474,9 @@ namespace ArtificialBuilder
             }
         }
 
-        private static async Task<AB_Response_Window_Model?> FindWindowByNameAsync(string _name)
+        private static async Task<AB_Response_Ui_Window_Model?> FindWindowByNameAsync(string _name)
         {
-            List<AB_Response_Window_Model> all = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
+            List<AB_Response_Ui_Window_Model> all = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
             foreach (var w in all)
             {
                 if (w.Name_ == _name) return w;
