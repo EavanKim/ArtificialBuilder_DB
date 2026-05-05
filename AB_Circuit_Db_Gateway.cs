@@ -8,6 +8,7 @@ using EDPFW;
 using System;
 using System.Collections.Generic;
 
+// TODO[db-three-way-split]: sub 4 — AB_Db_Manager internal helper 강등 또는 통합. plan: docs/plans/doing/db-three-way-split/4-db-manager.md
 namespace ArtificialBuilder
 {
     /// <summary>

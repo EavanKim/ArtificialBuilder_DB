@@ -8,6 +8,8 @@ using EDPFW;
 using System;
 using System.Collections.Generic;
 using System.IO;
+
+// TODO[db-three-way-split]: sub 4 — AB_Db_Manager internal helper. Persona DB schema 보존 (사용자 정본 = 별도 그대로). plan: docs/plans/doing/db-three-way-split/4-db-manager.md
 using System.Linq;
 using System.Threading.Tasks;
 

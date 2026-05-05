@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+// TODO[db-three-way-split]: sub 4 — AB_Db_Manager internal helper. App DB = 글로벌 메타. **로직 무관**. plan: docs/plans/doing/db-three-way-split/4-db-manager.md
+
 namespace ArtificialBuilder
 {
     /// <summary>

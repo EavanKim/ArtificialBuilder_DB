@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ArtificialBuilder.Models;
 
+// TODO[db-three-way-split]: sub 3 — Circuit DB 정합 (자원 보존 + Response UI 4 종 분리 + Used_Sub_Circuit / Hosted_Logic 신설). 폐기 DbSet: ResponseWindows / WindowComponents / UiTemplates (→ Response UI DB sub 2). 보존: Settings/Lore/Asset/Character/Location/Pattern/Data. plan: docs/plans/doing/db-three-way-split/3-circuit-db-simplify.md
 namespace ArtificialBuilder
 {
     /// <summary>Circuit DB 컨텍스트 (Circuit별 설정/로어/캐릭터/장소/UI 등).</summary>

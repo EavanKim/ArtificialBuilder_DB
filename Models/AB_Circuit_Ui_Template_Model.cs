@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+// TODO[db-three-way-split]: sub 3 폐기 + sub 2 신설. 본 모델 → Response UI DB 의 AB_Response_Ui_Template_Model 로 이전. plan: docs/plans/doing/db-three-way-split/2-response-ui-db-schema.md
 namespace ArtificialBuilder.Models
 {
     /// <summary>

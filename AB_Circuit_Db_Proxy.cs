@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+// TODO[db-three-way-split]: sub 4 — AB_Db_Manager 로 흡수. 외부 직접 호출 (`AB_Circuit_Db_Proxy.I.*`) 폐기. internal helper 강등 또는 통합. plan: docs/plans/doing/db-three-way-split/4-db-manager.md
+// TODO[db-three-way-split]: sub 5 — 외부 호출 = DDO publish 만. CIRCUIT_DB_* 헤더 옵저버. plan: docs/plans/doing/db-three-way-split/5-message-queue.md
 namespace ArtificialBuilder
 {
     /// <summary>
