@@ -317,6 +317,22 @@ namespace ArtificialBuilder.Requests
         public AB_Update_Session_Turn_Shard_Size_Response() { Topic = AB_Persona_Db_Topics.Persona; IsResponse = true; }
     }
 
+    /// <summary>
+    /// 세션의 CircuitName_ 만 갱신. chat 진행 중 circuit 교체 시 사용 — 다음 turn 부터 새 circuit 적용.
+    /// history 데이터 보존, 페이로드/스토리지 wipe 없음.
+    /// </summary>
+    public class AB_Update_Session_Circuit_Request : AB_Message
+    {
+        public string SessionId = "";
+        public string CircuitName = "";
+        public AB_Update_Session_Circuit_Request() { Topic = AB_Persona_Db_Topics.Persona; }
+    }
+    public class AB_Update_Session_Circuit_Response : AB_Message
+    {
+        public bool Success;
+        public AB_Update_Session_Circuit_Response() { Topic = AB_Persona_Db_Topics.Persona; IsResponse = true; }
+    }
+
     // Phase 4.6 — Context_Record / Context_History Request/Response 통째 폐기.
     // 4 계층 storage 의 Context_Storage / Node_Storage / Session_Storage 가 정본.
     // MessageDataRef Request/Response 는 Phase C 에서 폐기됨.

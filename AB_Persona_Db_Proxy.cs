@@ -204,6 +204,18 @@ namespace ArtificialBuilder
             return resp.Success;
         }
 
+        /// <summary>세션 CircuitName_ 만 갱신. chat 진행 중 circuit 교체용 (history 보존).</summary>
+        public async Task<bool> UpdateSessionCircuitAsync(string _sessionId, string _circuitName)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Update_Session_Circuit_Response>(
+                new AB_Update_Session_Circuit_Request
+                {
+                    SessionId = _sessionId,
+                    CircuitName = _circuitName
+                }, DefaultTimeout);
+            return resp.Success;
+        }
+
         // MessageDataRef API (GetMessageDataRefsAsync / GetLatestMessageDataRefsAsync / PutMessageDataRefsAsync)
         // 은 Phase C 에서 폐기됨. context_records 단일 소스로 이관.
 

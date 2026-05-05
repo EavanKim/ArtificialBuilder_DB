@@ -383,6 +383,26 @@ namespace ArtificialBuilder
                         { CorrelationId = req.CorrelationId, Success = ok });
                         break;
                     }
+                    case AB_Update_Session_Circuit_Request req:
+                    {
+                        bool ok = false;
+                        if (handle != 0)
+                        {
+                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == req.SessionId);
+                            var session = sessions.FirstOrDefault();
+                            if (session != null)
+                            {
+                                session.CircuitName_ = req.CircuitName;
+                                session.UpdatedAt_ = DateTime.UtcNow;
+                                m_engine.Update(handle, session);
+                                await m_engine.SaveChangesAsync(handle);
+                                ok = true;
+                            }
+                        }
+                        m_broker?.Publish(new AB_Update_Session_Circuit_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
 
                     // Phase 4.6 — Context_Record / Context_History 핸들러 폐기.
                     // 4 계층 storage ([[storage-layers]]) 의 Context_Storage / Node_Storage / Session_Storage 가 정본.
