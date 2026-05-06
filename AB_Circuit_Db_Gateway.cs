@@ -1329,6 +1329,77 @@ namespace ArtificialBuilder
                         m_broker?.Publish(new AB_Set_Hosted_Logic_Slot_Value_Response { CorrelationId = req.CorrelationId, Success = ok });
                         break;
                     }
+
+                    // --- circuit-as-node-graph sub 2 (2026-05-07) — hosted_logic 슬롯 매핑 + UI 매핑 atomic replace ---
+
+                    case AB_Get_Hosted_Logic_Slot_Mappings_Request req:
+                    {
+                        System.Collections.Generic.List<AB_Hosted_Slot_Mapping_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            string hostedLogicId = req.Hosted_Logic_Id;
+                            var found = await AB_Board.Db.FindAsync<AB_Hosted_Slot_Mapping_Model>(dbId,
+                                _m => _m.HostedLogicId_ == hostedLogicId);
+                            data.AddRange(found);
+                        }
+                        m_broker?.Publish(new AB_Get_Hosted_Logic_Slot_Mappings_Response { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Replace_Hosted_Logic_Slot_Mappings_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0)
+                        {
+                            string hostedLogicId = req.Hosted_Logic_Id;
+                            var existing = await AB_Board.Db.FindAsync<AB_Hosted_Slot_Mapping_Model>(dbId,
+                                _m => _m.HostedLogicId_ == hostedLogicId);
+                            foreach (var row in existing) AB_Board.Db.Remove(dbId, row);
+                            foreach (var item in req.Items)
+                            {
+                                item.HostedLogicId_ = hostedLogicId;
+                                item.UpdatedAt_ = System.DateTime.UtcNow;
+                                await AB_Board.Db.AddAsync(dbId, item);
+                            }
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                            ok = true;
+                        }
+                        m_broker?.Publish(new AB_Replace_Hosted_Logic_Slot_Mappings_Response { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Get_Hosted_Logic_Ui_Mappings_Request req:
+                    {
+                        System.Collections.Generic.List<AB_Hosted_Ui_Mapping_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            string hostedLogicId = req.Hosted_Logic_Id;
+                            var found = await AB_Board.Db.FindAsync<AB_Hosted_Ui_Mapping_Model>(dbId,
+                                _m => _m.HostedLogicId_ == hostedLogicId);
+                            data.AddRange(found);
+                        }
+                        m_broker?.Publish(new AB_Get_Hosted_Logic_Ui_Mappings_Response { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Replace_Hosted_Logic_Ui_Mappings_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0)
+                        {
+                            string hostedLogicId = req.Hosted_Logic_Id;
+                            var existing = await AB_Board.Db.FindAsync<AB_Hosted_Ui_Mapping_Model>(dbId,
+                                _m => _m.HostedLogicId_ == hostedLogicId);
+                            foreach (var row in existing) AB_Board.Db.Remove(dbId, row);
+                            foreach (var item in req.Items)
+                            {
+                                item.HostedLogicId_ = hostedLogicId;
+                                item.UpdatedAt_ = System.DateTime.UtcNow;
+                                await AB_Board.Db.AddAsync(dbId, item);
+                            }
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                            ok = true;
+                        }
+                        m_broker?.Publish(new AB_Replace_Hosted_Logic_Ui_Mappings_Response { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
                 }
             }
             catch (Exception ex)

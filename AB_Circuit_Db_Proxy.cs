@@ -765,5 +765,36 @@ namespace ArtificialBuilder
                 new AB_Remove_Hosted_Logic_Request { Hosted_Logic_Id = _hostedLogicId }, DefaultTimeout);
             return resp.Success;
         }
+
+        // --- circuit-as-node-graph sub 2 (2026-05-07) — hosted_logic 슬롯 매핑 + UI 매핑 (atomic replace) ---
+        // 정본: docs/architecture/3-pipeline/circuit-as-node-graph.md / data-by-blackboard-key-only.md
+
+        public async Task<List<AB_Hosted_Slot_Mapping_Model>> GetHostedLogicSlotMappingsAsync(string _hostedLogicId)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Hosted_Logic_Slot_Mappings_Response>(
+                new AB_Get_Hosted_Logic_Slot_Mappings_Request { Hosted_Logic_Id = _hostedLogicId }, DefaultTimeout);
+            return resp.Data ?? new();
+        }
+
+        public async Task<bool> ReplaceHostedLogicSlotMappingsAsync(string _hostedLogicId, List<AB_Hosted_Slot_Mapping_Model> _items)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Replace_Hosted_Logic_Slot_Mappings_Response>(
+                new AB_Replace_Hosted_Logic_Slot_Mappings_Request { Hosted_Logic_Id = _hostedLogicId, Items = _items }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<List<AB_Hosted_Ui_Mapping_Model>> GetHostedLogicUiMappingsAsync(string _hostedLogicId)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Hosted_Logic_Ui_Mappings_Response>(
+                new AB_Get_Hosted_Logic_Ui_Mappings_Request { Hosted_Logic_Id = _hostedLogicId }, DefaultTimeout);
+            return resp.Data ?? new();
+        }
+
+        public async Task<bool> ReplaceHostedLogicUiMappingsAsync(string _hostedLogicId, List<AB_Hosted_Ui_Mapping_Model> _items)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Replace_Hosted_Logic_Ui_Mappings_Response>(
+                new AB_Replace_Hosted_Logic_Ui_Mappings_Request { Hosted_Logic_Id = _hostedLogicId, Items = _items }, DefaultTimeout);
+            return resp.Success;
+        }
     }
 }

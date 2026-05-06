@@ -1778,4 +1778,56 @@ namespace ArtificialBuilder.Requests
         public string? Error;
         public AB_Remove_Hosted_Logic_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
     }
+
+    // --- circuit-as-node-graph sub 2 (2026-05-07) — hosted_logic 슬롯 매핑 + UI 매핑 (atomic replace) ---
+
+    public class AB_Get_Hosted_Logic_Slot_Mappings_Request : AB_Message
+    {
+        public string Hosted_Logic_Id = "";
+        public AB_Get_Hosted_Logic_Slot_Mappings_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Get_Hosted_Logic_Slot_Mappings_Response : AB_Message
+    {
+        public List<AB_Hosted_Slot_Mapping_Model> Data = new();
+        public string? Error;
+        public AB_Get_Hosted_Logic_Slot_Mappings_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    public class AB_Replace_Hosted_Logic_Slot_Mappings_Request : AB_Message
+    {
+        public string Hosted_Logic_Id = "";
+        public List<AB_Hosted_Slot_Mapping_Model> Items = new();
+        public AB_Replace_Hosted_Logic_Slot_Mappings_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Replace_Hosted_Logic_Slot_Mappings_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Replace_Hosted_Logic_Slot_Mappings_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    public class AB_Get_Hosted_Logic_Ui_Mappings_Request : AB_Message
+    {
+        public string Hosted_Logic_Id = "";
+        public AB_Get_Hosted_Logic_Ui_Mappings_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Get_Hosted_Logic_Ui_Mappings_Response : AB_Message
+    {
+        public List<AB_Hosted_Ui_Mapping_Model> Data = new();
+        public string? Error;
+        public AB_Get_Hosted_Logic_Ui_Mappings_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    public class AB_Replace_Hosted_Logic_Ui_Mappings_Request : AB_Message
+    {
+        public string Hosted_Logic_Id = "";
+        public List<AB_Hosted_Ui_Mapping_Model> Items = new();
+        public AB_Replace_Hosted_Logic_Ui_Mappings_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Replace_Hosted_Logic_Ui_Mappings_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Replace_Hosted_Logic_Ui_Mappings_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
 }

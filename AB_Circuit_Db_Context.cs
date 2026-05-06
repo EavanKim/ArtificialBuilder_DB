@@ -111,12 +111,28 @@ namespace ArtificialBuilder
             get { return m_outputSlots; }
             set { m_outputSlots = value; }
         }
-        /// <summary>hosted logic 별 슬롯 값 (서킷 화면에서 채움). v2 2026-05-06 후속 변수 슬롯 절.</summary>
+        /// <summary>hosted logic 별 슬롯 값 (서킷 화면에서 채움). v2 2026-05-06 후속 변수 슬롯 절. v3 (2026-05-07) 부터 폐기 예정 — 슬롯 매핑은 HostedLogicSlotMappings 로 이전.</summary>
         private DbSet<AB_Circuit_Hosted_Logic_Slot_Value_Model> m_hostedLogicSlotValues = null!;
         public DbSet<AB_Circuit_Hosted_Logic_Slot_Value_Model> HostedLogicSlotValues
         {
             get { return m_hostedLogicSlotValues; }
             set { m_hostedLogicSlotValues = value; }
+        }
+
+        /// <summary>v3 (2026-05-07) — hosted_logic 의 슬롯 매핑 (빈 슬롯명 → 칠판 데이터 키 + description). [[circuit-as-node-graph]] [[data-by-blackboard-key-only]].</summary>
+        private DbSet<AB_Hosted_Slot_Mapping_Model> m_hostedLogicSlotMappings = null!;
+        public DbSet<AB_Hosted_Slot_Mapping_Model> HostedLogicSlotMappings
+        {
+            get { return m_hostedLogicSlotMappings; }
+            set { m_hostedLogicSlotMappings = value; }
+        }
+
+        /// <summary>v3 (2026-05-07) — hosted_logic 의 UI 출력 매핑 (내부 노드 → UI 슬롯 + description). [[circuit-as-node-graph]] [[data-by-blackboard-key-only]].</summary>
+        private DbSet<AB_Hosted_Ui_Mapping_Model> m_hostedLogicUiMappings = null!;
+        public DbSet<AB_Hosted_Ui_Mapping_Model> HostedLogicUiMappings
+        {
+            get { return m_hostedLogicUiMappings; }
+            set { m_hostedLogicUiMappings = value; }
         }
 
         /// <summary>EF Core 옵션 주입 생성자.</summary>
