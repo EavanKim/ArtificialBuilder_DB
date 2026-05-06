@@ -111,6 +111,13 @@ namespace ArtificialBuilder
             get { return m_outputSlots; }
             set { m_outputSlots = value; }
         }
+        /// <summary>hosted logic 별 슬롯 값 (서킷 화면에서 채움). v2 2026-05-06 후속 변수 슬롯 절.</summary>
+        private DbSet<AB_Circuit_Hosted_Logic_Slot_Value_Model> m_hostedLogicSlotValues = null!;
+        public DbSet<AB_Circuit_Hosted_Logic_Slot_Value_Model> HostedLogicSlotValues
+        {
+            get { return m_hostedLogicSlotValues; }
+            set { m_hostedLogicSlotValues = value; }
+        }
 
         /// <summary>EF Core 옵션 주입 생성자.</summary>
         public AB_Circuit_Db_Context(DbContextOptions<AB_Circuit_Db_Context> _options)

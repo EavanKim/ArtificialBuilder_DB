@@ -55,6 +55,13 @@ namespace ArtificialBuilder
             get { return m_internalConnections; }
             set { m_internalConnections = value; }
         }
+        /// <summary>로직 변수 슬롯 (빈칸 schema). v2 2026-05-06 후속 변수 슬롯 절.</summary>
+        private DbSet<AB_Logic_Variable_Slot_Model> m_variableSlots = null!;
+        public DbSet<AB_Logic_Variable_Slot_Model> VariableSlots
+        {
+            get { return m_variableSlots; }
+            set { m_variableSlots = value; }
+        }
 
         /// <summary>EF Core 옵션 주입 생성자.</summary>
         public AB_Logic_Db_Context(DbContextOptions<AB_Logic_Db_Context> _options)
