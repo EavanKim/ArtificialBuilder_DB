@@ -138,5 +138,79 @@ namespace ArtificialBuilder
                 new AB_Append_Logic_History_Turn_Request { Item = _item }, DefaultTimeout);
             return resp.Success;
         }
+
+        // ====================================================================
+        // circuit-home-logic-graph-runtime-db-proxy sub 5 — v2 변수 슬롯 / 내부 노드 / 내부 connection
+        // ====================================================================
+
+        public async Task<List<AB_Logic_Variable_Slot_Model>> GetAllVariableSlotsAsync()
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Logic_Variable_Slots_Response>(
+                new AB_Get_All_Logic_Variable_Slots_Request(), DefaultTimeout);
+            return resp.Data ?? new();
+        }
+
+        public async Task<bool> AddVariableSlotAsync(AB_Logic_Variable_Slot_Model _item)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Logic_Variable_Slot_Response>(
+                new AB_Add_Logic_Variable_Slot_Request { Item = _item }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<bool> SaveVariableSlotAsync(AB_Logic_Variable_Slot_Model _item)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Save_Logic_Variable_Slot_Response>(
+                new AB_Save_Logic_Variable_Slot_Request { Item = _item }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<bool> RemoveVariableSlotAsync(string _slotId)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Remove_Logic_Variable_Slot_Response>(
+                new AB_Remove_Logic_Variable_Slot_Request { Slot_Id = _slotId }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<List<AB_Logic_Internal_Node_Model>> GetAllInternalNodesAsync()
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Logic_Internal_Nodes_Response>(
+                new AB_Get_All_Logic_Internal_Nodes_Request(), DefaultTimeout);
+            return resp.Data ?? new();
+        }
+
+        public async Task<bool> AddInternalNodeAsync(AB_Logic_Internal_Node_Model _item)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Logic_Internal_Node_Response>(
+                new AB_Add_Logic_Internal_Node_Request { Item = _item }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<bool> RemoveInternalNodeAsync(string _nodeId)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Remove_Logic_Internal_Node_Response>(
+                new AB_Remove_Logic_Internal_Node_Request { Node_Id = _nodeId }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<List<AB_Logic_Internal_Connection_Model>> GetAllInternalConnectionsAsync()
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Logic_Internal_Connections_Response>(
+                new AB_Get_All_Logic_Internal_Connections_Request(), DefaultTimeout);
+            return resp.Data ?? new();
+        }
+
+        public async Task<bool> AddInternalConnectionAsync(AB_Logic_Internal_Connection_Model _item)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Logic_Internal_Connection_Response>(
+                new AB_Add_Logic_Internal_Connection_Request { Item = _item }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<bool> RemoveInternalConnectionAsync(string _connectionId)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Remove_Logic_Internal_Connection_Response>(
+                new AB_Remove_Logic_Internal_Connection_Request { Connection_Id = _connectionId }, DefaultTimeout);
+            return resp.Success;
+        }
     }
 }

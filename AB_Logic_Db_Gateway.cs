@@ -231,6 +231,146 @@ namespace ArtificialBuilder
                         { CorrelationId = req.CorrelationId, Success = ok });
                         break;
                     }
+                    // --- circuit-home-logic-graph-runtime-db-proxy sub 3 — v2 변수 슬롯 ---
+                    case AB_Get_All_Logic_Variable_Slots_Request req:
+                    {
+                        List<AB_Logic_Variable_Slot_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            var all = await AB_Board.Db.GetAllAsync<AB_Logic_Variable_Slot_Model>(dbId);
+                            data.AddRange(all);
+                        }
+                        m_broker?.Publish(new AB_Get_All_Logic_Variable_Slots_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Add_Logic_Variable_Slot_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0)
+                        {
+                            await AB_Board.Db.AddAsync(dbId, req.Item);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                            ok = true;
+                        }
+                        m_broker?.Publish(new AB_Add_Logic_Variable_Slot_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Save_Logic_Variable_Slot_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0)
+                        {
+                            AB_Board.Db.Update(dbId, req.Item);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                            ok = true;
+                        }
+                        m_broker?.Publish(new AB_Save_Logic_Variable_Slot_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Remove_Logic_Variable_Slot_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0)
+                        {
+                            var existing = await AB_Board.Db.GetByIdAsync<AB_Logic_Variable_Slot_Model>(dbId, req.Slot_Id);
+                            if (existing != null)
+                            {
+                                AB_Board.Db.Remove(dbId, existing);
+                                await AB_Board.Db.SaveChangesAsync(dbId);
+                                ok = true;
+                            }
+                        }
+                        m_broker?.Publish(new AB_Remove_Logic_Variable_Slot_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Get_All_Logic_Internal_Nodes_Request req:
+                    {
+                        List<AB_Logic_Internal_Node_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            var all = await AB_Board.Db.GetAllAsync<AB_Logic_Internal_Node_Model>(dbId);
+                            data.AddRange(all);
+                        }
+                        m_broker?.Publish(new AB_Get_All_Logic_Internal_Nodes_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Add_Logic_Internal_Node_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0)
+                        {
+                            await AB_Board.Db.AddAsync(dbId, req.Item);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                            ok = true;
+                        }
+                        m_broker?.Publish(new AB_Add_Logic_Internal_Node_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Remove_Logic_Internal_Node_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0)
+                        {
+                            var existing = await AB_Board.Db.GetByIdAsync<AB_Logic_Internal_Node_Model>(dbId, req.Node_Id);
+                            if (existing != null)
+                            {
+                                AB_Board.Db.Remove(dbId, existing);
+                                await AB_Board.Db.SaveChangesAsync(dbId);
+                                ok = true;
+                            }
+                        }
+                        m_broker?.Publish(new AB_Remove_Logic_Internal_Node_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Get_All_Logic_Internal_Connections_Request req:
+                    {
+                        List<AB_Logic_Internal_Connection_Model> data = new();
+                        if (dbId != 0)
+                        {
+                            var all = await AB_Board.Db.GetAllAsync<AB_Logic_Internal_Connection_Model>(dbId);
+                            data.AddRange(all);
+                        }
+                        m_broker?.Publish(new AB_Get_All_Logic_Internal_Connections_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Add_Logic_Internal_Connection_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0)
+                        {
+                            await AB_Board.Db.AddAsync(dbId, req.Item);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                            ok = true;
+                        }
+                        m_broker?.Publish(new AB_Add_Logic_Internal_Connection_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Remove_Logic_Internal_Connection_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0)
+                        {
+                            var existing = await AB_Board.Db.GetByIdAsync<AB_Logic_Internal_Connection_Model>(dbId, req.Connection_Id);
+                            if (existing != null)
+                            {
+                                AB_Board.Db.Remove(dbId, existing);
+                                await AB_Board.Db.SaveChangesAsync(dbId);
+                                ok = true;
+                            }
+                        }
+                        m_broker?.Publish(new AB_Remove_Logic_Internal_Connection_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
                 }
             }
             catch (Exception ex)

@@ -1601,4 +1601,144 @@ namespace ArtificialBuilder.Requests
         public string? Error;
         public AB_Delete_Circuit_File_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
     }
+
+    // ====================================================================
+    // circuit-home-logic-graph-runtime-db-proxy sub 3 — v2 슬롯 / hosted_logic_slot_value
+    // ====================================================================
+
+    // --- Input Slots ---
+
+    public class AB_Add_Circuit_Input_Slot_Request : AB_Message
+    {
+        public AB_Circuit_Input_Slot_Model Item = new();
+        public AB_Add_Circuit_Input_Slot_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Add_Circuit_Input_Slot_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Add_Circuit_Input_Slot_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    public class AB_Remove_Circuit_Input_Slot_Request : AB_Message
+    {
+        public string Slot_Id = "";
+        public AB_Remove_Circuit_Input_Slot_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Remove_Circuit_Input_Slot_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Remove_Circuit_Input_Slot_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    public class AB_Save_Circuit_Input_Slot_Request : AB_Message
+    {
+        public AB_Circuit_Input_Slot_Model Item = new();
+        public AB_Save_Circuit_Input_Slot_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Save_Circuit_Input_Slot_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Save_Circuit_Input_Slot_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    public class AB_Get_All_Circuit_Input_Slots_Request : AB_Message
+    {
+        public AB_Get_All_Circuit_Input_Slots_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Get_All_Circuit_Input_Slots_Response : AB_Message
+    {
+        public List<AB_Circuit_Input_Slot_Model> Data = new();
+        public string? Error;
+        public AB_Get_All_Circuit_Input_Slots_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    // --- Output Slots ---
+
+    public class AB_Add_Circuit_Output_Slot_Request : AB_Message
+    {
+        public AB_Circuit_Output_Slot_Model Item = new();
+        public AB_Add_Circuit_Output_Slot_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Add_Circuit_Output_Slot_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Add_Circuit_Output_Slot_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    public class AB_Remove_Circuit_Output_Slot_Request : AB_Message
+    {
+        public string Slot_Id = "";
+        public AB_Remove_Circuit_Output_Slot_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Remove_Circuit_Output_Slot_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Remove_Circuit_Output_Slot_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    public class AB_Save_Circuit_Output_Slot_Request : AB_Message
+    {
+        public AB_Circuit_Output_Slot_Model Item = new();
+        public AB_Save_Circuit_Output_Slot_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Save_Circuit_Output_Slot_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Save_Circuit_Output_Slot_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    public class AB_Get_All_Circuit_Output_Slots_Request : AB_Message
+    {
+        public AB_Get_All_Circuit_Output_Slots_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Get_All_Circuit_Output_Slots_Response : AB_Message
+    {
+        public List<AB_Circuit_Output_Slot_Model> Data = new();
+        public string? Error;
+        public AB_Get_All_Circuit_Output_Slots_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    // --- Hosted_Logic_Slot_Value ---
+
+    public class AB_Set_Hosted_Logic_Slot_Value_Request : AB_Message
+    {
+        public AB_Circuit_Hosted_Logic_Slot_Value_Model Item = new();
+        public AB_Set_Hosted_Logic_Slot_Value_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Set_Hosted_Logic_Slot_Value_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Set_Hosted_Logic_Slot_Value_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    public class AB_Get_Hosted_Logic_Slot_Value_Request : AB_Message
+    {
+        public string Logic_Id = "";
+        public string Slot_Id = "";
+        public AB_Get_Hosted_Logic_Slot_Value_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Get_Hosted_Logic_Slot_Value_Response : AB_Message
+    {
+        public AB_Circuit_Hosted_Logic_Slot_Value_Model? Data;
+        public string? Error;
+        public AB_Get_Hosted_Logic_Slot_Value_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    public class AB_Get_All_Hosted_Logic_Slot_Values_Request : AB_Message
+    {
+        public AB_Get_All_Hosted_Logic_Slot_Values_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Get_All_Hosted_Logic_Slot_Values_Response : AB_Message
+    {
+        public List<AB_Circuit_Hosted_Logic_Slot_Value_Model> Data = new();
+        public string? Error;
+        public AB_Get_All_Hosted_Logic_Slot_Values_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
 }

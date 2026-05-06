@@ -202,4 +202,131 @@ namespace ArtificialBuilder.Requests
         public string? Error;
         public AB_Append_Logic_History_Turn_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
     }
+
+    // ====================================================================
+    // circuit-home-logic-graph-runtime-db-proxy sub 3 — v2 변수 슬롯 / 내부 노드 / 내부 connection
+    // ====================================================================
+
+    // --- Variable Slots ---
+
+    public class AB_Add_Logic_Variable_Slot_Request : AB_Message
+    {
+        public AB_Logic_Variable_Slot_Model Item = new();
+        public AB_Add_Logic_Variable_Slot_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+    public class AB_Add_Logic_Variable_Slot_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Add_Logic_Variable_Slot_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
+
+    public class AB_Remove_Logic_Variable_Slot_Request : AB_Message
+    {
+        public string Slot_Id = "";
+        public AB_Remove_Logic_Variable_Slot_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+    public class AB_Remove_Logic_Variable_Slot_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Remove_Logic_Variable_Slot_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
+
+    public class AB_Save_Logic_Variable_Slot_Request : AB_Message
+    {
+        public AB_Logic_Variable_Slot_Model Item = new();
+        public AB_Save_Logic_Variable_Slot_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+    public class AB_Save_Logic_Variable_Slot_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Save_Logic_Variable_Slot_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
+
+    public class AB_Get_All_Logic_Variable_Slots_Request : AB_Message
+    {
+        public AB_Get_All_Logic_Variable_Slots_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+    public class AB_Get_All_Logic_Variable_Slots_Response : AB_Message
+    {
+        public List<AB_Logic_Variable_Slot_Model> Data = new();
+        public string? Error;
+        public AB_Get_All_Logic_Variable_Slots_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
+
+    // --- Internal Nodes ---
+
+    public class AB_Add_Logic_Internal_Node_Request : AB_Message
+    {
+        public AB_Logic_Internal_Node_Model Item = new();
+        public AB_Add_Logic_Internal_Node_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+    public class AB_Add_Logic_Internal_Node_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Add_Logic_Internal_Node_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
+
+    public class AB_Remove_Logic_Internal_Node_Request : AB_Message
+    {
+        public string Node_Id = "";
+        public AB_Remove_Logic_Internal_Node_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+    public class AB_Remove_Logic_Internal_Node_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Remove_Logic_Internal_Node_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
+
+    public class AB_Get_All_Logic_Internal_Nodes_Request : AB_Message
+    {
+        public AB_Get_All_Logic_Internal_Nodes_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+    public class AB_Get_All_Logic_Internal_Nodes_Response : AB_Message
+    {
+        public List<AB_Logic_Internal_Node_Model> Data = new();
+        public string? Error;
+        public AB_Get_All_Logic_Internal_Nodes_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
+
+    // --- Internal Connections ---
+
+    public class AB_Add_Logic_Internal_Connection_Request : AB_Message
+    {
+        public AB_Logic_Internal_Connection_Model Item = new();
+        public AB_Add_Logic_Internal_Connection_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+    public class AB_Add_Logic_Internal_Connection_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Add_Logic_Internal_Connection_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
+
+    public class AB_Remove_Logic_Internal_Connection_Request : AB_Message
+    {
+        public string Connection_Id = "";
+        public AB_Remove_Logic_Internal_Connection_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+    public class AB_Remove_Logic_Internal_Connection_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Remove_Logic_Internal_Connection_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
+
+    public class AB_Get_All_Logic_Internal_Connections_Request : AB_Message
+    {
+        public AB_Get_All_Logic_Internal_Connections_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+    public class AB_Get_All_Logic_Internal_Connections_Response : AB_Message
+    {
+        public List<AB_Logic_Internal_Connection_Model> Data = new();
+        public string? Error;
+        public AB_Get_All_Logic_Internal_Connections_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
 }

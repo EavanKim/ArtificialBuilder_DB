@@ -1144,3 +1144,172 @@ namespace ArtificialBuilder
         }
     }
 }
+
+namespace ArtificialBuilder
+{
+    using ArtificialBuilder.Models;
+    using ArtificialBuilder.Requests;
+    using ArtificialBuilder_EDP.Components;
+    using ArtificialBuilder_EDP.Core.Messaging;
+    using EDPFW;
+    using System;
+    using System.Threading.Tasks;
+
+    /// <summary>
+    /// circuit-home-logic-graph-runtime-db-proxy sub 3 — v2 슬롯 / hosted_logic_slot_value 게이트웨이.
+    /// AB_Circuit_Db_Gateway 본체 와 동일 토픽 (AB_Circuit_Db_Topics.ActiveCircuit). 분리 등록.
+    /// </summary>
+    public class AB_Circuit_Db_V2_Slots_Gateway : ArtificialBuilder_EDP.Core.AB_Component
+    {
+        private IAB_Message_Broker? m_broker;
+        private AB_Subscription_Token? m_sub;
+
+        public override void OnAttach()
+        {
+            try
+            {
+                m_broker = ArtificialBuilder_EDP.Core.AB_Engine.Get<AB_In_Memory_Broker>();
+                m_sub = m_broker.Subscribe(AB_Circuit_Db_Topics.ActiveCircuit, HandleMessage);
+            }
+            catch (Exception ex)
+            {
+                AB_Log.Error("CircuitGwV2", $"OnAttach 실패: {ex.Message}");
+            }
+        }
+
+        public override void OnDetach()
+        {
+            try
+            {
+                if (m_broker != null && m_sub != null)
+                    m_broker.Unsubscribe(m_sub);
+            }
+            catch { }
+        }
+
+        private async void HandleMessage(AB_Message _msg)
+        {
+            if (_msg.IsResponse) return;
+
+            try
+            {
+                int dbId = AB_Board.Circuit.Handle;
+
+                switch (_msg)
+                {
+                    case AB_Get_All_Circuit_Input_Slots_Request req:
+                    {
+                        System.Collections.Generic.List<AB_Circuit_Input_Slot_Model> data = new();
+                        if (dbId != 0) data.AddRange(await AB_Board.Db.GetAllAsync<AB_Circuit_Input_Slot_Model>(dbId));
+                        m_broker?.Publish(new AB_Get_All_Circuit_Input_Slots_Response { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Add_Circuit_Input_Slot_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0) { await AB_Board.Db.AddAsync(dbId, req.Item); await AB_Board.Db.SaveChangesAsync(dbId); ok = true; }
+                        m_broker?.Publish(new AB_Add_Circuit_Input_Slot_Response { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Save_Circuit_Input_Slot_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0) { AB_Board.Db.Update(dbId, req.Item); await AB_Board.Db.SaveChangesAsync(dbId); ok = true; }
+                        m_broker?.Publish(new AB_Save_Circuit_Input_Slot_Response { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Remove_Circuit_Input_Slot_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0)
+                        {
+                            var existing = await AB_Board.Db.GetByIdAsync<AB_Circuit_Input_Slot_Model>(dbId, req.Slot_Id);
+                            if (existing != null) { AB_Board.Db.Remove(dbId, existing); await AB_Board.Db.SaveChangesAsync(dbId); ok = true; }
+                        }
+                        m_broker?.Publish(new AB_Remove_Circuit_Input_Slot_Response { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Get_All_Circuit_Output_Slots_Request req:
+                    {
+                        System.Collections.Generic.List<AB_Circuit_Output_Slot_Model> data = new();
+                        if (dbId != 0) data.AddRange(await AB_Board.Db.GetAllAsync<AB_Circuit_Output_Slot_Model>(dbId));
+                        m_broker?.Publish(new AB_Get_All_Circuit_Output_Slots_Response { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Add_Circuit_Output_Slot_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0) { await AB_Board.Db.AddAsync(dbId, req.Item); await AB_Board.Db.SaveChangesAsync(dbId); ok = true; }
+                        m_broker?.Publish(new AB_Add_Circuit_Output_Slot_Response { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Save_Circuit_Output_Slot_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0) { AB_Board.Db.Update(dbId, req.Item); await AB_Board.Db.SaveChangesAsync(dbId); ok = true; }
+                        m_broker?.Publish(new AB_Save_Circuit_Output_Slot_Response { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Remove_Circuit_Output_Slot_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0)
+                        {
+                            var existing = await AB_Board.Db.GetByIdAsync<AB_Circuit_Output_Slot_Model>(dbId, req.Slot_Id);
+                            if (existing != null) { AB_Board.Db.Remove(dbId, existing); await AB_Board.Db.SaveChangesAsync(dbId); ok = true; }
+                        }
+                        m_broker?.Publish(new AB_Remove_Circuit_Output_Slot_Response { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Get_All_Hosted_Logic_Slot_Values_Request req:
+                    {
+                        System.Collections.Generic.List<AB_Circuit_Hosted_Logic_Slot_Value_Model> data = new();
+                        if (dbId != 0) data.AddRange(await AB_Board.Db.GetAllAsync<AB_Circuit_Hosted_Logic_Slot_Value_Model>(dbId));
+                        m_broker?.Publish(new AB_Get_All_Hosted_Logic_Slot_Values_Response { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_Hosted_Logic_Slot_Value_Request req:
+                    {
+                        AB_Circuit_Hosted_Logic_Slot_Value_Model? data = null;
+                        if (dbId != 0)
+                        {
+                            string logicId = req.Logic_Id;
+                            string slotId = req.Slot_Id;
+                            var all = await AB_Board.Db.FindAsync<AB_Circuit_Hosted_Logic_Slot_Value_Model>(dbId,
+                                _v => _v.LogicId_ == logicId && _v.SlotId_ == slotId);
+                            foreach (var v in all) { data = v; break; }
+                        }
+                        m_broker?.Publish(new AB_Get_Hosted_Logic_Slot_Value_Response { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Set_Hosted_Logic_Slot_Value_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0)
+                        {
+                            var existing = await AB_Board.Db.FindAsync<AB_Circuit_Hosted_Logic_Slot_Value_Model>(dbId,
+                                _v => _v.LogicId_ == req.Item.LogicId_ && _v.SlotId_ == req.Item.SlotId_);
+                            bool found = false;
+                            foreach (var v in existing)
+                            {
+                                v.ValueJson_ = req.Item.ValueJson_;
+                                AB_Board.Db.Update(dbId, v);
+                                found = true;
+                                break;
+                            }
+                            if (!found) await AB_Board.Db.AddAsync(dbId, req.Item);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                            ok = true;
+                        }
+                        m_broker?.Publish(new AB_Set_Hosted_Logic_Slot_Value_Response { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AB_Log.Error("CircuitGwV2", $"HandleMessage 실패: {ex.Message}");
+            }
+        }
+    }
+}

@@ -663,5 +663,86 @@ namespace ArtificialBuilder
                 new AB_Delete_Circuit_File_Request { Name = _name }, DefaultTimeout);
             return resp.Success;
         }
+
+        // ====================================================================
+        // circuit-home-logic-graph-runtime-db-proxy sub 4 — v2 슬롯 / hosted_logic_slot_value
+        // ====================================================================
+
+        public async Task<List<AB_Circuit_Input_Slot_Model>> GetAllInputSlotsAsync()
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Circuit_Input_Slots_Response>(
+                new AB_Get_All_Circuit_Input_Slots_Request(), DefaultTimeout);
+            return resp.Data ?? new();
+        }
+
+        public async Task<bool> AddInputSlotAsync(AB_Circuit_Input_Slot_Model _item)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Circuit_Input_Slot_Response>(
+                new AB_Add_Circuit_Input_Slot_Request { Item = _item }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<bool> SaveInputSlotAsync(AB_Circuit_Input_Slot_Model _item)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Save_Circuit_Input_Slot_Response>(
+                new AB_Save_Circuit_Input_Slot_Request { Item = _item }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<bool> RemoveInputSlotAsync(string _slotId)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Remove_Circuit_Input_Slot_Response>(
+                new AB_Remove_Circuit_Input_Slot_Request { Slot_Id = _slotId }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<List<AB_Circuit_Output_Slot_Model>> GetAllOutputSlotsAsync()
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Circuit_Output_Slots_Response>(
+                new AB_Get_All_Circuit_Output_Slots_Request(), DefaultTimeout);
+            return resp.Data ?? new();
+        }
+
+        public async Task<bool> AddOutputSlotAsync(AB_Circuit_Output_Slot_Model _item)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Circuit_Output_Slot_Response>(
+                new AB_Add_Circuit_Output_Slot_Request { Item = _item }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<bool> SaveOutputSlotAsync(AB_Circuit_Output_Slot_Model _item)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Save_Circuit_Output_Slot_Response>(
+                new AB_Save_Circuit_Output_Slot_Request { Item = _item }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<bool> RemoveOutputSlotAsync(string _slotId)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Remove_Circuit_Output_Slot_Response>(
+                new AB_Remove_Circuit_Output_Slot_Request { Slot_Id = _slotId }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<List<AB_Circuit_Hosted_Logic_Slot_Value_Model>> GetAllHostedLogicSlotValuesAsync()
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Hosted_Logic_Slot_Values_Response>(
+                new AB_Get_All_Hosted_Logic_Slot_Values_Request(), DefaultTimeout);
+            return resp.Data ?? new();
+        }
+
+        public async Task<AB_Circuit_Hosted_Logic_Slot_Value_Model?> GetHostedLogicSlotValueAsync(string _logicId, string _slotId)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Hosted_Logic_Slot_Value_Response>(
+                new AB_Get_Hosted_Logic_Slot_Value_Request { Logic_Id = _logicId, Slot_Id = _slotId }, DefaultTimeout);
+            return resp.Data;
+        }
+
+        public async Task<bool> SetHostedLogicSlotValueAsync(AB_Circuit_Hosted_Logic_Slot_Value_Model _item)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Set_Hosted_Logic_Slot_Value_Response>(
+                new AB_Set_Hosted_Logic_Slot_Value_Request { Item = _item }, DefaultTimeout);
+            return resp.Success;
+        }
     }
 }
