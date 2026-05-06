@@ -1282,6 +1282,31 @@ namespace ArtificialBuilder
                         m_broker?.Publish(new AB_Get_Hosted_Logic_Slot_Value_Response { CorrelationId = req.CorrelationId, Data = data });
                         break;
                     }
+                    case AB_Get_All_Hosted_Logics_Request req:
+                    {
+                        System.Collections.Generic.List<AB_Circuit_Hosted_Logic_Model> data = new();
+                        if (dbId != 0) data.AddRange(await AB_Board.Db.GetAllAsync<AB_Circuit_Hosted_Logic_Model>(dbId));
+                        m_broker?.Publish(new AB_Get_All_Hosted_Logics_Response { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Add_Hosted_Logic_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0) { await AB_Board.Db.AddAsync(dbId, req.Item); await AB_Board.Db.SaveChangesAsync(dbId); ok = true; }
+                        m_broker?.Publish(new AB_Add_Hosted_Logic_Response { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Remove_Hosted_Logic_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0)
+                        {
+                            var existing = await AB_Board.Db.GetByIdAsync<AB_Circuit_Hosted_Logic_Model>(dbId, req.Hosted_Logic_Id);
+                            if (existing != null) { AB_Board.Db.Remove(dbId, existing); await AB_Board.Db.SaveChangesAsync(dbId); ok = true; }
+                        }
+                        m_broker?.Publish(new AB_Remove_Hosted_Logic_Response { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
                     case AB_Set_Hosted_Logic_Slot_Value_Request req:
                     {
                         bool ok = false;

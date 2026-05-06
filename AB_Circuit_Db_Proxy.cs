@@ -744,5 +744,26 @@ namespace ArtificialBuilder
                 new AB_Set_Hosted_Logic_Slot_Value_Request { Item = _item }, DefaultTimeout);
             return resp.Success;
         }
+
+        public async Task<List<AB_Circuit_Hosted_Logic_Model>> GetHostedLogicsAsync()
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Hosted_Logics_Response>(
+                new AB_Get_All_Hosted_Logics_Request(), DefaultTimeout);
+            return resp.Data ?? new();
+        }
+
+        public async Task<bool> AddHostedLogicAsync(AB_Circuit_Hosted_Logic_Model _item)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Hosted_Logic_Response>(
+                new AB_Add_Hosted_Logic_Request { Item = _item }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<bool> RemoveHostedLogicAsync(string _hostedLogicId)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Remove_Hosted_Logic_Response>(
+                new AB_Remove_Hosted_Logic_Request { Hosted_Logic_Id = _hostedLogicId }, DefaultTimeout);
+            return resp.Success;
+        }
     }
 }

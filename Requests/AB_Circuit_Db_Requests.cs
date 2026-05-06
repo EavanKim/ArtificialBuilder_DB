@@ -1741,4 +1741,41 @@ namespace ArtificialBuilder.Requests
         public string? Error;
         public AB_Get_All_Hosted_Logic_Slot_Values_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
     }
+
+    // --- Hosted Logics (서킷이 호스팅하는 Logic 인스턴스) ---
+
+    public class AB_Get_All_Hosted_Logics_Request : AB_Message
+    {
+        public AB_Get_All_Hosted_Logics_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Get_All_Hosted_Logics_Response : AB_Message
+    {
+        public List<AB_Circuit_Hosted_Logic_Model> Data = new();
+        public string? Error;
+        public AB_Get_All_Hosted_Logics_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    public class AB_Add_Hosted_Logic_Request : AB_Message
+    {
+        public AB_Circuit_Hosted_Logic_Model Item = new();
+        public AB_Add_Hosted_Logic_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Add_Hosted_Logic_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Add_Hosted_Logic_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
+
+    public class AB_Remove_Hosted_Logic_Request : AB_Message
+    {
+        public string Hosted_Logic_Id = "";
+        public AB_Remove_Hosted_Logic_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
+    }
+    public class AB_Remove_Hosted_Logic_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Remove_Hosted_Logic_Response() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; IsResponse = true; }
+    }
 }
