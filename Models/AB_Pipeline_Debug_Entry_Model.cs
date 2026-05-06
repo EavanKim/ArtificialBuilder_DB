@@ -39,7 +39,7 @@ namespace ArtificialBuilder.Models
         }
 
         private string m_nodeId = "";
-        [Column("node_id")]
+        [Column("logic_id")]
         public string NodeId_
         {
             get { return m_nodeId; }

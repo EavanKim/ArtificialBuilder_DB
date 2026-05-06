@@ -150,7 +150,7 @@ namespace ArtificialBuilder
         // Node Storage — 1 노드 1 회 실행
         // ============================================================
 
-        /// <summary>노드 실행 결과 추가. resource_id 단일 키만 보관.</summary>
+        /// <summary>로직 실행 결과 추가. resource_id 단일 키만 보관.</summary>
         public async Task<long> AddNodeAsync(long _contextId, string _nodeId, int _emissionOrder, long? _resourceId, string? _metaJson)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Node_Response>(
@@ -165,8 +165,8 @@ namespace ArtificialBuilder
             return resp.Success ? resp.Id : 0;
         }
 
-        /// <summary>context 의 모든 노드 실행 row 조회 (emission_order 정렬).</summary>
-        public async Task<List<AB_Node_Storage_Model>> GetNodesByContextAsync(long _contextId)
+        /// <summary>context 의 모든 로직 실행 row 조회 (emission_order 정렬).</summary>
+        public async Task<List<AB_Logic_Storage_Model>> GetNodesByContextAsync(long _contextId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Nodes_By_Context_Response>(
                 new AB_Get_Nodes_By_Context_Request { ContextId = _contextId }, DefaultTimeout);

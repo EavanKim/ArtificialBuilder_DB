@@ -60,8 +60,8 @@ namespace ArtificialBuilder
         }
 
         /// <summary>Node Storage — 1 노드 1 회 실행 + resource 키만 (4 계층 저장소의 4 번).</summary>
-        private DbSet<AB_Node_Storage_Model> m_nodeStorage = null!;
-        public DbSet<AB_Node_Storage_Model> NodeStorage
+        private DbSet<AB_Logic_Storage_Model> m_nodeStorage = null!;
+        public DbSet<AB_Logic_Storage_Model> NodeStorage
         {
             get { return m_nodeStorage; }
             set { m_nodeStorage = value; }
@@ -104,9 +104,9 @@ namespace ArtificialBuilder
             _modelBuilder.Entity<AB_Context_Storage_Model>()
                 .HasIndex(_c => _c.TurnId_);
 
-            _modelBuilder.Entity<AB_Node_Storage_Model>()
+            _modelBuilder.Entity<AB_Logic_Storage_Model>()
                 .HasIndex(_n => _n.ContextId_);
-            _modelBuilder.Entity<AB_Node_Storage_Model>()
+            _modelBuilder.Entity<AB_Logic_Storage_Model>()
                 .HasIndex(_n => new { _n.ContextId_, _n.NodeId_, _n.EmissionOrder_ })
                 .IsUnique();
         }

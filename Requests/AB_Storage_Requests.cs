@@ -189,7 +189,7 @@ namespace ArtificialBuilder.Requests
     // Node Storage — 1 노드 1 회 실행
     // ============================================================
 
-    /// <summary>노드 실행 결과 추가. resource_id 단일 키만 보관.</summary>
+    /// <summary>로직 실행 결과 추가. resource_id 단일 키만 보관.</summary>
     public class AB_Add_Node_Request : AB_Message
     {
         public long ContextId;
@@ -208,7 +208,7 @@ namespace ArtificialBuilder.Requests
         public AB_Add_Node_Response() { Topic = AB_Storage_Topics.Storage; IsResponse = true; }
     }
 
-    /// <summary>context 의 모든 노드 실행 row 조회 (emission_order 정렬).</summary>
+    /// <summary>context 의 모든 로직 실행 row 조회 (emission_order 정렬).</summary>
     public class AB_Get_Nodes_By_Context_Request : AB_Message
     {
         public long ContextId;
@@ -217,7 +217,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Get_Nodes_By_Context_Response : AB_Message
     {
-        public List<AB_Node_Storage_Model> Data = new();
+        public List<AB_Logic_Storage_Model> Data = new();
         public AB_Get_Nodes_By_Context_Response() { Topic = AB_Storage_Topics.Storage; IsResponse = true; }
     }
 

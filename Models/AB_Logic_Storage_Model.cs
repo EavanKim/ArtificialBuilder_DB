@@ -16,10 +16,10 @@ namespace ArtificialBuilder.Models
     /// - emission_order 는 같은 (context, node) 안의 발행 순서 컬럼
     /// - 페이로드 inline 금지 — resource_id 로만 가리킴
     /// </summary>
-    [Table("node_storage")]
-    public class AB_Node_Storage_Model
+    [Table("logic_storage")]
+    public class AB_Logic_Storage_Model
     {
-        /// <summary>노드 실행 row 단일 PK.</summary>
+        /// <summary>로직 실행 row 단일 PK.</summary>
         private long m_id_;
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -42,7 +42,7 @@ namespace ArtificialBuilder.Models
         /// <summary>그래프 노드 식별자 (UI 노드 그래프의 논리 ID 문자열). DB row FK 아님.</summary>
         private string m_nodeId_ = "";
         [Required]
-        [Column("node_id")]
+        [Column("logic_id")]
         public string NodeId_
         {
             get { return m_nodeId_; }

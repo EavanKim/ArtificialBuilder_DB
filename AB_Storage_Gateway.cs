@@ -293,7 +293,7 @@ namespace ArtificialBuilder
                         if (handle != 0)
                         {
                             // 노드 cascade 제거
-                            var nodes = await m_engine.FindAsync<AB_Node_Storage_Model>(handle, _n => _n.ContextId_ == req.Id);
+                            var nodes = await m_engine.FindAsync<AB_Logic_Storage_Model>(handle, _n => _n.ContextId_ == req.Id);
                             foreach (var n in nodes)
                                 m_engine.Remove(handle, n);
                             var found = await m_engine.FindAsync<AB_Context_Storage_Model>(handle, _c => _c.Id_ == req.Id);
@@ -316,7 +316,7 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (handle != 0)
                         {
-                            AB_Node_Storage_Model row = new()
+                            AB_Logic_Storage_Model row = new()
                             {
                                 ContextId_ = req.ContextId,
                                 NodeId_ = req.NodeId,
@@ -336,10 +336,10 @@ namespace ArtificialBuilder
                     }
                     case AB_Get_Nodes_By_Context_Request req:
                     {
-                        List<AB_Node_Storage_Model> data = new();
+                        List<AB_Logic_Storage_Model> data = new();
                         if (handle != 0)
                         {
-                            var all = await m_engine.FindAsync<AB_Node_Storage_Model>(handle, _n => _n.ContextId_ == req.ContextId && !_n.IsDeleted_);
+                            var all = await m_engine.FindAsync<AB_Logic_Storage_Model>(handle, _n => _n.ContextId_ == req.ContextId && !_n.IsDeleted_);
                             data = all.OrderBy(_n => _n.EmissionOrder_).ToList();
                         }
                         m_broker?.Publish(new AB_Get_Nodes_By_Context_Response
@@ -353,7 +353,7 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (handle != 0)
                         {
-                            var found = await m_engine.FindAsync<AB_Node_Storage_Model>(handle, _n => _n.Id_ == req.Id);
+                            var found = await m_engine.FindAsync<AB_Logic_Storage_Model>(handle, _n => _n.Id_ == req.Id);
                             var target = found.FirstOrDefault();
                             if (target != null)
                             {
@@ -399,7 +399,7 @@ namespace ArtificialBuilder
                                         ctx.IsDeleted_ = true;
                                         m_engine.Update(handle, ctx);
                                     }
-                                    var nodes = (await m_engine.FindAsync<AB_Node_Storage_Model>(handle, _n => _n.ContextId_ == req.TargetId && !_n.IsDeleted_)).ToList();
+                                    var nodes = (await m_engine.FindAsync<AB_Logic_Storage_Model>(handle, _n => _n.ContextId_ == req.TargetId && !_n.IsDeleted_)).ToList();
                                     foreach (var n in nodes)
                                     {
                                         n.IsDeleted_ = true;
@@ -425,7 +425,7 @@ namespace ArtificialBuilder
                                     }
                                     if (ctxIds.Count > 0)
                                     {
-                                        var nodes = (await m_engine.FindAsync<AB_Node_Storage_Model>(handle, _n => ctxIds.Contains(_n.ContextId_) && !_n.IsDeleted_)).ToList();
+                                        var nodes = (await m_engine.FindAsync<AB_Logic_Storage_Model>(handle, _n => ctxIds.Contains(_n.ContextId_) && !_n.IsDeleted_)).ToList();
                                         foreach (var n in nodes)
                                         {
                                             n.IsDeleted_ = true;
@@ -467,7 +467,7 @@ namespace ArtificialBuilder
                                 {
                                     // 마킹된 노드 batch 처리. node 는 inbound ref 없음 → 항상 DELETE.
                                     // resource 는 leaf — live ref 있으면 leave alone, 없으면 DELETE.
-                                    var nodes = (await m_engine.FindAsync<AB_Node_Storage_Model>(handle,
+                                    var nodes = (await m_engine.FindAsync<AB_Logic_Storage_Model>(handle,
                                         _n => _n.ContextId_ == pending.TargetId_ && _n.IsDeleted_))
                                         .Take(8).ToList();
                                     if (nodes.Count > 0)
@@ -479,7 +479,7 @@ namespace ArtificialBuilder
                                             {
                                                 long rid = n.ResourceId_.Value;
                                                 // live ref count — !IsDeleted_ 만. 마킹된 자손은 자동 제외 (drift 없는 live count).
-                                                int liveNodeRefs = (await m_engine.FindAsync<AB_Node_Storage_Model>(handle,
+                                                int liveNodeRefs = (await m_engine.FindAsync<AB_Logic_Storage_Model>(handle,
                                                     _x => _x.ResourceId_ == rid && _x.Id_ != n.Id_ && !_x.IsDeleted_)).Count();
                                                 int liveSlotRefs = (await m_engine.FindAsync<AB_Session_Storage_Model>(handle,
                                                     _s => _s.InputResourceId_ == rid && !_s.IsDeleted_)).Count();
@@ -536,7 +536,7 @@ namespace ArtificialBuilder
                                         foreach (var c in markedCtxs)
                                         {
                                             if (sw.ElapsedTicks > budgetTicks) break;
-                                            var ctxNodes = (await m_engine.FindAsync<AB_Node_Storage_Model>(handle,
+                                            var ctxNodes = (await m_engine.FindAsync<AB_Logic_Storage_Model>(handle,
                                                 _n => _n.ContextId_ == c.Id_ && _n.IsDeleted_))
                                                 .Take(8).ToList();
                                             if (ctxNodes.Count > 0)
@@ -547,7 +547,7 @@ namespace ArtificialBuilder
                                                     if (n.ResourceId_.HasValue)
                                                     {
                                                         long rid = n.ResourceId_.Value;
-                                                        int liveNodeRefs = (await m_engine.FindAsync<AB_Node_Storage_Model>(handle,
+                                                        int liveNodeRefs = (await m_engine.FindAsync<AB_Logic_Storage_Model>(handle,
                                                             _x => _x.ResourceId_ == rid && _x.Id_ != n.Id_ && !_x.IsDeleted_)).Count();
                                                         int liveSlotRefs = (await m_engine.FindAsync<AB_Session_Storage_Model>(handle,
                                                             _s => _s.InputResourceId_ == rid && !_s.IsDeleted_)).Count();
@@ -616,7 +616,7 @@ namespace ArtificialBuilder
                                                 if (slot.InputResourceId_.HasValue)
                                                 {
                                                     long rid = slot.InputResourceId_.Value;
-                                                    int liveNodeRefs = (await m_engine.FindAsync<AB_Node_Storage_Model>(handle,
+                                                    int liveNodeRefs = (await m_engine.FindAsync<AB_Logic_Storage_Model>(handle,
                                                         _x => _x.ResourceId_ == rid && !_x.IsDeleted_)).Count();
                                                     int liveSlotRefs = (await m_engine.FindAsync<AB_Session_Storage_Model>(handle,
                                                         _s => _s.InputResourceId_ == rid && _s.Id_ != slot.Id_ && !_s.IsDeleted_)).Count();
@@ -660,7 +660,7 @@ namespace ArtificialBuilder
                             var slots = (await m_engine.FindAsync<AB_Session_Storage_Model>(handle, _s => _s.SessionId_ == req.SessionId)).ToList();
                             var contexts = (await m_engine.FindAsync<AB_Context_Storage_Model>(handle, _c => _c.SessionId_ == req.SessionId)).ToList();
                             HashSet<long> ctxIds = new(contexts.Select(_c => _c.Id_));
-                            var nodes = (await m_engine.FindAsync<AB_Node_Storage_Model>(handle, _n => ctxIds.Contains(_n.ContextId_))).ToList();
+                            var nodes = (await m_engine.FindAsync<AB_Logic_Storage_Model>(handle, _n => ctxIds.Contains(_n.ContextId_))).ToList();
 
                             // 2) 참조 resource id 수집 — 슬롯의 input + 노드의 output.
                             HashSet<long> resourceIds = new();
@@ -681,7 +681,7 @@ namespace ArtificialBuilder
                             // 4) resource 는 다른 세션 / 슬롯이 참조 중일 수 있으니 검증 후 삭제 — 이번 세션 외 참조 없으면 제거.
                             foreach (long rid in resourceIds)
                             {
-                                bool stillRefdByNode = (await m_engine.FindAsync<AB_Node_Storage_Model>(handle, _n => _n.ResourceId_ == rid)).Any();
+                                bool stillRefdByNode = (await m_engine.FindAsync<AB_Logic_Storage_Model>(handle, _n => _n.ResourceId_ == rid)).Any();
                                 bool stillRefdBySlot = (await m_engine.FindAsync<AB_Session_Storage_Model>(handle, _s => _s.InputResourceId_ == rid)).Any();
                                 if (!stillRefdByNode && !stillRefdBySlot)
                                 {

@@ -322,7 +322,7 @@ namespace ArtificialBuilder.Models
             set { m_pipelineId_ = value; }
         }
 
-        // --- 노드 에디터 레이아웃 (인라인, 하위 호환) ---
+        // --- 로직 에디터 레이아웃 (인라인, 하위 호환) ---
 
         private string? m_nodeLayout_;
         [Column("node_layout")]

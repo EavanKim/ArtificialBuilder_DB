@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ArtificialBuilder.Models
 {
     /// <summary>
-    /// Response UI 의 Window 정의 (Response UI DB per-response-ui SQLite). 노드 에디터의 End 노드 + Response UI 바인딩이 WindowId 로 참조.
+    /// Response UI 의 Window 정의 (Response UI DB per-response-ui SQLite). 로직 에디터의 End 노드 + Response UI 바인딩이 WindowId 로 참조.
     /// 성격/프레임/레이아웃/뎁스는 response_ui_components (AB_Response_Ui_Component_Model) 에 저장.
     /// </summary>
     [Table("response_ui_windows")]
