@@ -97,6 +97,20 @@ namespace ArtificialBuilder
             get { return m_hostedLogics; }
             set { m_hostedLogics = value; }
         }
+        /// <summary>서킷 input 슬롯 (사용자 키보드 입력 진입). v2 2026-05-06 후속 [[circuit-input-slots]].</summary>
+        private DbSet<AB_Circuit_Input_Slot_Model> m_inputSlots = null!;
+        public DbSet<AB_Circuit_Input_Slot_Model> InputSlots
+        {
+            get { return m_inputSlots; }
+            set { m_inputSlots = value; }
+        }
+        /// <summary>서킷 output 슬롯 (화면 출력 emit). v2 2026-05-06 후속 [[circuit-input-slots]].</summary>
+        private DbSet<AB_Circuit_Output_Slot_Model> m_outputSlots = null!;
+        public DbSet<AB_Circuit_Output_Slot_Model> OutputSlots
+        {
+            get { return m_outputSlots; }
+            set { m_outputSlots = value; }
+        }
 
         /// <summary>EF Core 옵션 주입 생성자.</summary>
         public AB_Circuit_Db_Context(DbContextOptions<AB_Circuit_Db_Context> _options)

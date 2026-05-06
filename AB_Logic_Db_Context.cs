@@ -41,6 +41,20 @@ namespace ArtificialBuilder
             get { return m_historyTurns; }
             set { m_historyTurns = value; }
         }
+        /// <summary>로직 내부 그래프 노드 (= AB_Logic_Node_* 인스턴스). v2 2026-05-06 후속 [[logic-internal-graph]].</summary>
+        private DbSet<AB_Logic_Internal_Node_Model> m_internalNodes = null!;
+        public DbSet<AB_Logic_Internal_Node_Model> InternalNodes
+        {
+            get { return m_internalNodes; }
+            set { m_internalNodes = value; }
+        }
+        /// <summary>로직 내부 그래프 connection. v2 2026-05-06 후속 [[logic-internal-graph]].</summary>
+        private DbSet<AB_Logic_Internal_Connection_Model> m_internalConnections = null!;
+        public DbSet<AB_Logic_Internal_Connection_Model> InternalConnections
+        {
+            get { return m_internalConnections; }
+            set { m_internalConnections = value; }
+        }
 
         /// <summary>EF Core 옵션 주입 생성자.</summary>
         public AB_Logic_Db_Context(DbContextOptions<AB_Logic_Db_Context> _options)
@@ -67,6 +81,9 @@ namespace ArtificialBuilder
             _modelBuilder.Entity<AB_Logic_History_Turn_Model>()
                 .HasIndex(_m => _m.TurnId_)
                 .IsUnique();
+
+            _modelBuilder.Entity<AB_Logic_Internal_Connection_Model>()
+                .HasIndex(_m => new { _m.FromNodeId_, _m.ToNodeId_ });
         }
     }
 }
