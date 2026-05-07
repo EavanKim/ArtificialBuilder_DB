@@ -222,6 +222,13 @@ namespace ArtificialBuilder
             return resp.Success;
         }
 
+        public async Task<bool> SaveInternalNodeAsync(AB_Logic_Internal_Node_Model _item)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Save_Logic_Internal_Node_Response>(
+                new AB_Save_Logic_Internal_Node_Request { Item = _item }, DefaultTimeout);
+            return resp.Success;
+        }
+
         public async Task<List<AB_Logic_Internal_Connection_Model>> GetAllInternalConnectionsAsync()
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Logic_Internal_Connections_Response>(

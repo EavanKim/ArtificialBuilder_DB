@@ -391,4 +391,19 @@ namespace ArtificialBuilder.Requests
         public string? Error;
         public AB_Open_Logic_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
     }
+
+    /// <summary>로직 내부 노드 갱신 요청 (캔버스 위치 / properties_json 저장).</summary>
+    public class AB_Save_Logic_Internal_Node_Request : AB_Message
+    {
+        public AB_Logic_Internal_Node_Model Item = new();
+        public AB_Save_Logic_Internal_Node_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+
+    /// <summary>로직 내부 노드 갱신 응답.</summary>
+    public class AB_Save_Logic_Internal_Node_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Save_Logic_Internal_Node_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
 }

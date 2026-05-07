@@ -369,6 +369,19 @@ namespace ArtificialBuilder
                         { CorrelationId = req.CorrelationId, Success = ok });
                         break;
                     }
+                    case AB_Save_Logic_Internal_Node_Request req:
+                    {
+                        bool ok = false;
+                        if (dbId != 0)
+                        {
+                            AB_Board.Db.Update(dbId, req.Item);
+                            await AB_Board.Db.SaveChangesAsync(dbId);
+                            ok = true;
+                        }
+                        m_broker?.Publish(new AB_Save_Logic_Internal_Node_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
                     case AB_Get_All_Logic_Internal_Connections_Request req:
                     {
                         List<AB_Logic_Internal_Connection_Model> data = new();
