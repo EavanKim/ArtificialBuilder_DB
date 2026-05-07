@@ -31,13 +31,31 @@ namespace ArtificialBuilder
         private IAB_Message_Broker GetBroker()
             => ArtificialBuilder_EDP.Core.AB_Engine.Get<AB_In_Memory_Broker>();
 
+        // --- 로직 라이브러리 (main-tabs-and-package-system sub 2) ---
+
+        public async Task<string?> CreateLogicAsync(string? _name = null, string? _uuid = null)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Create_Logic_Response>(
+                new AB_Create_Logic_Request { Uuid = _uuid, Name = _name }, DefaultTimeout);
+            return resp.Uuid;
+        }
+
+        public async Task<bool> DeleteLogicAsync(string _uuid)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Logic_Response>(
+                new AB_Delete_Logic_Request { Uuid = _uuid }, DefaultTimeout);
+            return resp.Success;
+        }
+
+        public async Task<List<AB_Logic_Library_Item>> GetLogicLibraryInfoAsync()
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Logic_Library_Info_Response>(
+                new AB_Get_Logic_Library_Info_Request(), DefaultTimeout);
+            return resp.Data ?? new();
+        }
+
         // --- Meta ---
 
-        // TODO(main-tabs-and-package-system sub 2): 로직 라이브러리 진입점 신설.
-        // CreateLogicAsync(name?) → 신규 UUID + 빈 .alogic 파일 + 메타 저장 → UUID 반환.
-        // DeleteLogicAsync(uuid) → .alogic 파일 안전 삭제 (활성 open 차단 + 사용 중 서킷 ref 검사).
-        // GetLogicLibraryInfoAsync() → List<(string Uuid, string Name, DateTime UpdatedAt)>.
-        // plans/doing/main-tabs-and-package-system/sub-2-logic-library-screen.md
         public async Task<AB_Logic_Meta_Model?> GetMetaAsync()
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Logic_Meta_Response>(

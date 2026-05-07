@@ -47,11 +47,6 @@ namespace ArtificialBuilder
             catch { }
         }
 
-        // TODO(main-tabs-and-package-system sub 2): 로직 라이브러리 Gateway case 추가.
-        // AB_Create_Logic_Request → AB_Logic_Db.CreateLogicFile(uuid, name) + Response(uuid).
-        // AB_Delete_Logic_Request → AB_Logic_Db.DeleteLogicFile(uuid) + Response(success).
-        // AB_Get_Logic_Library_Info_Request → 디렉터리 scan + 각 UUID 의 meta name 추출 + Response.
-        // plans/doing/main-tabs-and-package-system/sub-2-logic-library-screen.md
         private async void HandleMessage(AB_Message _msg)
         {
             if (_msg.IsResponse) return;
@@ -62,6 +57,28 @@ namespace ArtificialBuilder
 
                 switch (_msg)
                 {
+                    // --- 로직 라이브러리 (main-tabs-and-package-system sub 2) — 디렉터리 단위, dbId 무관 ---
+                    case AB_Create_Logic_Request req:
+                    {
+                        string? newUuid = await AB_Board.Logic.CreateLogicFileAsync(req.Uuid, req.Name);
+                        m_broker?.Publish(new AB_Create_Logic_Response
+                        { CorrelationId = req.CorrelationId, Uuid = newUuid });
+                        break;
+                    }
+                    case AB_Delete_Logic_Request req:
+                    {
+                        bool ok = AB_Board.Logic.DeleteLogicFile(req.Uuid);
+                        m_broker?.Publish(new AB_Delete_Logic_Response
+                        { CorrelationId = req.CorrelationId, Success = ok });
+                        break;
+                    }
+                    case AB_Get_Logic_Library_Info_Request req:
+                    {
+                        List<AB_Logic_Library_Item> data = await AB_Board.Logic.GetLogicLibraryInfoAsync();
+                        m_broker?.Publish(new AB_Get_Logic_Library_Info_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
                     case AB_Get_Logic_Meta_Request req:
                     {
                         AB_Logic_Meta_Model? data = dbId == 0

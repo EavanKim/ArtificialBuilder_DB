@@ -29,11 +29,6 @@ namespace ArtificialBuilder
 
         // --- 파일시스템 ---
 
-        // TODO(main-tabs-and-package-system sub 2): 로직 라이브러리 — CreateLogicFile / DeleteLogicFile 신설.
-        // CreateLogicFile = UUID 생성 + 빈 .alogic 파일 (EF Core schema apply 포함).
-        // DeleteLogicFile = .alogic + .alogic-shm 등 일괄 안전 삭제 (활성 open 시 차단).
-        // GetLogicLibraryInfoAsync (Db_Proxy 측) = UUID + meta name 동반 list.
-        // plans/doing/main-tabs-and-package-system/sub-2-logic-library-screen.md
         /// <summary>logic 디렉터리의 Logic UUID 목록.</summary>
         public List<string> GetLogicUuids()
         {
@@ -50,6 +45,107 @@ namespace ArtificialBuilder
             }
             uuids.Sort(StringComparer.Ordinal);
             return uuids;
+        }
+
+        /// <summary>신규 Logic 파일 생성. UUID 미지정 시 새 UUID 생성. 동일 UUID 가 이미 있으면 false.</summary>
+        public async Task<string?> CreateLogicFileAsync(string? _uuid = null, string? _name = null)
+        {
+            string uuid = string.IsNullOrEmpty(_uuid) ? Guid.NewGuid().ToString("N") : _uuid;
+            string safeUuid = Path.GetFileNameWithoutExtension(uuid);
+            if (string.IsNullOrEmpty(safeUuid) || safeUuid != uuid || safeUuid.Contains("..") || safeUuid.Contains('/') || safeUuid.Contains('\\'))
+            {
+                AB_Log.Warn("LogicDb", $"CreateLogicFile — invalid uuid: {_uuid}");
+                return null;
+            }
+            Directory.CreateDirectory(LOGIC_DIR);
+            string dbPath = Path.Combine(LOGIC_DIR, $"{safeUuid}{LOGIC_EXTENSION}");
+            if (File.Exists(dbPath))
+            {
+                AB_Log.Warn("LogicDb", $"CreateLogicFile — already exists: {dbPath}");
+                return null;
+            }
+            int handle = m_engine.OpenDatabase<AB_Logic_Db_Context>(
+                dbPath, _options => new AB_Logic_Db_Context(_options));
+            try
+            {
+                AB_Logic_Meta_Model meta = new()
+                {
+                    Id_ = "meta",
+                    LogicUuid_ = safeUuid,
+                    DisplayName_ = _name ?? "",
+                };
+                await AB_Board.Db.AddAsync(handle, meta);
+                await AB_Board.Db.SaveChangesAsync(handle);
+            }
+            finally
+            {
+                await m_engine.CloseAsync(handle);
+            }
+            AB_Log.Info("LogicDb", $"CreateLogicFile — uuid={safeUuid} name={_name}");
+            return safeUuid;
+        }
+
+        /// <summary>Logic 파일 삭제. 활성 open 시 차단.</summary>
+        public bool DeleteLogicFile(string _uuid)
+        {
+            string safeUuid = Path.GetFileNameWithoutExtension(_uuid);
+            if (string.IsNullOrEmpty(safeUuid) || safeUuid != _uuid || safeUuid.Contains("..") || safeUuid.Contains('/') || safeUuid.Contains('\\'))
+            {
+                AB_Log.Warn("LogicDb", $"DeleteLogicFile — invalid uuid: {_uuid}");
+                return false;
+            }
+            if (Handle != 0 && string.Equals(ActiveUuid, safeUuid, StringComparison.Ordinal))
+            {
+                AB_Log.Warn("LogicDb", $"DeleteLogicFile — uuid {safeUuid} is active, refusing");
+                return false;
+            }
+            string dbPath = Path.Combine(LOGIC_DIR, $"{safeUuid}{LOGIC_EXTENSION}");
+            if (!File.Exists(dbPath))
+            {
+                AB_Log.Warn("LogicDb", $"DeleteLogicFile — not found: {dbPath}");
+                return false;
+            }
+            File.Delete(dbPath);
+            string shm = dbPath + "-shm";
+            if (File.Exists(shm)) File.Delete(shm);
+            string wal = dbPath + "-wal";
+            if (File.Exists(wal)) File.Delete(wal);
+            AB_Log.Info("LogicDb", $"DeleteLogicFile — uuid={safeUuid}");
+            return true;
+        }
+
+        /// <summary>logic 디렉터리 scan + 각 UUID 의 meta name 동반 list.</summary>
+        public async Task<List<AB_Logic_Library_Item>> GetLogicLibraryInfoAsync()
+        {
+            List<AB_Logic_Library_Item> items = new();
+            List<string> uuids = GetLogicUuids();
+            foreach (string uuid in uuids)
+            {
+                string dbPath = Path.Combine(LOGIC_DIR, $"{uuid}{LOGIC_EXTENSION}");
+                DateTime updatedAt = File.GetLastWriteTimeUtc(dbPath);
+                string name = "";
+                if (Handle != 0 && string.Equals(ActiveUuid, uuid, StringComparison.Ordinal))
+                {
+                    AB_Logic_Meta_Model? meta = await AB_Board.Db.GetByIdAsync<AB_Logic_Meta_Model>(Handle, "meta");
+                    if (meta != null) name = meta.DisplayName_ ?? "";
+                }
+                else
+                {
+                    int h = m_engine.OpenDatabase<AB_Logic_Db_Context>(
+                        dbPath, _options => new AB_Logic_Db_Context(_options));
+                    try
+                    {
+                        AB_Logic_Meta_Model? meta = await AB_Board.Db.GetByIdAsync<AB_Logic_Meta_Model>(h, "meta");
+                        if (meta != null) name = meta.DisplayName_ ?? "";
+                    }
+                    finally
+                    {
+                        await m_engine.CloseAsync(h);
+                    }
+                }
+                items.Add(new AB_Logic_Library_Item { Uuid_ = uuid, Name_ = name, UpdatedAt_ = updatedAt });
+            }
+            return items;
         }
 
         // --- 열기/닫기 ---

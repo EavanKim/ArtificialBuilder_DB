@@ -330,9 +330,50 @@ namespace ArtificialBuilder.Requests
         public AB_Get_All_Logic_Internal_Connections_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
     }
 
-    // TODO(main-tabs-and-package-system sub 2): 로직 라이브러리 Request/Response 3 쌍 신설.
-    // AB_Create_Logic_Request (Name?) → AB_Create_Logic_Response (Uuid)
-    // AB_Delete_Logic_Request (Uuid) → AB_Delete_Logic_Response (Success)
-    // AB_Get_Logic_Library_Info_Request → AB_Get_Logic_Library_Info_Response (List<(Uuid, Name, UpdatedAt)>)
-    // plans/doing/main-tabs-and-package-system/sub-2-logic-library-screen.md
+    // --- 로직 라이브러리 (main-tabs-and-package-system sub 2) ---
+
+    /// <summary>신규 Logic 파일 생성 요청. UUID 미지정 시 새 UUID 생성.</summary>
+    public class AB_Create_Logic_Request : AB_Message
+    {
+        public string? Uuid;
+        public string? Name;
+        public AB_Create_Logic_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+
+    /// <summary>신규 Logic 파일 생성 응답. 생성 실패 시 Uuid = null.</summary>
+    public class AB_Create_Logic_Response : AB_Message
+    {
+        public string? Uuid;
+        public string? Error;
+        public AB_Create_Logic_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
+
+    /// <summary>Logic 파일 삭제 요청. 활성 open 시 차단.</summary>
+    public class AB_Delete_Logic_Request : AB_Message
+    {
+        public string Uuid = "";
+        public AB_Delete_Logic_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+
+    /// <summary>Logic 파일 삭제 응답.</summary>
+    public class AB_Delete_Logic_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Delete_Logic_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
+
+    /// <summary>로직 라이브러리 list 요청 (UUID + meta 이름 + 갱신 시각 동반).</summary>
+    public class AB_Get_Logic_Library_Info_Request : AB_Message
+    {
+        public AB_Get_Logic_Library_Info_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+
+    /// <summary>로직 라이브러리 list 응답.</summary>
+    public class AB_Get_Logic_Library_Info_Response : AB_Message
+    {
+        public List<AB_Logic_Library_Item> Data = new();
+        public string? Error;
+        public AB_Get_Logic_Library_Info_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
 }
