@@ -63,6 +63,27 @@ namespace ArtificialBuilder.Models
             set { m_externalConnectorIndex_ = value; }
         }
 
+        /// <summary>
+        /// 추상 input port schema list (JSON, List&lt;AB_Node_Port_Schema&gt; 직렬화).
+        /// 모델 ≠ 노드 — 노드는 *추상 인터페이스*만 ([[open-key-io]]). 빈 list = port 없음.
+        /// </summary>
+        private string? m_inputsJson_ = "[]";
+        [Column("inputs_json")]
+        public string? InputsJson_
+        {
+            get { return m_inputsJson_; }
+            set { m_inputsJson_ = value; }
+        }
+
+        /// <summary>추상 output port schema list (JSON, List&lt;AB_Node_Port_Schema&gt; 직렬화).</summary>
+        private string? m_outputsJson_ = "[]";
+        [Column("outputs_json")]
+        public string? OutputsJson_
+        {
+            get { return m_outputsJson_; }
+            set { m_outputsJson_ = value; }
+        }
+
         private DateTime m_createdAt_ = DateTime.UtcNow;
         [Column("created_at")]
         public DateTime CreatedAt_
