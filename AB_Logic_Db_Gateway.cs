@@ -79,6 +79,24 @@ namespace ArtificialBuilder
                         { CorrelationId = req.CorrelationId, Data = data });
                         break;
                     }
+                    case AB_Open_Logic_Request req:
+                    {
+                        bool ok = false;
+                        string? err = null;
+                        try
+                        {
+                            await AB_Board.Logic.OpenAsync(req.Uuid);
+                            ok = AB_Board.Logic.Handle != 0;
+                        }
+                        catch (Exception ex)
+                        {
+                            err = ex.Message;
+                            AB_Log.Warn("LogicGw", $"OpenLogic 실패 — uuid={req.Uuid} {ex.Message}");
+                        }
+                        m_broker?.Publish(new AB_Open_Logic_Response
+                        { CorrelationId = req.CorrelationId, Success = ok, Error = err });
+                        break;
+                    }
                     case AB_Get_Logic_Meta_Request req:
                     {
                         AB_Logic_Meta_Model? data = dbId == 0

@@ -376,4 +376,19 @@ namespace ArtificialBuilder.Requests
         public string? Error;
         public AB_Get_Logic_Library_Info_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
     }
+
+    /// <summary>Logic open 요청 (UI 가 ack 받기 위해). DDO LOGIC_DB_OPEN 의 Request/Response 변형.</summary>
+    public class AB_Open_Logic_Request : AB_Message
+    {
+        public string Uuid = "";
+        public AB_Open_Logic_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
+    }
+
+    /// <summary>Logic open 응답.</summary>
+    public class AB_Open_Logic_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Open_Logic_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
+    }
 }

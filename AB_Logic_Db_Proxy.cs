@@ -54,6 +54,13 @@ namespace ArtificialBuilder
             return resp.Data ?? new();
         }
 
+        public async Task<bool> OpenLogicAsync(string _uuid)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Open_Logic_Response>(
+                new AB_Open_Logic_Request { Uuid = _uuid }, DefaultTimeout);
+            return resp.Success;
+        }
+
         // --- Meta ---
 
         public async Task<AB_Logic_Meta_Model?> GetMetaAsync()
