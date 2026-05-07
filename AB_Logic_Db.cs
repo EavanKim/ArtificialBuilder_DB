@@ -29,6 +29,11 @@ namespace ArtificialBuilder
 
         // --- 파일시스템 ---
 
+        // TODO(main-tabs-and-package-system sub 2): 로직 라이브러리 — CreateLogicFile / DeleteLogicFile 신설.
+        // CreateLogicFile = UUID 생성 + 빈 .alogic 파일 (EF Core schema apply 포함).
+        // DeleteLogicFile = .alogic + .alogic-shm 등 일괄 안전 삭제 (활성 open 시 차단).
+        // GetLogicLibraryInfoAsync (Db_Proxy 측) = UUID + meta name 동반 list.
+        // plans/doing/main-tabs-and-package-system/sub-2-logic-library-screen.md
         /// <summary>logic 디렉터리의 Logic UUID 목록.</summary>
         public List<string> GetLogicUuids()
         {

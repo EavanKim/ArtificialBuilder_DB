@@ -329,4 +329,10 @@ namespace ArtificialBuilder.Requests
         public string? Error;
         public AB_Get_All_Logic_Internal_Connections_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
     }
+
+    // TODO(main-tabs-and-package-system sub 2): 로직 라이브러리 Request/Response 3 쌍 신설.
+    // AB_Create_Logic_Request (Name?) → AB_Create_Logic_Response (Uuid)
+    // AB_Delete_Logic_Request (Uuid) → AB_Delete_Logic_Response (Success)
+    // AB_Get_Logic_Library_Info_Request → AB_Get_Logic_Library_Info_Response (List<(Uuid, Name, UpdatedAt)>)
+    // plans/doing/main-tabs-and-package-system/sub-2-logic-library-screen.md
 }

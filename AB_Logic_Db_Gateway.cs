@@ -47,6 +47,11 @@ namespace ArtificialBuilder
             catch { }
         }
 
+        // TODO(main-tabs-and-package-system sub 2): 로직 라이브러리 Gateway case 추가.
+        // AB_Create_Logic_Request → AB_Logic_Db.CreateLogicFile(uuid, name) + Response(uuid).
+        // AB_Delete_Logic_Request → AB_Logic_Db.DeleteLogicFile(uuid) + Response(success).
+        // AB_Get_Logic_Library_Info_Request → 디렉터리 scan + 각 UUID 의 meta name 추출 + Response.
+        // plans/doing/main-tabs-and-package-system/sub-2-logic-library-screen.md
         private async void HandleMessage(AB_Message _msg)
         {
             if (_msg.IsResponse) return;

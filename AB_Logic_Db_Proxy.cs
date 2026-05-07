@@ -33,6 +33,11 @@ namespace ArtificialBuilder
 
         // --- Meta ---
 
+        // TODO(main-tabs-and-package-system sub 2): 로직 라이브러리 진입점 신설.
+        // CreateLogicAsync(name?) → 신규 UUID + 빈 .alogic 파일 + 메타 저장 → UUID 반환.
+        // DeleteLogicAsync(uuid) → .alogic 파일 안전 삭제 (활성 open 차단 + 사용 중 서킷 ref 검사).
+        // GetLogicLibraryInfoAsync() → List<(string Uuid, string Name, DateTime UpdatedAt)>.
+        // plans/doing/main-tabs-and-package-system/sub-2-logic-library-screen.md
         public async Task<AB_Logic_Meta_Model?> GetMetaAsync()
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Logic_Meta_Response>(

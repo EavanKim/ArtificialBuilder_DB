@@ -35,7 +35,11 @@ namespace ArtificialBuilder.Models
         [Column("data_key")]
         public string DataKey_ { get { return m_dataKey_; } set { m_dataKey_ = value; } }
 
-        /// <summary>description — 데이터 종류 식별자 (enum-like string, 예: "Text" / "Image" / "VectorStore").</summary>
+        // TODO(main-tabs-and-package-system sub 7): open key 처리 모델 — description 자유 string (enum 강제 X).
+        // 데이터 종류 한정 X — 사용자 정본 ([[open-key-io]]).
+        // 받는 쪽 (인터프리터) 이 description 보고 처리 가능 여부 판단 → 가능 = 처리, 불가능 = AB_Log.Warn 로깅 (예외 X).
+        // plans/doing/main-tabs-and-package-system/sub-7-open-key-io.md
+        /// <summary>description — 데이터 종류 식별자 (자유 string, enum 강제 X). 받는 쪽이 처리 가능 여부 판단.</summary>
         private string m_descKind_ = "";
         [Column("desc_kind")]
         public string DescKind_ { get { return m_descKind_; } set { m_descKind_ = value; } }
