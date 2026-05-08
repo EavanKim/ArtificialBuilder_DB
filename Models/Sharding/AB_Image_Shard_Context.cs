@@ -12,11 +12,12 @@ namespace ArtificialBuilder.Sharding
 
         protected override void OnModelCreating(ModelBuilder _builder)
         {
-            _builder.Entity<AB_Saved_Image_Model>(e =>
+            void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<AB_Saved_Image_Model> _e)
             {
-                e.ToTable("saved_images");
-                e.HasKey(m => m.Id_);
-            });
+                _e.ToTable("saved_images");
+                _e.HasKey(m => m.Id_);
+            }
+            _builder.Entity<AB_Saved_Image_Model>(Configure);
         }
     }
 }
