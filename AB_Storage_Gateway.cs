@@ -179,8 +179,17 @@ namespace ArtificialBuilder
                         {
                             var all = await m_engine.FindAsync<AB_Session_Storage_Model>(handle, _s => _s.SessionId_ == req.SessionId && !_s.IsDeleted_);
                             // head 부터 next_id 따라가며 정렬 (마킹된 슬롯은 이미 제외)
-                            var byId = all.ToDictionary(_s => _s.Id_);
-                            var head = all.FirstOrDefault(_s => _s.PrevId_ == null || (_s.PrevId_.HasValue && !byId.ContainsKey(_s.PrevId_.Value)));
+                            Dictionary<long, AB_Session_Storage_Model> byId = new();
+                            foreach (AB_Session_Storage_Model s in all) byId[s.Id_] = s;
+                            AB_Session_Storage_Model? head = null;
+                            foreach (AB_Session_Storage_Model s in all)
+                            {
+                                if (s.PrevId_ == null || (s.PrevId_.HasValue && !byId.ContainsKey(s.PrevId_.Value)))
+                                {
+                                    head = s;
+                                    break;
+                                }
+                            }
                             while (head != null)
                             {
                                 data.Add(head);
@@ -281,7 +290,9 @@ namespace ArtificialBuilder
                         if (handle != 0)
                         {
                             var all = await m_engine.FindAsync<AB_Context_Storage_Model>(handle, _c => _c.TurnId_ == req.TurnId && !_c.IsDeleted_);
-                            data = all.OrderBy(_c => _c.CreatedAt_).ToList();
+                            int CompareCreated(AB_Context_Storage_Model _a, AB_Context_Storage_Model _b) => _a.CreatedAt_.CompareTo(_b.CreatedAt_);
+                            data = new List<AB_Context_Storage_Model>(all);
+                            data.Sort(CompareCreated);
                         }
                         m_broker?.Publish(new AB_Get_Contexts_By_Turn_Response
                         { CorrelationId = req.CorrelationId, Data = data });
@@ -340,7 +351,9 @@ namespace ArtificialBuilder
                         if (handle != 0)
                         {
                             var all = await m_engine.FindAsync<AB_Logic_Storage_Model>(handle, _n => _n.ContextId_ == req.ContextId && !_n.IsDeleted_);
-                            data = all.OrderBy(_n => _n.EmissionOrder_).ToList();
+                            int CompareEmission(AB_Logic_Storage_Model _a, AB_Logic_Storage_Model _b) => _a.EmissionOrder_.CompareTo(_b.EmissionOrder_);
+                            data = new List<AB_Logic_Storage_Model>(all);
+                            data.Sort(CompareEmission);
                         }
                         m_broker?.Publish(new AB_Get_Nodes_By_Context_Response
                         { CorrelationId = req.CorrelationId, Data = data });
@@ -453,9 +466,9 @@ namespace ArtificialBuilder
                         {
                             var sw = Stopwatch.StartNew();
                             long budgetTicks = (req.BudgetMicros * Stopwatch.Frequency) / 1_000_000L;
-                            var pendingAll = (await m_engine.FindAsync<AB_Pending_Deletion_Storage_Model>(handle, _p => true))
-                                .OrderBy(_p => _p.EnqueuedAt_)
-                                .ToList();
+                            int CompareEnqueued(AB_Pending_Deletion_Storage_Model _a, AB_Pending_Deletion_Storage_Model _b) => _a.EnqueuedAt_.CompareTo(_b.EnqueuedAt_);
+                            List<AB_Pending_Deletion_Storage_Model> pendingAll = new(await m_engine.FindAsync<AB_Pending_Deletion_Storage_Model>(handle, _p => true));
+                            pendingAll.Sort(CompareEnqueued);
                             if (pendingAll.Count == 0) drained = true;
                             else drained = false;
 
@@ -659,7 +672,8 @@ namespace ArtificialBuilder
                             // 1) 세션의 슬롯 / 컨텍스트 / 노드 수집.
                             var slots = (await m_engine.FindAsync<AB_Session_Storage_Model>(handle, _s => _s.SessionId_ == req.SessionId)).ToList();
                             var contexts = (await m_engine.FindAsync<AB_Context_Storage_Model>(handle, _c => _c.SessionId_ == req.SessionId)).ToList();
-                            HashSet<long> ctxIds = new(contexts.Select(_c => _c.Id_));
+                            HashSet<long> ctxIds = new();
+                            foreach (AB_Context_Storage_Model c in contexts) ctxIds.Add(c.Id_);
                             var nodes = (await m_engine.FindAsync<AB_Logic_Storage_Model>(handle, _n => ctxIds.Contains(_n.ContextId_))).ToList();
 
                             // 2) 참조 resource id 수집 — 슬롯의 input + 노드의 output.

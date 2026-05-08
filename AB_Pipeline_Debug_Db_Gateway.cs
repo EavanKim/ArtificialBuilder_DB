@@ -111,7 +111,8 @@ namespace ArtificialBuilder
                                     _e => _e.SessionId_ == req.SessionId);
 
                             var sorted = new List<AB_Pipeline_Debug_Entry_Model>(all);
-                            sorted.Sort((_a, _b) => _b.TimestampUtc_.CompareTo(_a.TimestampUtc_));
+                            int CompareDesc(AB_Pipeline_Debug_Entry_Model _a, AB_Pipeline_Debug_Entry_Model _b) => _b.TimestampUtc_.CompareTo(_a.TimestampUtc_);
+                            sorted.Sort(CompareDesc);
 
                             int skip = Math.Min(req.Offset, sorted.Count);
                             int take = Math.Min(req.Limit, sorted.Count - skip);
