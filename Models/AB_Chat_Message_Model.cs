@@ -5,7 +5,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>
     /// 채팅 메시지 DTO. chat_messages 테이블은 폐기됐고, 이 타입은 순수 POCO 로
-    /// `AB_Chat.GetMessagesAsync` view 가 context_records 에서 합성해 반환하는 용도.
+    /// `AB_Runtime.GetMessagesAsync` view 가 context_records 에서 합성해 반환하는 용도.
     /// </summary>
     public class AB_Chat_Message_Model
     {

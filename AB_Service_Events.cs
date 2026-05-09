@@ -50,7 +50,7 @@ namespace ArtificialBuilder
         public string SessionId_;
     }
 
-    /// <summary>채팅 메시지 수신 이벤트 (현재 미사용 - AB_Chat 콜백 사용).</summary>
+    /// <summary>채팅 메시지 수신 이벤트 (현재 미사용 - AB_Runtime 콜백 사용).</summary>
     public struct Chat_Message_Received
     {
         /// <summary>수신된 메시지.</summary>
