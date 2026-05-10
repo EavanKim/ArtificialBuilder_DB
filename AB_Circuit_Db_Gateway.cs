@@ -627,7 +627,7 @@ namespace ArtificialBuilder
                         byte[]? data = null;
                         if (dbId != 0)
                         {
-                            var found = await AB_Board.Db.FindAsync<AB_Circuit_Asset_Model>(dbId, _a => _a.Id_ == req.AssetId);
+                            var found = await AB_Board.Db.FindAsync<AB_Circuit_Asset_Model>(dbId, _a => _a.Id_.ToString() == req.AssetId);
                             data = found.FirstOrDefault()?.Data_;
                         }
                         m_broker?.Publish(new AB_Get_Asset_Data_Response

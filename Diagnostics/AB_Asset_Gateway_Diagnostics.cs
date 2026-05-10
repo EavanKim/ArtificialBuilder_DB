@@ -47,7 +47,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
 
                 Step("GetAsset (Id)");
                 var getResp = await broker.PublishAndWaitAsync<AB_Get_Asset_Response>(
-                    new AB_Get_Asset_Request { Id = asset.Id_ }, TimeSpan.FromSeconds(5));
+                    new AB_Get_Asset_Request { Id = asset.Id_.ToString() }, TimeSpan.FromSeconds(5));
                 Log("get.Data?.Name_", getResp.Data?.Name_ ?? "<null>");
                 Assert("결과 존재", getResp.Data != null);
                 Assert("이름 일치", getResp.Data?.Name_ == "test_asset.png");
@@ -55,12 +55,12 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 Step("GetAssetByName");
                 var getNameResp = await broker.PublishAndWaitAsync<AB_Get_Asset_By_Name_Response>(
                     new AB_Get_Asset_By_Name_Request { Name = "test_asset.png" }, TimeSpan.FromSeconds(5));
-                Log("getByName.Id", getNameResp.Data?.Id_ ?? "<null>");
+                Log("getByName.Id", getNameResp.Data?.Id_.ToString() ?? "<null>");
                 Assert("ID 일치", getNameResp.Data?.Id_ == asset.Id_);
 
                 Step("GetAssetData (바이너리)");
                 var dataResp = await broker.PublishAndWaitAsync<AB_Get_Asset_Data_Response>(
-                    new AB_Get_Asset_Data_Request { AssetId = asset.Id_ }, TimeSpan.FromSeconds(5));
+                    new AB_Get_Asset_Data_Request { AssetId = asset.Id_.ToString() }, TimeSpan.FromSeconds(5));
                 Log("data.Length", dataResp.Data?.Length ?? -1);
                 Assert("바이너리 길이 일치", dataResp.Data?.Length == bytes.Length);
                 bool match = dataResp.Data != null && dataResp.Data[0] == 0xDE && dataResp.Data[3] == 0xEF;

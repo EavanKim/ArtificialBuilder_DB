@@ -4,14 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ArtificialBuilder.Models
 {
-    /// <summary>Circuit 단일 설정 (시스템 프롬프트/모델/외형/파이프라인 등).</summary>
+    /// <summary>Circuit 단일 설정 (시스템 프롬프트/모델/외형/파이프라인 등). singleton (PK fixed = 1). (example-mental-restructure Phase B Sub 4 Circuit 8/8) — string PK → long PK.</summary>
     [Table("circuit_settings")]
     public class AB_Circuit_Settings_Model
     {
-        private string m_id_ = "settings";
+        private long m_id_ = 1;
         [Key]
         [Column("id")]
-        public string Id_
+        public long Id_
         {
             get { return m_id_; }
             set { m_id_ = value; }
