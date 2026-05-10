@@ -11,10 +11,10 @@ namespace ArtificialBuilder.Models
     [Table("pipelines")]
     public class AB_Pipeline_Model
     {
-        private string m_id_ = Guid.NewGuid().ToString();
+        private long m_id_ = ArtificialBuilder.AB_Id_Issuer.Issue();
         [Key]
         [Column("id")]
-        public string Id_
+        public long Id_
         {
             get { return m_id_; }
             set { m_id_ = value; }

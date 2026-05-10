@@ -49,13 +49,13 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
 
                 Step("SetActive(t2)");
                 var setResp = await broker.PublishAndWaitAsync<AB_Set_Active_Ui_Template_Response>(
-                    new AB_Set_Active_Ui_Template_Request { TemplateId = t2.Id_ }, TimeSpan.FromSeconds(5));
+                    new AB_Set_Active_Ui_Template_Request { TemplateId = t2.Id_.ToString() }, TimeSpan.FromSeconds(5));
                 Assert("SetActive 성공", setResp.Success, setResp.Error ?? "");
 
                 Step("GetActive == t2");
                 var actResp = await broker.PublishAndWaitAsync<AB_Get_Active_Ui_Template_Response>(
                     new AB_Get_Active_Ui_Template_Request(), TimeSpan.FromSeconds(5));
-                Log("active.Id", actResp.Data?.Id_ ?? "(null)");
+                Log("active.Id", actResp.Data?.Id_.ToString() ?? "(null)");
                 Assert("활성 t2", actResp.Data != null && actResp.Data.Id_ == t2.Id_);
 
                 Step("Delete t1");

@@ -68,7 +68,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
 
                 Step("AddDataCategory");
                 var cat = new AB_Data_Category_Model { Name_ = "test_cat" };
-                catId = cat.Id_;
+                catId = cat.Id_.ToString();
                 var addCatResp = await broker.PublishAndWaitAsync<AB_Add_Data_Category_Response>(
                     new AB_Add_Data_Category_Request { Category = cat }, TimeSpan.FromSeconds(5));
                 Assert("AddCategory 성공", addCatResp.Success, addCatResp.Error ?? "");

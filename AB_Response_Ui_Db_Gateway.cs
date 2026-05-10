@@ -441,7 +441,7 @@ namespace ArtificialBuilder
             var all = await AB_Board.Db.GetAllAsync<AB_Response_Ui_Template_Model>(dbId);
             foreach (AB_Response_Ui_Template_Model t in all)
             {
-                t.IsActive_ = (t.Id_ == _templateId);
+                t.IsActive_ = (t.Id_.ToString() == _templateId);
                 AB_Board.Db.Update(dbId, t);
             }
             await AB_Board.Db.SaveChangesAsync(dbId);
