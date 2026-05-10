@@ -88,7 +88,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
 
                 Step("GetCharacter (Id)");
                 var get = await broker.PublishAndWaitAsync<AB_Get_Character_Response>(
-                    new AB_Get_Character_Request { Id = ch.Id_ }, TimeSpan.FromSeconds(5));
+                    new AB_Get_Character_Request { Id = ch.Id_.ToString() }, TimeSpan.FromSeconds(5));
                 Log("get.Name_", get.Data?.Name_ ?? "<null>");
                 Log("get.Personality_", get.Data?.Personality_ ?? "<null>");
                 Assert("결과 존재", get.Data != null);
