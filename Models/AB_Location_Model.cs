@@ -1,17 +1,18 @@
+using ArtificialBuilder;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ArtificialBuilder.Models
 {
-    /// <summary>장소 정의 (이름/설명).</summary>
+    /// <summary>장소 정의 (이름/설명). (example-mental-restructure Phase B Sub 4 Persona 7/7) — string PK → long PK.</summary>
     [Table("circuit_locations")]
     public class AB_Location_Model
     {
-        private string m_id_ = Guid.NewGuid().ToString();
+        private long m_id_ = AB_Id_Issuer.Issue();
         [Key]
         [Column("id")]
-        public string Id_
+        public long Id_
         {
             get { return m_id_; }
             set { m_id_ = value; }
