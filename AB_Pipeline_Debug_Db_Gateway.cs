@@ -29,15 +29,15 @@ namespace ArtificialBuilder
         /// </summary>
         public AB_Pipeline_Debug_Db Db => m_db;
 
+        /// <summary>m_db.Initialize + Open 이 1 회만 수행되도록 가드. lazy 초기화 — 첫 message 또는 AB_Board.Bind 시점 이후로 미룸 (OnAttach 시 AB_Board.Db 아직 null).</summary>
+        private bool m_dbInitialized;
+
         /// <inheritdoc/>
         public override void OnAttach()
         {
             try
             {
-                m_db.Initialize(m_engine);
-                // fire-and-forget 으로 기본 파일 열기 — 실패 시 Handle == 0 로 남아 빈 응답을 낸다.
-                _ = m_db.OpenDefaultAsync();
-
+                // m_db.Initialize 는 lazy — OnAttach 시점은 AB_Board.Bind (Program.cs InitializeAll 후반) 이전이라 AB_Board.Db == null. NRE 회피.
                 m_broker = ArtificialBuilder_EDP.Core.AB_Engine.Get<AB_In_Memory_Broker>();
                 m_sub = m_broker.Subscribe(AB_Pipeline_Debug_Db_Topics.PipelineDebug, HandleMessage);
             }
@@ -45,6 +45,20 @@ namespace ArtificialBuilder
             {
                 AB_Log.Error("PipelineDebugGw", $"OnAttach 실패: {ex.Message}");
             }
+        }
+
+        /// <summary>m_db 초기화 + 기본 파일 열기. 첫 message handle 시 lazy 호출. AB_Board.Db 가 비-null 인 시점 보장.</summary>
+        private async Task EnsureDbInitializedAsync()
+        {
+            if (m_dbInitialized) return;
+            if (AB_Board.Db == null)
+            {
+                AB_Log.Warn("PipelineDebugGw", "AB_Board.Db 미 bind — DB 초기화 보류");
+                return;
+            }
+            m_db.Initialize(m_engine);
+            await m_db.OpenDefaultAsync();
+            m_dbInitialized = true;
         }
 
         /// <inheritdoc/>
@@ -72,6 +86,7 @@ namespace ArtificialBuilder
 
             try
             {
+                await EnsureDbInitializedAsync();
                 int handle = Handle;
 
                 switch (_msg)
