@@ -19,11 +19,11 @@ namespace ArtificialBuilder
         public override void OnAttach()
         {
             // --- App DB ---
-            AddObs(AB_DDO_Headers.APP_DB_MODEL_GET_ALL, HandleAppModelGetAll);
-            AddObs(AB_DDO_Headers.APP_DB_MODEL_GET, HandleAppModelGet);
-            AddObs(AB_DDO_Headers.APP_DB_MODEL_ADD, HandleAppModelAdd);
-            AddObs(AB_DDO_Headers.APP_DB_MODEL_SAVE, HandleAppModelSave);
-            AddObs(AB_DDO_Headers.APP_DB_MODEL_DELETE, HandleAppModelDelete);
+            AddObs(AB_DDO_Header_Type.APP_DB_MODEL_GET_ALL, HandleAppModelGetAll);
+            AddObs(AB_DDO_Header_Type.APP_DB_MODEL_GET, HandleAppModelGet);
+            AddObs(AB_DDO_Header_Type.APP_DB_MODEL_ADD, HandleAppModelAdd);
+            AddObs(AB_DDO_Header_Type.APP_DB_MODEL_SAVE, HandleAppModelSave);
+            AddObs(AB_DDO_Header_Type.APP_DB_MODEL_DELETE, HandleAppModelDelete);
 
             // --- Persona DB ---
             AddObs(AB_DDO_Header_Type.PERSONA_DB_LOAD_ACTIVE, HandlePersonaLoadActive);
