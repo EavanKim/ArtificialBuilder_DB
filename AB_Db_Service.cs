@@ -26,7 +26,7 @@ namespace ArtificialBuilder
             AddObs(AB_DDO_Headers.APP_DB_MODEL_DELETE, HandleAppModelDelete);
 
             // --- Persona DB ---
-            AddObs(AB_DDO_Headers.PERSONA_DB_LOAD_ACTIVE, HandlePersonaLoadActive);
+            AddObs(AB_DDO_Header_Type.PERSONA_DB_LOAD_ACTIVE, HandlePersonaLoadActive);
 
             // --- Circuit DB ---
             AddObs(AB_DDO_Headers.CIRCUIT_DB_OPEN, HandleCircuitOpen);
@@ -89,6 +89,10 @@ namespace ArtificialBuilder
             }
             m_observers.Add(obs);
         }
+
+        /// <summary>(example-mental-restructure Phase C Sub 3) — typed enum overload.</summary>
+        private void AddObs(AB_DDO_Header_Type _type, Action<AB_DDO_Command> _handler)
+            => AddObs(AB_DDO_Headers.Get(_type), _handler);
 
         // ================ App DB ================
 
