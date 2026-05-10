@@ -92,9 +92,9 @@ namespace ArtificialBuilder.Models
         }
 
         /// <summary>null=Circuit 템플릿, 값=채팅전용</summary>
-        private string? m_sessionId_;
+        private long? m_sessionId_;
         [Column("session_id")]
-        public string? SessionId_
+        public long? SessionId_
         {
             get { return m_sessionId_; }
             set { m_sessionId_ = value; }

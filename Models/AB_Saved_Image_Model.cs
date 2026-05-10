@@ -97,10 +97,10 @@ namespace ArtificialBuilder.Models
             set { m_useCount_ = value; }
         }
 
-        /// <summary>이 이미지를 원래 저장한 세션 ID (참조용).</summary>
-        private string m_sourceSessionId_ = "";
+        /// <summary>이 이미지를 원래 저장한 세션 ID (참조용). 0L=세션 외부.</summary>
+        private long m_sourceSessionId_;
         [Column("source_session_id")]
-        public string SourceSessionId_
+        public long SourceSessionId_
         {
             get { return m_sourceSessionId_; }
             set { m_sourceSessionId_ = value; }

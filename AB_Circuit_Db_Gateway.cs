@@ -358,7 +358,7 @@ namespace ArtificialBuilder
                         List<AB_Character_Data_Model> data = new();
                         if (dbId != 0)
                         {
-                            string sid = req.SessionId.ToString();
+                            long sid = req.SessionId;
                             var all = await AB_Board.Db.FindAsync<AB_Character_Data_Model>(dbId, _d => _d.SessionId_ == sid);
                             data.AddRange(all);
                         }
@@ -381,7 +381,7 @@ namespace ArtificialBuilder
                     }
                     case AB_Delete_Session_Data_Request req:
                     {
-                        bool ok = await CharacterDataDeleteBySessionAsync(req.SessionId.ToString());
+                        bool ok = await CharacterDataDeleteBySessionAsync(req.SessionId);
                         m_broker?.Publish(new AB_Delete_Session_Data_Response
                         { CorrelationId = req.CorrelationId, Success = ok });
                         break;
@@ -402,7 +402,7 @@ namespace ArtificialBuilder
                     }
                     case AB_Copy_Circuit_Data_To_Session_Request req:
                     {
-                        bool ok = await CharacterDataCopyCircuitToSessionAsync(req.SessionId.ToString());
+                        bool ok = await CharacterDataCopyCircuitToSessionAsync(req.SessionId);
                         m_broker?.Publish(new AB_Copy_Circuit_Data_To_Session_Response
                         { CorrelationId = req.CorrelationId, Success = ok });
                         break;
@@ -414,7 +414,7 @@ namespace ArtificialBuilder
                         if (dbId != 0)
                         {
                             string cid = req.CharacterId;
-                            string? sid = req.SessionId == 0L ? null : req.SessionId.ToString();
+                            long? sid = req.SessionId == 0L ? (long?)null : req.SessionId;
                             string catId = req.CategoryId;
                             var all = await AB_Board.Db.FindAsync<AB_Character_Data_Model>(dbId,
                                 _d => _d.CharacterId_ == cid && _d.SessionId_ == sid && _d.CategoryId_ == catId);
@@ -432,7 +432,7 @@ namespace ArtificialBuilder
                             var item = new AB_Character_Data_Model
                             {
                                 CharacterId_ = req.CharacterId,
-                                SessionId_ = req.SessionId == 0L ? null : req.SessionId.ToString(),
+                                SessionId_ = req.SessionId == 0L ? (long?)null : req.SessionId,
                                 CategoryId_ = req.CategoryId,
                                 FieldName_ = req.FieldName,
                                 FieldValue_ = req.FieldValue,
@@ -1090,7 +1090,7 @@ namespace ArtificialBuilder
 
         // --- CharacterData 삭제 헬퍼 ---
 
-        private static async System.Threading.Tasks.Task<bool> CharacterDataDeleteBySessionAsync(string _sessionId)
+        private static async System.Threading.Tasks.Task<bool> CharacterDataDeleteBySessionAsync(long _sessionId)
         {
             int dbId = ActiveDbId;
             if (dbId == 0) return false;
@@ -1121,7 +1121,7 @@ namespace ArtificialBuilder
             return true;
         }
 
-        private static async System.Threading.Tasks.Task<bool> CharacterDataCopyCircuitToSessionAsync(string _sessionId)
+        private static async System.Threading.Tasks.Task<bool> CharacterDataCopyCircuitToSessionAsync(long _sessionId)
         {
             int dbId = ActiveDbId;
             if (dbId == 0) return false;
