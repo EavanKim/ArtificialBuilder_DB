@@ -444,11 +444,11 @@ namespace ArtificialBuilder
                         var vs = persona.VecStore;
                         if (vs != null)
                         {
-                            var raw = vs.SearchChat(persona.VecHandle, req.Query, req.TopK, req.ExcludeSessionId);
+                            var raw = vs.SearchChat(persona.VecHandle, req.Query, req.TopK, string.IsNullOrEmpty(req.ExcludeSessionId) ? (long?)null : long.Parse(req.ExcludeSessionId));
                             foreach (var (sid, nid, ti, ri, eo, dist) in raw)
                                 hits.Add(new AB_Vec_Chat_Hit
                                 {
-                                    SessionId = long.Parse(sid),
+                                    SessionId = sid,
                                     NodeId = nid,
                                     TurnIndex = ti,
                                     RefreshIndex = ri,
@@ -467,7 +467,7 @@ namespace ArtificialBuilder
                             if (!persona.IsVecInitialized())
                                 persona.InitializeVec(req.Embedding.Length);
                             persona.VecStore?.InsertChatEmbedding(persona.VecHandle,
-                                req.SessionId.ToString(), req.NodeId, req.TurnIndex, req.RefreshIndex, req.EmissionOrder, req.Embedding);
+                                req.SessionId, req.NodeId, req.TurnIndex, req.RefreshIndex, req.EmissionOrder, req.Embedding);
                         }
                         m_broker?.Publish(new AB_Persona_Insert_Chat_Embedding_Response
                         { CorrelationId = req.CorrelationId, Success = true });
@@ -475,7 +475,7 @@ namespace ArtificialBuilder
                     }
                     case AB_Persona_Delete_Chat_Embeddings_By_Session_Request req:
                     {
-                        persona.VecStore?.DeleteChatEmbeddingsBySession(persona.VecHandle, req.SessionId.ToString());
+                        persona.VecStore?.DeleteChatEmbeddingsBySession(persona.VecHandle, req.SessionId);
                         m_broker?.Publish(new AB_Persona_Delete_Chat_Embeddings_By_Session_Response
                         { CorrelationId = req.CorrelationId, Success = true });
                         break;
@@ -483,7 +483,7 @@ namespace ArtificialBuilder
                     case AB_Persona_Delete_Chat_Embedding_By_Record_Request req:
                     {
                         persona.VecStore?.DeleteChatEmbeddingByRecord(persona.VecHandle,
-                            req.SessionId.ToString(), req.NodeId, req.TurnIndex, req.RefreshIndex, req.EmissionOrder);
+                            req.SessionId, req.NodeId, req.TurnIndex, req.RefreshIndex, req.EmissionOrder);
                         m_broker?.Publish(new AB_Persona_Delete_Chat_Embedding_By_Record_Response
                         { CorrelationId = req.CorrelationId, Success = true });
                         break;
@@ -494,7 +494,7 @@ namespace ArtificialBuilder
                         var vs = persona.VecStore;
                         if (vs != null)
                         {
-                            var raw = vs.GetChatEmbeddingsBySession(persona.VecHandle, req.SessionId.ToString());
+                            var raw = vs.GetChatEmbeddingsBySession(persona.VecHandle, req.SessionId);
                             foreach (var (nid, ti, ri, eo, dim) in raw)
                                 data.Add(new AB_Chat_Embedding_Info
                                 {

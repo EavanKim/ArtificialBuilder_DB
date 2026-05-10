@@ -84,7 +84,7 @@ namespace ArtificialBuilder
             m_engine.ExecuteRawSql(_handle,
                 $"CREATE VIRTUAL TABLE IF NOT EXISTS vec_lore USING vec0(lore_id TEXT NOT NULL, embedding float[{safeDim}])");
             m_engine.ExecuteRawSql(_handle,
-                $"CREATE VIRTUAL TABLE IF NOT EXISTS vec_chat USING vec0(session_id TEXT NOT NULL, node_id TEXT NOT NULL, turn_index INTEGER NOT NULL, refresh_index INTEGER NOT NULL, emission_order INTEGER NOT NULL, embedding float[{safeDim}])");
+                $"CREATE VIRTUAL TABLE IF NOT EXISTS vec_chat USING vec0(session_id INTEGER NOT NULL, node_id TEXT NOT NULL, turn_index INTEGER NOT NULL, refresh_index INTEGER NOT NULL, emission_order INTEGER NOT NULL, embedding float[{safeDim}])");
             m_engine.ExecuteRawSql(_handle,
                 $"CREATE VIRTUAL TABLE IF NOT EXISTS vec_cdata USING vec0(cdata_id TEXT NOT NULL, embedding float[{safeDim}])");
 
@@ -163,7 +163,7 @@ namespace ArtificialBuilder
         // 키: (session_id, node_id, turn_index, refresh_index, emission_order) — context_records 와 동일 키.
 
         /// <summary>채팅 컨텍스트 레코드 임베딩 삽입.</summary>
-        public void InsertChatEmbedding(int _handle, string _sessionId, string _nodeId,
+        public void InsertChatEmbedding(int _handle, long _sessionId, string _nodeId,
             int _turnIndex, int _refreshIndex, int _emissionOrder, float[] _embedding)
         {
             SqliteConnection conn = m_engine.GetRawConnection(_handle);
@@ -179,7 +179,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>세션의 채팅 임베딩 일괄 삭제.</summary>
-        public void DeleteChatEmbeddingsBySession(int _handle, string _sessionId)
+        public void DeleteChatEmbeddingsBySession(int _handle, long _sessionId)
         {
             if (!TableExists(_handle, "vec_chat")) return;
             SqliteConnection conn = m_engine.GetRawConnection(_handle);
@@ -190,7 +190,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>특정 컨텍스트 레코드의 채팅 임베딩 삭제.</summary>
-        public void DeleteChatEmbeddingByRecord(int _handle, string _sessionId, string _nodeId,
+        public void DeleteChatEmbeddingByRecord(int _handle, long _sessionId, string _nodeId,
             int _turnIndex, int _refreshIndex, int _emissionOrder)
         {
             if (!TableExists(_handle, "vec_chat")) return;
@@ -215,10 +215,10 @@ namespace ArtificialBuilder
         }
 
         /// <summary>채팅 벡터 유사도 검색 (선택적 세션 제외).</summary>
-        public List<(string SessionId, string NodeId, int TurnIndex, int RefreshIndex, int EmissionOrder, double Distance)> SearchChat(
-            int _handle, float[] _query, int _topK = 10, string? _excludeSessionId = null)
+        public List<(long SessionId, string NodeId, int TurnIndex, int RefreshIndex, int EmissionOrder, double Distance)> SearchChat(
+            int _handle, float[] _query, int _topK = 10, long? _excludeSessionId = null)
         {
-            List<(string, string, int, int, int, double)> results = new();
+            List<(long, string, int, int, int, double)> results = new();
             SqliteConnection conn = m_engine.GetRawConnection(_handle);
             using var cmd = conn.CreateCommand();
 
@@ -246,14 +246,14 @@ namespace ArtificialBuilder
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
-                results.Add((reader.GetString(0), reader.GetString(1), reader.GetInt32(2), reader.GetInt32(3), reader.GetInt32(4), reader.GetDouble(5)));
+                results.Add((reader.GetInt64(0), reader.GetString(1), reader.GetInt32(2), reader.GetInt32(3), reader.GetInt32(4), reader.GetDouble(5)));
             }
             return results;
         }
 
         /// <summary>세션별 임베딩 목록 조회 (키 튜플 + 벡터 차원수)</summary>
         public List<(string NodeId, int TurnIndex, int RefreshIndex, int EmissionOrder, int Dimensions)> GetChatEmbeddingsBySession(
-            int _handle, string _sessionId)
+            int _handle, long _sessionId)
         {
             List<(string, int, int, int, int)> results = new();
             if (!TableExists(_handle, "vec_chat")) return results;
@@ -268,7 +268,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>세션별 임베딩 총 개수</summary>
-        public int GetChatEmbeddingCount(int _handle, string _sessionId)
+        public int GetChatEmbeddingCount(int _handle, long _sessionId)
         {
             if (!TableExists(_handle, "vec_chat")) return 0;
             SqliteConnection conn = m_engine.GetRawConnection(_handle);
