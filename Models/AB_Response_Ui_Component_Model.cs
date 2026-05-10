@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ArtificialBuilder;
 
 namespace ArtificialBuilder.Models
 {
@@ -9,24 +10,25 @@ namespace ArtificialBuilder.Models
     /// 한 response_ui_windows 행에 대해 N 개 row (Frame/Layout/Depth + 출력 레이어).
     /// ComponentType_ = AB_Window_Component_Kind 카탈로그 태그 (frame/layout/depth/message/image/3d).
     /// 컴포넌트 고유 설정은 ConfigJson_ 에 직렬화.
+    /// (example-mental-restructure-phase-b-residue sub 1) — string PK / FK → long.
     /// </summary>
     [Table("response_ui_components")]
     public class AB_Response_Ui_Component_Model
     {
-        private string m_id_ = Guid.NewGuid().ToString();
+        private long m_id_ = AB_Id_Issuer.Issue();
         [Key]
         [Column("id")]
-        public string Id_
+        public long Id_
         {
             get { return m_id_; }
             set { m_id_ = value; }
         }
 
         /// <summary>부모 윈도우 (response_windows.id) 참조.</summary>
-        private string m_windowId_ = "";
+        private long m_windowId_;
         [Required]
         [Column("window_id")]
-        public string WindowId_
+        public long WindowId_
         {
             get { return m_windowId_; }
             set { m_windowId_ = value; }

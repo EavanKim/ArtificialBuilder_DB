@@ -128,7 +128,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
 
                 Step("DB windowIds");
                 List<AB_Response_Ui_Window_Model> db = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
-                var ids = new List<string>();
+                var ids = new List<long>();
                 foreach (var w in db) ids.Add(w.Id_);
                 Log("db.windowIds", string.Join(",", ids));
 
@@ -137,7 +137,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 Assert("matches == true (신규 생성 직후 stale 아님)", matches, "방금 만든 envelope 이 DB 와 매칭되지 않으면 ApplyCircuitDefAsync 가 ID 를 envelope 에 잘못 기록한 것");
 
                 Step("가짜 DB 셋과 매칭 시 stale 검출");
-                bool stale = AB_Window_Component_Seeding.EnvelopeMatchesDb(applied.EnvelopeJson, new[] { "bogus1", "bogus2" });
+                bool stale = AB_Window_Component_Seeding.EnvelopeMatchesDb(applied.EnvelopeJson, new long[] { -1L, -2L });
                 Assert("가짜 셋은 stale (false)", !stale, "EnvelopeMatchesDb 가 무관한 ID 셋을 true 로 판정하면 잘못된 매칭");
             }
             finally

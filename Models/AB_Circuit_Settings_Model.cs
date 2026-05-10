@@ -434,9 +434,9 @@ namespace ArtificialBuilder.Models
         /// [[project_display_binding_principle]] — chat view 필터 기준 window ID.
         /// Circuit 생성 시 기본 "메시지 영역" 윈도우 ID 자동 세팅.
         /// </summary>
-        private string? m_primaryChatWindowId_;
+        private long? m_primaryChatWindowId_;
         [Column("primary_chat_window_id")]
-        public string? PrimaryChatWindowId_
+        public long? PrimaryChatWindowId_
         {
             get { return m_primaryChatWindowId_; }
             set { m_primaryChatWindowId_ = value; }

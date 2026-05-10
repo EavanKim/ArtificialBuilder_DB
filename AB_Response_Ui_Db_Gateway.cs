@@ -199,7 +199,7 @@ namespace ArtificialBuilder
                         List<AB_Response_Ui_Component_Model> data = new();
                         if (dbId != 0)
                         {
-                            string wid = req.WindowId;
+                            long wid = req.WindowId;
                             var found = await AB_Board.Db.FindAsync<AB_Response_Ui_Component_Model>(dbId, _c => _c.WindowId_ == wid);
                             data.AddRange(found);
                         }
@@ -262,7 +262,7 @@ namespace ArtificialBuilder
                         int deleted = 0;
                         if (dbId != 0)
                         {
-                            string wid = req.WindowId;
+                            long wid = req.WindowId;
                             var found = await AB_Board.Db.FindAsync<AB_Response_Ui_Component_Model>(dbId, _c => _c.WindowId_ == wid);
                             foreach (var c in found)
                             {

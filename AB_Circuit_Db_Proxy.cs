@@ -110,7 +110,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>응답 윈도우 단건 조회.</summary>
-        public async Task<AB_Db_Result<AB_Response_Ui_Window_Model>> GetWindowAsync(string _id)
+        public async Task<AB_Db_Result<AB_Response_Ui_Window_Model>> GetWindowAsync(long _id)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Window_Response>(
                 new AB_Get_Window_Request { Id = _id }, DefaultTimeout);
@@ -136,7 +136,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>응답 윈도우 삭제.</summary>
-        public async Task<bool> DeleteWindowAsync(string _id)
+        public async Task<bool> DeleteWindowAsync(long _id)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Window_Response>(
                 new AB_Delete_Window_Request { Id = _id }, DefaultTimeout);
@@ -144,7 +144,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>특정 윈도우의 컴포넌트 전체 조회.</summary>
-        public async Task<List<AB_Response_Ui_Component_Model>> GetWindowComponentsAsync(string _windowId)
+        public async Task<List<AB_Response_Ui_Component_Model>> GetWindowComponentsAsync(long _windowId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Window_Components_Response>(
                 new AB_Get_Window_Components_Request { WindowId = _windowId }, DefaultTimeout);
@@ -176,7 +176,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>윈도우 컴포넌트 삭제.</summary>
-        public async Task<bool> DeleteWindowComponentAsync(string _id)
+        public async Task<bool> DeleteWindowComponentAsync(long _id)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Window_Component_Response>(
                 new AB_Delete_Window_Component_Request { Id = _id }, DefaultTimeout);
@@ -184,7 +184,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>윈도우의 전 컴포넌트 cascade 삭제.</summary>
-        public async Task<int> DeleteWindowComponentsByWindowAsync(string _windowId)
+        public async Task<int> DeleteWindowComponentsByWindowAsync(long _windowId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Window_Components_By_Window_Response>(
                 new AB_Delete_Window_Components_By_Window_Request { WindowId = _windowId }, DefaultTimeout);

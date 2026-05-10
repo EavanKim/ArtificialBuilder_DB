@@ -5,9 +5,9 @@ namespace ArtificialBuilder
     /// <summary>JSON 직렬화용 윈도우 레이아웃 데이터 (비율 + 구 포맷 호환 절대좌표)</summary>
     public class Window_Layout_Data
     {
-        /// <summary>템플릿 ID — response_windows.Id (GUID). 재시드 시 envelope 내 TemplateId 를 그대로 재사용해 DB GUID 안정성 보장.</summary>
-        private string m_templateId = "";
-        public string TemplateId
+        /// <summary>템플릿 ID — response_windows.Id (long PK). 재시드 시 envelope 내 TemplateId 를 그대로 재사용해 DB Id 안정성 보장.</summary>
+        private long m_templateId;
+        public long TemplateId
         {
             get { return m_templateId; }
             set { m_templateId = value; }

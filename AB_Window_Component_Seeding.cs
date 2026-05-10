@@ -20,7 +20,7 @@ namespace ArtificialBuilder
         {
             public List<AB_Response_Ui_Window_Model> Windows { get; set; } = new();
             public string EnvelopeJson { get; set; } = "";
-            public string? PrimaryChatWindowId { get; set; }
+            public long? PrimaryChatWindowId { get; set; }
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace ArtificialBuilder
             if (windows.Count == 0) return;
 
             List<AB_Response_Ui_Component_Model> allComps = await AB_Circuit_Db_Proxy.I.GetAllWindowComponentsAsync();
-            var hasComps = new HashSet<string>();
+            var hasComps = new HashSet<long>();
             foreach (var c in allComps) hasComps.Add(c.WindowId_);
 
             int seeded = 0;
@@ -54,17 +54,17 @@ namespace ArtificialBuilder
         /// false 반환 시 호출측은 envelope 재조립 (예: ApplyCircuitDefAsync 재호출) 을 해야 함.
         /// 순수 함수 — 테스트 가능, DB 접근 없음.
         /// </summary>
-        public static bool EnvelopeMatchesDb(string? _envelopeJson, IEnumerable<string> _dbWindowIds)
+        public static bool EnvelopeMatchesDb(string? _envelopeJson, IEnumerable<long> _dbWindowIds)
         {
             if (string.IsNullOrEmpty(_envelopeJson)) return false;
             Window_Layout_Envelope? env;
             try { env = JsonSerializer.Deserialize<Window_Layout_Envelope>(_envelopeJson); }
             catch { return false; }
             if (env?.Windows == null || env.Windows.Count == 0) return false;
-            var idSet = new HashSet<string>(_dbWindowIds);
+            var idSet = new HashSet<long>(_dbWindowIds);
             foreach (Window_Layout_Data wd in env.Windows)
             {
-                if (!string.IsNullOrEmpty(wd.TemplateId) && idSet.Contains(wd.TemplateId))
+                if (wd.TemplateId != 0 && idSet.Contains(wd.TemplateId))
                     return true;
             }
             return false;
@@ -76,7 +76,7 @@ namespace ArtificialBuilder
         /// _reuseIdByName 이 주어지면 DB 에서 이름 매칭 실패 시 해당 GUID 를 그대로 재사용 — envelope 에 남아있는
         /// 과거 GUID 를 유지해 context_records.DisplayTargets dead reference 방지. null 이면 기존 동작 (Guid.NewGuid()).
         /// </summary>
-        public static async Task<Apply_Result> ApplyCircuitDefAsync(string _circuitType, IReadOnlyDictionary<string, string>? _reuseIdByName = null)
+        public static async Task<Apply_Result> ApplyCircuitDefAsync(string _circuitType, IReadOnlyDictionary<string, long>? _reuseIdByName = null)
         {
             var result = new Apply_Result();
 
@@ -100,11 +100,11 @@ namespace ArtificialBuilder
                         Enabled_ = true,
                         SortOrder_ = entry.SortOrder
                     };
-                    // envelope 에 과거 GUID 가 있으면 재사용 — response_windows 재시드여도 records 참조 유효.
-                    if (_reuseIdByName != null && _reuseIdByName.TryGetValue(entry.Name, out string? reuseId) && !string.IsNullOrEmpty(reuseId))
+                    // envelope 에 과거 Id 가 있으면 재사용 — response_windows 재시드여도 records 참조 유효.
+                    if (_reuseIdByName != null && _reuseIdByName.TryGetValue(entry.Name, out long reuseId) && reuseId != 0)
                     {
                         window.Id_ = reuseId;
-                        AB_Log.Info("WinSeed", $"ApplyCircuitDef: {entry.Name} 과거 GUID 재사용 {reuseId[..Math.Min(8, reuseId.Length)]}");
+                        AB_Log.Info("WinSeed", $"ApplyCircuitDef: {entry.Name} 과거 Id 재사용 {reuseId}");
                     }
                     bool added = await AB_Circuit_Db_Proxy.I.AddWindowAsync(window);
                     if (!added)
@@ -198,9 +198,9 @@ namespace ArtificialBuilder
             }
 
             // primary chat 윈도우 이름 해석
-            if (settingsR.IsOk && !string.IsNullOrEmpty(settingsR.Data.PrimaryChatWindowId_))
+            if (settingsR.IsOk && settingsR.Data.PrimaryChatWindowId_.HasValue)
             {
-                string pid = settingsR.Data.PrimaryChatWindowId_!;
+                long pid = settingsR.Data.PrimaryChatWindowId_.Value;
                 foreach (AB_Response_Ui_Window_Model w in windows)
                 {
                     if (w.Id_ == pid) { circuitDef.PrimaryChatWindowName = w.Name_; break; }
@@ -208,7 +208,7 @@ namespace ArtificialBuilder
             }
 
             // windowId → components 그룹핑
-            Dictionary<string, List<AB_Response_Ui_Component_Model>> compsByWindow = new();
+            Dictionary<long, List<AB_Response_Ui_Component_Model>> compsByWindow = new();
             foreach (AB_Response_Ui_Component_Model c in comps)
             {
                 if (!compsByWindow.TryGetValue(c.WindowId_, out var list))
@@ -289,7 +289,7 @@ namespace ArtificialBuilder
             AB_Log.Info("WinSeed", $"Replace: 기존 윈도우 {existing.Count} 개 삭제 완료");
 
             List<Window_Layout_Data> envelopeWindows = new();
-            Dictionary<string, string> nameToId = new();
+            Dictionary<string, long> nameToId = new();
 
             foreach (AB_Circuit_Def_Window entry in _circuitDef.Windows)
             {
@@ -362,7 +362,7 @@ namespace ArtificialBuilder
         /// Frame/Layout/Depth 공통 3 컴포넌트 DB 시드. _layout 이 있으면 Ratio 를 함께 저장 — circuit def 비율 좌표를
         /// Layout_Config 에 반영. null 이면 Position 기반 도킹 Circuit 기본 ratio 를 채운다 (레거시/단순 경로).
         /// </summary>
-        private static async Task AddFrameLayoutDepthAsync(string _windowId, string _title, string _position, int _sortOrder, AB_Circuit_Def_Layout? _layout = null)
+        private static async Task AddFrameLayoutDepthAsync(long _windowId, string _title, string _position, int _sortOrder, AB_Circuit_Def_Layout? _layout = null)
         {
             await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Response_Ui_Component_Model
             {

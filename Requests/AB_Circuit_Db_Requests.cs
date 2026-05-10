@@ -534,7 +534,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Get_Window_Request : AB_Message
     {
         /// <summary>윈도우 ID.</summary>
-        public string Id = "";
+        public long Id;
         /// <summary>토픽.</summary>
         public AB_Get_Window_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
@@ -593,7 +593,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Delete_Window_Request : AB_Message
     {
         /// <summary>윈도우 ID.</summary>
-        public string Id = "";
+        public long Id;
         /// <summary>토픽.</summary>
         public AB_Delete_Window_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
@@ -614,7 +614,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Get_Window_Components_Request : AB_Message
     {
         /// <summary>부모 윈도우 ID.</summary>
-        public string WindowId = "";
+        public long WindowId;
         /// <summary>토픽.</summary>
         public AB_Get_Window_Components_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
@@ -688,7 +688,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Delete_Window_Component_Request : AB_Message
     {
         /// <summary>삭제 대상 컴포넌트 ID.</summary>
-        public string Id = "";
+        public long Id;
         /// <summary>토픽.</summary>
         public AB_Delete_Window_Component_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
@@ -707,7 +707,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Delete_Window_Components_By_Window_Request : AB_Message
     {
         /// <summary>부모 윈도우 ID.</summary>
-        public string WindowId = "";
+        public long WindowId;
         /// <summary>토픽.</summary>
         public AB_Delete_Window_Components_By_Window_Request() { Topic = AB_Response_Ui_Db_Topics.ActiveResponseUi; }
     }
