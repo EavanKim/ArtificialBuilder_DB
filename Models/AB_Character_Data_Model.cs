@@ -1,17 +1,18 @@
+using ArtificialBuilder;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ArtificialBuilder.Models
 {
-    /// <summary>캐릭터별 동적 데이터 항목 (필드명/값 + 카테고리). 세션 또는 Circuit 범위.</summary>
+    /// <summary>캐릭터별 동적 데이터 항목 (필드명/값 + 카테고리). 세션 또는 Circuit 범위. (example-mental-restructure Phase B Sub 4 Persona 2/7) — string PK → long PK.</summary>
     [Table("circuit_character_data")]
     public class AB_Character_Data_Model
     {
-        private string m_id_ = Guid.NewGuid().ToString();
+        private long m_id_ = AB_Id_Issuer.Issue();
         [Key]
         [Column("id")]
-        public string Id_
+        public long Id_
         {
             get { return m_id_; }
             set { m_id_ = value; }
