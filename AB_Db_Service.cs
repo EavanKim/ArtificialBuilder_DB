@@ -29,42 +29,42 @@ namespace ArtificialBuilder
             AddObs(AB_DDO_Header_Type.PERSONA_DB_LOAD_ACTIVE, HandlePersonaLoadActive);
 
             // --- Circuit DB ---
-            AddObs(AB_DDO_Headers.CIRCUIT_DB_OPEN, HandleCircuitOpen);
-            AddObs(AB_DDO_Headers.CIRCUIT_DB_CLOSE, HandleCircuitClose);
-            AddObs(AB_DDO_Headers.CIRCUIT_DB_USED_SUB_CIRCUIT_GET_ALL, HandleCircuitUsedSubGetAll);
-            AddObs(AB_DDO_Headers.CIRCUIT_DB_USED_SUB_CIRCUIT_ADD, HandleCircuitUsedSubAdd);
-            AddObs(AB_DDO_Headers.CIRCUIT_DB_USED_SUB_CIRCUIT_DELETE, HandleCircuitUsedSubDelete);
-            AddObs(AB_DDO_Headers.CIRCUIT_DB_HOSTED_LOGIC_GET_ALL, HandleCircuitHostedLogicGetAll);
-            AddObs(AB_DDO_Headers.CIRCUIT_DB_HOSTED_LOGIC_ADD, HandleCircuitHostedLogicAdd);
-            AddObs(AB_DDO_Headers.CIRCUIT_DB_HOSTED_LOGIC_DELETE, HandleCircuitHostedLogicDelete);
+            AddObs(AB_DDO_Header_Type.CIRCUIT_DB_OPEN, HandleCircuitOpen);
+            AddObs(AB_DDO_Header_Type.CIRCUIT_DB_CLOSE, HandleCircuitClose);
+            AddObs(AB_DDO_Header_Type.CIRCUIT_DB_USED_SUB_CIRCUIT_GET_ALL, HandleCircuitUsedSubGetAll);
+            AddObs(AB_DDO_Header_Type.CIRCUIT_DB_USED_SUB_CIRCUIT_ADD, HandleCircuitUsedSubAdd);
+            AddObs(AB_DDO_Header_Type.CIRCUIT_DB_USED_SUB_CIRCUIT_DELETE, HandleCircuitUsedSubDelete);
+            AddObs(AB_DDO_Header_Type.CIRCUIT_DB_HOSTED_LOGIC_GET_ALL, HandleCircuitHostedLogicGetAll);
+            AddObs(AB_DDO_Header_Type.CIRCUIT_DB_HOSTED_LOGIC_ADD, HandleCircuitHostedLogicAdd);
+            AddObs(AB_DDO_Header_Type.CIRCUIT_DB_HOSTED_LOGIC_DELETE, HandleCircuitHostedLogicDelete);
 
             // --- Logic DB ---
-            AddObs(AB_DDO_Headers.LOGIC_DB_OPEN, HandleLogicOpen);
-            AddObs(AB_DDO_Headers.LOGIC_DB_CLOSE, HandleLogicClose);
-            AddObs(AB_DDO_Headers.LOGIC_DB_META_GET, HandleLogicMetaGet);
-            AddObs(AB_DDO_Headers.LOGIC_DB_META_SAVE, HandleLogicMetaSave);
-            AddObs(AB_DDO_Headers.LOGIC_DB_USED_CIRCUIT_GET_ALL, HandleLogicUsedCircuitGetAll);
-            AddObs(AB_DDO_Headers.LOGIC_DB_USED_CIRCUIT_ADD, HandleLogicUsedCircuitAdd);
-            AddObs(AB_DDO_Headers.LOGIC_DB_USED_CIRCUIT_SAVE, HandleLogicUsedCircuitSave);
-            AddObs(AB_DDO_Headers.LOGIC_DB_USED_CIRCUIT_DELETE, HandleLogicUsedCircuitDelete);
-            AddObs(AB_DDO_Headers.LOGIC_DB_USED_RESPONSE_UI_GET_ALL, HandleLogicUsedResponseUiGetAll);
-            AddObs(AB_DDO_Headers.LOGIC_DB_USED_RESPONSE_UI_ADD, HandleLogicUsedResponseUiAdd);
-            AddObs(AB_DDO_Headers.LOGIC_DB_USED_RESPONSE_UI_DELETE, HandleLogicUsedResponseUiDelete);
-            AddObs(AB_DDO_Headers.LOGIC_DB_SUB_LOGIC_GET_ALL, HandleLogicSubLogicGetAll);
-            AddObs(AB_DDO_Headers.LOGIC_DB_SUB_LOGIC_ADD, HandleLogicSubLogicAdd);
-            AddObs(AB_DDO_Headers.LOGIC_DB_SUB_LOGIC_DELETE, HandleLogicSubLogicDelete);
-            AddObs(AB_DDO_Headers.LOGIC_DB_HISTORY_GET_ALL, HandleLogicHistoryGetAll);
-            AddObs(AB_DDO_Headers.LOGIC_DB_HISTORY_APPEND, HandleLogicHistoryAppend);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_OPEN, HandleLogicOpen);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_CLOSE, HandleLogicClose);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_META_GET, HandleLogicMetaGet);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_META_SAVE, HandleLogicMetaSave);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_USED_CIRCUIT_GET_ALL, HandleLogicUsedCircuitGetAll);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_USED_CIRCUIT_ADD, HandleLogicUsedCircuitAdd);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_USED_CIRCUIT_SAVE, HandleLogicUsedCircuitSave);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_USED_CIRCUIT_DELETE, HandleLogicUsedCircuitDelete);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_USED_RESPONSE_UI_GET_ALL, HandleLogicUsedResponseUiGetAll);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_USED_RESPONSE_UI_ADD, HandleLogicUsedResponseUiAdd);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_USED_RESPONSE_UI_DELETE, HandleLogicUsedResponseUiDelete);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_SUB_LOGIC_GET_ALL, HandleLogicSubLogicGetAll);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_SUB_LOGIC_ADD, HandleLogicSubLogicAdd);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_SUB_LOGIC_DELETE, HandleLogicSubLogicDelete);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_HISTORY_GET_ALL, HandleLogicHistoryGetAll);
+            AddObs(AB_DDO_Header_Type.LOGIC_DB_HISTORY_APPEND, HandleLogicHistoryAppend);
 
             // --- Response UI DB ---
-            AddObs(AB_DDO_Headers.RESPONSE_UI_DB_OPEN, HandleResponseUiOpen);
-            AddObs(AB_DDO_Headers.RESPONSE_UI_DB_CLOSE, HandleResponseUiClose);
-            AddObs(AB_DDO_Headers.RESPONSE_UI_DB_META_GET, HandleResponseUiMetaGet);
-            AddObs(AB_DDO_Headers.RESPONSE_UI_DB_META_SAVE, HandleResponseUiMetaSave);
-            AddObs(AB_DDO_Headers.RESPONSE_UI_DB_LAYER_GET_ALL, HandleResponseUiLayerGetAll);
-            AddObs(AB_DDO_Headers.RESPONSE_UI_DB_LAYER_ADD, HandleResponseUiLayerAdd);
-            AddObs(AB_DDO_Headers.RESPONSE_UI_DB_LAYER_SAVE, HandleResponseUiLayerSave);
-            AddObs(AB_DDO_Headers.RESPONSE_UI_DB_LAYER_DELETE, HandleResponseUiLayerDelete);
+            AddObs(AB_DDO_Header_Type.RESPONSE_UI_DB_OPEN, HandleResponseUiOpen);
+            AddObs(AB_DDO_Header_Type.RESPONSE_UI_DB_CLOSE, HandleResponseUiClose);
+            AddObs(AB_DDO_Header_Type.RESPONSE_UI_DB_META_GET, HandleResponseUiMetaGet);
+            AddObs(AB_DDO_Header_Type.RESPONSE_UI_DB_META_SAVE, HandleResponseUiMetaSave);
+            AddObs(AB_DDO_Header_Type.RESPONSE_UI_DB_LAYER_GET_ALL, HandleResponseUiLayerGetAll);
+            AddObs(AB_DDO_Header_Type.RESPONSE_UI_DB_LAYER_ADD, HandleResponseUiLayerAdd);
+            AddObs(AB_DDO_Header_Type.RESPONSE_UI_DB_LAYER_SAVE, HandleResponseUiLayerSave);
+            AddObs(AB_DDO_Header_Type.RESPONSE_UI_DB_LAYER_DELETE, HandleResponseUiLayerDelete);
         }
 
         public override void OnDetach()
