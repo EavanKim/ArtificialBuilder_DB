@@ -1,3 +1,4 @@
+using ArtificialBuilder;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,10 +9,10 @@ namespace ArtificialBuilder.Models
     [Table("circuit_input_slots")]
     public class AB_Circuit_Input_Slot_Model
     {
-        private string m_id_ = Guid.NewGuid().ToString();
+        private long m_id_ = AB_Id_Issuer.Issue();
         [Key]
         [Column("id")]
-        public string Id_
+        public long Id_
         {
             get { return m_id_; }
             set { m_id_ = value; }

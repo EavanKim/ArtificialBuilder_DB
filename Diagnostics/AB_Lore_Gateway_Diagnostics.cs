@@ -41,7 +41,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
 
                 Step("GetLoreEntry 단일 조회");
                 var getResp = await broker.PublishAndWaitAsync<AB_Get_Lore_Entry_Response>(
-                    new AB_Get_Lore_Entry_Request { Id = entry.Id_ }, TimeSpan.FromSeconds(5));
+                    new AB_Get_Lore_Entry_Request { Id = entry.Id_.ToString() }, TimeSpan.FromSeconds(5));
                 Log("get.Data.Name_", getResp.Data?.Name_ ?? "<null>");
                 Assert("Get 결과 != null", getResp.Data != null);
                 Assert("이름 일치", getResp.Data?.Name_ == "test_lore");
