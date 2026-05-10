@@ -7,14 +7,15 @@ namespace ArtificialBuilder.Models
     /// <summary>
     /// 전역 UI 템플릿 (app.db, 모든 Circuit의 시작 라이브러리).
     /// Circuit 인스턴스 단위 활성/정렬 컬럼이 필요한 경우 <see cref="AB_Response_Ui_Template_Model"/> 사용.
+    /// (example-mental-restructure Phase B Sub 4 Response_Ui Ui_Template) — string PK → long PK.
     /// </summary>
     [Table("ui_templates")]
     public class AB_Ui_Template_Model
     {
-        private string m_id_ = Guid.NewGuid().ToString();
+        private long m_id_ = ArtificialBuilder.AB_Id_Issuer.Issue();
         [Key]
         [Column("id")]
-        public string Id_
+        public long Id_
         {
             get { return m_id_; }
             set { m_id_ = value; }
