@@ -157,7 +157,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Get_Session_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public AB_Get_Session_Request() { Topic = AB_Persona_Db_Topics.Persona; }
     }
     public class AB_Get_Session_Response : AB_Message
@@ -202,7 +202,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Rename_Session_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public string NewTitle = "";
         public AB_Rename_Session_Request() { Topic = AB_Persona_Db_Topics.Persona; }
     }
@@ -214,7 +214,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Copy_Session_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public AB_Copy_Session_Request() { Topic = AB_Persona_Db_Topics.Persona; }
     }
     public class AB_Copy_Session_Response : AB_Message
@@ -225,7 +225,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Move_Session_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public string TargetPersonaName = "";
         public AB_Move_Session_Request() { Topic = AB_Persona_Db_Topics.Persona; }
     }
@@ -237,7 +237,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Delete_Session_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public AB_Delete_Session_Request() { Topic = AB_Persona_Db_Topics.Persona; }
     }
     public class AB_Delete_Session_Response : AB_Message
@@ -248,7 +248,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Touch_Session_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public AB_Touch_Session_Request() { Topic = AB_Persona_Db_Topics.Persona; }
     }
     public class AB_Touch_Session_Response : AB_Message
@@ -259,7 +259,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Update_Session_Title_From_First_Message_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public string Text = "";
         public AB_Update_Session_Title_From_First_Message_Request() { Topic = AB_Persona_Db_Topics.Persona; }
     }
@@ -271,7 +271,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Update_Session_Cost_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public long InputTokens;
         public long OutputTokens;
         public decimal Cost;
@@ -285,7 +285,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Get_Session_Cost_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public AB_Get_Session_Cost_Request() { Topic = AB_Persona_Db_Topics.Persona; }
     }
     public class AB_Get_Session_Cost_Response : AB_Message
@@ -307,7 +307,7 @@ namespace ArtificialBuilder.Requests
     /// </summary>
     public class AB_Update_Session_Turn_Shard_Size_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public int NewTurnShardSize = 50;
         public AB_Update_Session_Turn_Shard_Size_Request() { Topic = AB_Persona_Db_Topics.Persona; }
     }
@@ -323,7 +323,7 @@ namespace ArtificialBuilder.Requests
     /// </summary>
     public class AB_Update_Session_Circuit_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public string CircuitName = "";
         public AB_Update_Session_Circuit_Request() { Topic = AB_Persona_Db_Topics.Persona; }
     }
@@ -371,7 +371,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Persona_Insert_Chat_Embedding_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public string NodeId = "";
         public int TurnIndex;
         public int RefreshIndex;
@@ -387,7 +387,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Persona_Delete_Chat_Embeddings_By_Session_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public AB_Persona_Delete_Chat_Embeddings_By_Session_Request() { Topic = AB_Persona_Db_Topics.Persona; }
     }
     public class AB_Persona_Delete_Chat_Embeddings_By_Session_Response : AB_Message
@@ -398,7 +398,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Persona_Delete_Chat_Embedding_By_Record_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public string NodeId = "";
         public int TurnIndex;
         public int RefreshIndex;
@@ -413,7 +413,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Persona_Get_Chat_Embeddings_By_Session_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public AB_Persona_Get_Chat_Embeddings_By_Session_Request() { Topic = AB_Persona_Db_Topics.Persona; }
     }
     public class AB_Persona_Get_Chat_Embeddings_By_Session_Response : AB_Message

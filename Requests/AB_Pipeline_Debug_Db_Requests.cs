@@ -45,7 +45,7 @@ namespace ArtificialBuilder.Requests
     /// <summary>세션 기준 페이징 조회 요청.</summary>
     public class AB_Query_Pipeline_Debug_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public string? EntryType;
         public int Offset;
         public int Limit = 50;

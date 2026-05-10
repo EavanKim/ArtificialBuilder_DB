@@ -13,7 +13,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Vec_Chat_Hit
     {
         /// <summary>세션 ID.</summary>
-        public string SessionId = "";
+        public long SessionId;
         /// <summary>소스 노드 ID.</summary>
         public string NodeId = "";
         /// <summary>턴 인덱스.</summary>

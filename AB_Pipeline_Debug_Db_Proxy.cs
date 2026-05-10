@@ -53,7 +53,7 @@ namespace ArtificialBuilder
             var resp = await GetBroker().PublishAndWaitAsync<AB_Query_Pipeline_Debug_Response>(
                 new AB_Query_Pipeline_Debug_Request
                 {
-                    SessionId = _sessionId,
+                    SessionId = long.Parse(_sessionId),
                     EntryType = _entryType,
                     Offset = _offset,
                     Limit = _limit

@@ -72,7 +72,7 @@ namespace ArtificialBuilder
             var resp = await GetBroker().PublishAndWaitAsync<AB_Append_Session_Slot_Response>(
                 new AB_Append_Session_Slot_Request
                 {
-                    SessionId = _sessionId,
+                    SessionId = long.Parse(_sessionId),
                     InputResourceId = _inputResourceId,
                 }, DefaultTimeout);
             return resp.Success ? resp.Id : 0;
@@ -90,7 +90,7 @@ namespace ArtificialBuilder
         public async Task<List<AB_Session_Storage_Model>> GetSessionSlotsAsync(string _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Session_Slots_Response>(
-                new AB_Get_Session_Slots_Request { SessionId = _sessionId }, DefaultTimeout);
+                new AB_Get_Session_Slots_Request { SessionId = long.Parse(_sessionId) }, DefaultTimeout);
             return resp.Data ?? new();
         }
 
@@ -124,7 +124,7 @@ namespace ArtificialBuilder
             var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Context_Response>(
                 new AB_Add_Context_Request
                 {
-                    SessionId = _sessionId,
+                    SessionId = long.Parse(_sessionId),
                     TurnId = _turnId,
                 }, DefaultTimeout);
             return resp.Success ? resp.Id : 0;
@@ -209,7 +209,7 @@ namespace ArtificialBuilder
         public async Task<AB_Delete_Session_Storage_Response> DeleteSessionStorageAsync(string _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Session_Storage_Response>(
-                new AB_Delete_Session_Storage_Request { SessionId = _sessionId }, DefaultTimeout);
+                new AB_Delete_Session_Storage_Request { SessionId = long.Parse(_sessionId) }, DefaultTimeout);
             return resp;
         }
     }

@@ -162,7 +162,7 @@ namespace ArtificialBuilder
                         AB_Chat_Session_Model? session = null;
                         if (handle != 0)
                         {
-                            long sid = long.Parse(req.SessionId);
+                            long sid = req.SessionId;
                             var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             session = sessions.FirstOrDefault();
                         }
@@ -225,7 +225,7 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (handle != 0)
                         {
-                            long sid = long.Parse(req.SessionId);
+                            long sid = req.SessionId;
                             var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
@@ -246,7 +246,7 @@ namespace ArtificialBuilder
                         AB_Chat_Session_Model? newSession = null;
                         if (handle != 0)
                         {
-                            long sid = long.Parse(req.SessionId);
+                            long sid = req.SessionId;
                             var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
@@ -271,7 +271,7 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (handle != 0)
                         {
-                            long sid = long.Parse(req.SessionId);
+                            long sid = req.SessionId;
                             var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
@@ -292,7 +292,7 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (handle != 0)
                         {
-                            long sid = long.Parse(req.SessionId);
+                            long sid = req.SessionId;
                             var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
@@ -312,7 +312,7 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (handle != 0)
                         {
-                            long sid = long.Parse(req.SessionId);
+                            long sid = req.SessionId;
                             var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
@@ -332,7 +332,7 @@ namespace ArtificialBuilder
                         string? title = null;
                         if (handle != 0)
                         {
-                            long sid = long.Parse(req.SessionId);
+                            long sid = req.SessionId;
                             var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
@@ -376,7 +376,7 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (handle != 0)
                         {
-                            long sid = long.Parse(req.SessionId);
+                            long sid = req.SessionId;
                             var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
@@ -397,7 +397,7 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (handle != 0)
                         {
-                            long sid = long.Parse(req.SessionId);
+                            long sid = req.SessionId;
                             var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
@@ -448,7 +448,7 @@ namespace ArtificialBuilder
                             foreach (var (sid, nid, ti, ri, eo, dist) in raw)
                                 hits.Add(new AB_Vec_Chat_Hit
                                 {
-                                    SessionId = sid,
+                                    SessionId = long.Parse(sid),
                                     NodeId = nid,
                                     TurnIndex = ti,
                                     RefreshIndex = ri,
@@ -467,7 +467,7 @@ namespace ArtificialBuilder
                             if (!persona.IsVecInitialized())
                                 persona.InitializeVec(req.Embedding.Length);
                             persona.VecStore?.InsertChatEmbedding(persona.VecHandle,
-                                req.SessionId, req.NodeId, req.TurnIndex, req.RefreshIndex, req.EmissionOrder, req.Embedding);
+                                req.SessionId.ToString(), req.NodeId, req.TurnIndex, req.RefreshIndex, req.EmissionOrder, req.Embedding);
                         }
                         m_broker?.Publish(new AB_Persona_Insert_Chat_Embedding_Response
                         { CorrelationId = req.CorrelationId, Success = true });
@@ -475,7 +475,7 @@ namespace ArtificialBuilder
                     }
                     case AB_Persona_Delete_Chat_Embeddings_By_Session_Request req:
                     {
-                        persona.VecStore?.DeleteChatEmbeddingsBySession(persona.VecHandle, req.SessionId);
+                        persona.VecStore?.DeleteChatEmbeddingsBySession(persona.VecHandle, req.SessionId.ToString());
                         m_broker?.Publish(new AB_Persona_Delete_Chat_Embeddings_By_Session_Response
                         { CorrelationId = req.CorrelationId, Success = true });
                         break;
@@ -483,7 +483,7 @@ namespace ArtificialBuilder
                     case AB_Persona_Delete_Chat_Embedding_By_Record_Request req:
                     {
                         persona.VecStore?.DeleteChatEmbeddingByRecord(persona.VecHandle,
-                            req.SessionId, req.NodeId, req.TurnIndex, req.RefreshIndex, req.EmissionOrder);
+                            req.SessionId.ToString(), req.NodeId, req.TurnIndex, req.RefreshIndex, req.EmissionOrder);
                         m_broker?.Publish(new AB_Persona_Delete_Chat_Embedding_By_Record_Response
                         { CorrelationId = req.CorrelationId, Success = true });
                         break;
@@ -494,7 +494,7 @@ namespace ArtificialBuilder
                         var vs = persona.VecStore;
                         if (vs != null)
                         {
-                            var raw = vs.GetChatEmbeddingsBySession(persona.VecHandle, req.SessionId);
+                            var raw = vs.GetChatEmbeddingsBySession(persona.VecHandle, req.SessionId.ToString());
                             foreach (var (nid, ti, ri, eo, dim) in raw)
                                 data.Add(new AB_Chat_Embedding_Info
                                 {

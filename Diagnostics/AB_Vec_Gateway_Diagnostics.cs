@@ -43,7 +43,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
 
                 Step("GetChatEmbeddingsBySession (빈)");
                 var listResp = await broker.PublishAndWaitAsync<AB_Get_Chat_Embeddings_By_Session_Response>(
-                    new AB_Get_Chat_Embeddings_By_Session_Request { SessionId = "sess_test" }, to);
+                    new AB_Get_Chat_Embeddings_By_Session_Request { SessionId = 1L }, to);
                 Assert("빈 리스트", listResp.Data.Count == 0);
 
                 Step("SearchLore (빈)");
@@ -73,7 +73,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 var ice = await broker.PublishAndWaitAsync<AB_Insert_Chat_Embedding_Response>(
                     new AB_Insert_Chat_Embedding_Request
                     {
-                        SessionId = "sess_test",
+                        SessionId = 1L,
                         NodeId = "node_test",
                         TurnIndex = 1,
                         RefreshIndex = 0,
@@ -84,7 +84,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 var dcebr = await broker.PublishAndWaitAsync<AB_Delete_Chat_Embedding_By_Record_Response>(
                     new AB_Delete_Chat_Embedding_By_Record_Request
                     {
-                        SessionId = "sess_test",
+                        SessionId = 1L,
                         NodeId = "node_test",
                         TurnIndex = 1,
                         RefreshIndex = 0,
@@ -92,7 +92,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                     }, to);
                 Assert("DeleteByRecord 성공", dcebr.Success, dcebr.Error ?? "");
                 var dcebs = await broker.PublishAndWaitAsync<AB_Delete_Chat_Embeddings_By_Session_Response>(
-                    new AB_Delete_Chat_Embeddings_By_Session_Request { SessionId = "sess_test" }, to);
+                    new AB_Delete_Chat_Embeddings_By_Session_Request { SessionId = 1L }, to);
                 Assert("DeleteBySession 성공", dcebs.Success, dcebs.Error ?? "");
 
                 Step("InsertCDataEmbedding (silent no-op)");

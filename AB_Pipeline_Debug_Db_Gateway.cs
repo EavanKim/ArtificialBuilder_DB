@@ -102,7 +102,7 @@ namespace ArtificialBuilder
                         List<AB_Pipeline_Debug_Entry_Model> data = new();
                         if (handle != 0)
                         {
-                            long sid = long.Parse(req.SessionId);
+                            long sid = req.SessionId;
                             IEnumerable<AB_Pipeline_Debug_Entry_Model> all;
                             if (req.EntryType != null)
                                 all = await m_engine.FindAsync<AB_Pipeline_Debug_Entry_Model>(handle,

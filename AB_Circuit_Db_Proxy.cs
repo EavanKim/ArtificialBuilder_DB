@@ -41,7 +41,7 @@ namespace ArtificialBuilder
         public async Task<List<AB_Character_Model>> GetAllCharactersAsync(string? _sessionId = null)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Characters_Response>(
-                new AB_Get_All_Characters_Request { SessionId = _sessionId }, DefaultTimeout);
+                new AB_Get_All_Characters_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
             return resp.Data ?? new();
         }
 
@@ -57,7 +57,7 @@ namespace ArtificialBuilder
         public async Task<bool> AddCharacterAsync(AB_Character_Model _character, string? _sessionId = null)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Character_Response>(
-                new AB_Add_Character_Request { Character = _character, SessionId = _sessionId }, DefaultTimeout);
+                new AB_Add_Character_Request { Character = _character, SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
             return resp.Success;
         }
 
@@ -81,7 +81,7 @@ namespace ArtificialBuilder
         public async Task<List<AB_Character_Relationship_Model>> GetAllRelationshipsAsync(string? _sessionId = null)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Relationships_Response>(
-                new AB_Get_All_Relationships_Request { SessionId = _sessionId }, DefaultTimeout);
+                new AB_Get_All_Relationships_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
             return resp.Data ?? new();
         }
 
@@ -89,7 +89,7 @@ namespace ArtificialBuilder
         public async Task<List<AB_Location_Model>> GetAllLocationsAsync(string? _sessionId = null)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Locations_Response>(
-                new AB_Get_All_Locations_Request { SessionId = _sessionId }, DefaultTimeout);
+                new AB_Get_All_Locations_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
             return resp.Data ?? new();
         }
 
@@ -97,7 +97,7 @@ namespace ArtificialBuilder
         public async Task<List<AB_Location_Connection_Model>> GetAllLocationConnectionsAsync(string? _sessionId = null)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Location_Connections_Response>(
-                new AB_Get_All_Location_Connections_Request { SessionId = _sessionId }, DefaultTimeout);
+                new AB_Get_All_Location_Connections_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
             return resp.Data ?? new();
         }
 
@@ -195,7 +195,7 @@ namespace ArtificialBuilder
         public async Task<List<AB_Character_Data_Model>> GetAllSessionDataAsync(string _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Session_Data_Response>(
-                new AB_Get_All_Session_Data_Request { SessionId = _sessionId }, DefaultTimeout);
+                new AB_Get_All_Session_Data_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
             return resp.Data ?? new();
         }
 
@@ -211,7 +211,7 @@ namespace ArtificialBuilder
         public async Task<bool> DeleteSessionDataAsync(string _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Session_Data_Response>(
-                new AB_Delete_Session_Data_Request { SessionId = _sessionId }, DefaultTimeout);
+                new AB_Delete_Session_Data_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
             return resp.Success;
         }
 
@@ -235,7 +235,7 @@ namespace ArtificialBuilder
         public async Task<bool> CopyCircuitDataToSessionAsync(string _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Copy_Circuit_Data_To_Session_Response>(
-                new AB_Copy_Circuit_Data_To_Session_Request { SessionId = _sessionId }, DefaultTimeout);
+                new AB_Copy_Circuit_Data_To_Session_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
             return resp.Success;
         }
 
@@ -245,7 +245,7 @@ namespace ArtificialBuilder
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Character_Data_By_Category_Response>(
                 new AB_Get_Character_Data_By_Category_Request
-                { CharacterId = _characterId, SessionId = _sessionId, CategoryId = _categoryId },
+                { CharacterId = _characterId, SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId), CategoryId = _categoryId },
                 DefaultTimeout);
             return resp.Data ?? new();
         }
@@ -259,7 +259,7 @@ namespace ArtificialBuilder
             var resp = await GetBroker().PublishAndWaitAsync<AB_Upsert_Character_Data_Response>(
                 new AB_Upsert_Character_Data_Request
                 {
-                    CharacterId = _characterId, SessionId = _sessionId, CategoryId = _categoryId,
+                    CharacterId = _characterId, SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId), CategoryId = _categoryId,
                     FieldName = _fieldName, FieldValue = _fieldValue, Narrative = _narrative,
                     Source = _source, MessageId = _messageId
                 }, DefaultTimeout);
@@ -590,7 +590,7 @@ namespace ArtificialBuilder
             var resp = await GetBroker().PublishAndWaitAsync<AB_Insert_Chat_Embedding_Response>(
                 new AB_Insert_Chat_Embedding_Request
                 {
-                    SessionId = _sessionId,
+                    SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId),
                     NodeId = _nodeId,
                     TurnIndex = _turnIndex,
                     RefreshIndex = _refreshIndex,
@@ -604,7 +604,7 @@ namespace ArtificialBuilder
         public async Task<bool> DeleteChatEmbeddingsBySessionAsync(string _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Chat_Embeddings_By_Session_Response>(
-                new AB_Delete_Chat_Embeddings_By_Session_Request { SessionId = _sessionId }, DefaultTimeout);
+                new AB_Delete_Chat_Embeddings_By_Session_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
             return resp.Success;
         }
 
@@ -615,7 +615,7 @@ namespace ArtificialBuilder
             var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Chat_Embedding_By_Record_Response>(
                 new AB_Delete_Chat_Embedding_By_Record_Request
                 {
-                    SessionId = _sessionId,
+                    SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId),
                     NodeId = _nodeId,
                     TurnIndex = _turnIndex,
                     RefreshIndex = _refreshIndex,
@@ -628,7 +628,7 @@ namespace ArtificialBuilder
         public async Task<List<AB_Chat_Embedding_Info>> GetChatEmbeddingsBySessionAsync(string _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Chat_Embeddings_By_Session_Response>(
-                new AB_Get_Chat_Embeddings_By_Session_Request { SessionId = _sessionId }, DefaultTimeout);
+                new AB_Get_Chat_Embeddings_By_Session_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
             return resp.Data ?? new();
         }
 

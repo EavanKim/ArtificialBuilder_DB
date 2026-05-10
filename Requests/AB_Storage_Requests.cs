@@ -68,7 +68,7 @@ namespace ArtificialBuilder.Requests
     /// <summary>새 turn 슬롯 추가 (list tail 에 append). prev/next 포인터 자동 연결.</summary>
     public class AB_Append_Session_Slot_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public long? InputResourceId;
         public AB_Append_Session_Slot_Request() { Topic = AB_Storage_Topics.Storage; }
     }
@@ -99,7 +99,7 @@ namespace ArtificialBuilder.Requests
     /// <summary>세션의 모든 슬롯 head→tail 순회 결과.</summary>
     public class AB_Get_Session_Slots_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public AB_Get_Session_Slots_Request() { Topic = AB_Storage_Topics.Storage; }
     }
 
@@ -145,7 +145,7 @@ namespace ArtificialBuilder.Requests
     /// <summary>새 context (실행 변종) 추가. turn_id 기준 같은 슬롯 안의 변종.</summary>
     public class AB_Add_Context_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public long TurnId;
         public AB_Add_Context_Request() { Topic = AB_Storage_Topics.Storage; }
     }
@@ -242,7 +242,7 @@ namespace ArtificialBuilder.Requests
     /// <summary>세션의 모든 신 storage row cascade 삭제. resource 는 해당 세션 데이터에서 참조하던 것만 같이 제거.</summary>
     public class AB_Delete_Session_Storage_Request : AB_Message
     {
-        public string SessionId = "";
+        public long SessionId;
         public AB_Delete_Session_Storage_Request() { Topic = AB_Storage_Topics.Storage; }
     }
 

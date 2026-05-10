@@ -31,7 +31,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Get_All_Characters_Request : AB_Message
     {
         /// <summary>세션 ID 필터 (null이면 전체).</summary>
-        public string? SessionId;
+        public long SessionId;
         /// <summary>토픽 자동 설정 생성자.</summary>
         public AB_Get_All_Characters_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
@@ -77,7 +77,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>추가할 캐릭터.</summary>
         public AB_Character_Model Character = new();
         /// <summary>세션 ID (옵션).</summary>
-        public string? SessionId;
+        public long SessionId;
         /// <summary>토픽 자동 설정.</summary>
         public AB_Add_Character_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
@@ -143,7 +143,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Get_All_Relationships_Request : AB_Message
     {
         /// <summary>세션 ID 필터.</summary>
-        public string? SessionId;
+        public long SessionId;
         /// <summary>토픽 자동 설정.</summary>
         public AB_Get_All_Relationships_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
@@ -165,7 +165,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Get_All_Locations_Request : AB_Message
     {
         /// <summary>세션 ID 필터.</summary>
-        public string? SessionId;
+        public long SessionId;
         /// <summary>토픽 자동 설정.</summary>
         public AB_Get_All_Locations_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
@@ -187,7 +187,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Get_All_Location_Connections_Request : AB_Message
     {
         /// <summary>세션 ID 필터.</summary>
-        public string? SessionId;
+        public long SessionId;
         /// <summary>토픽 자동 설정.</summary>
         public AB_Get_All_Location_Connections_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
@@ -309,7 +309,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Get_All_Session_Data_Request : AB_Message
     {
         /// <summary>세션 ID.</summary>
-        public string SessionId = "";
+        public long SessionId;
         /// <summary>토픽.</summary>
         public AB_Get_All_Session_Data_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
@@ -345,7 +345,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Delete_Session_Data_Request : AB_Message
     {
         /// <summary>세션 ID.</summary>
-        public string SessionId = "";
+        public long SessionId;
         /// <summary>토픽.</summary>
         public AB_Delete_Session_Data_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
@@ -402,7 +402,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Copy_Circuit_Data_To_Session_Request : AB_Message
     {
         /// <summary>대상 세션 ID.</summary>
-        public string SessionId = "";
+        public long SessionId;
         /// <summary>토픽.</summary>
         public AB_Copy_Circuit_Data_To_Session_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
@@ -423,7 +423,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>캐릭터 ID.</summary>
         public string CharacterId = "";
         /// <summary>세션 ID (null=Circuit 템플릿).</summary>
-        public string? SessionId;
+        public long SessionId;
         /// <summary>카테고리 ID.</summary>
         public string CategoryId = "";
         /// <summary>토픽.</summary>
@@ -446,7 +446,7 @@ namespace ArtificialBuilder.Requests
         /// <summary>캐릭터 ID.</summary>
         public string CharacterId = "";
         /// <summary>세션 ID.</summary>
-        public string? SessionId;
+        public long SessionId;
         /// <summary>카테고리 ID.</summary>
         public string CategoryId = "";
         /// <summary>필드 이름.</summary>
@@ -1426,7 +1426,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Insert_Chat_Embedding_Request : AB_Message
     {
         /// <summary>세션 ID.</summary>
-        public string SessionId = "";
+        public long SessionId;
         /// <summary>소스 노드 ID.</summary>
         public string NodeId = "";
         /// <summary>턴 인덱스.</summary>
@@ -1457,7 +1457,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Delete_Chat_Embeddings_By_Session_Request : AB_Message
     {
         /// <summary>세션 ID.</summary>
-        public string SessionId = "";
+        public long SessionId;
         /// <summary>토픽.</summary>
         public AB_Delete_Chat_Embeddings_By_Session_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
@@ -1478,7 +1478,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Delete_Chat_Embedding_By_Record_Request : AB_Message
     {
         /// <summary>세션 ID.</summary>
-        public string SessionId = "";
+        public long SessionId;
         /// <summary>소스 노드 ID.</summary>
         public string NodeId = "";
         /// <summary>턴 인덱스.</summary>
@@ -1507,7 +1507,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Get_Chat_Embeddings_By_Session_Request : AB_Message
     {
         /// <summary>세션 ID.</summary>
-        public string SessionId = "";
+        public long SessionId;
         /// <summary>토픽.</summary>
         public AB_Get_Chat_Embeddings_By_Session_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }

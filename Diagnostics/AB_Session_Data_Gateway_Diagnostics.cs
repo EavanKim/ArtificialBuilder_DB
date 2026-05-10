@@ -28,7 +28,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
             {
                 Step("GetAllSessionData (빈)");
                 var sd = await broker.PublishAndWaitAsync<AB_Get_All_Session_Data_Response>(
-                    new AB_Get_All_Session_Data_Request { SessionId = "sess_test" }, TimeSpan.FromSeconds(5));
+                    new AB_Get_All_Session_Data_Request { SessionId = 1L }, TimeSpan.FromSeconds(5));
                 Log("sessionData.Count", sd.Data.Count);
                 Assert("0개", sd.Data.Count == 0);
 
@@ -62,7 +62,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
 
             try
             {
-                string sessionId = "sess_x";
+                string sessionId = "1";
                 string charId = "char_x";
                 string catId = "cat_x";
 
@@ -77,7 +77,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 var upResp = await broker.PublishAndWaitAsync<AB_Upsert_Character_Data_Response>(
                     new AB_Upsert_Character_Data_Request
                     {
-                        CharacterId = charId, SessionId = sessionId, CategoryId = catId,
+                        CharacterId = charId, SessionId = long.Parse(sessionId), CategoryId = catId,
                         FieldName = "mood", FieldValue = "happy", Source = "test", MessageId = 1
                     }, TimeSpan.FromSeconds(5));
                 Assert("Upsert 성공", upResp.Success, upResp.Error ?? "");
@@ -85,25 +85,25 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 Step("GetCharacterDataByCategory");
                 var byCat = await broker.PublishAndWaitAsync<AB_Get_Character_Data_By_Category_Response>(
                     new AB_Get_Character_Data_By_Category_Request
-                    { CharacterId = charId, SessionId = sessionId, CategoryId = catId },
+                    { CharacterId = charId, SessionId = long.Parse(sessionId), CategoryId = catId },
                     TimeSpan.FromSeconds(5));
                 Log("byCategory.Count", byCat.Data.Count);
                 Assert("1건 이상", byCat.Data.Count >= 1);
 
                 Step("GetAllSessionData");
                 var sd = await broker.PublishAndWaitAsync<AB_Get_All_Session_Data_Response>(
-                    new AB_Get_All_Session_Data_Request { SessionId = sessionId }, TimeSpan.FromSeconds(5));
+                    new AB_Get_All_Session_Data_Request { SessionId = long.Parse(sessionId) }, TimeSpan.FromSeconds(5));
                 Log("sessionData.Count", sd.Data.Count);
                 Assert("세션 데이터 1건 이상", sd.Data.Count >= 1);
 
                 Step("DeleteSessionData");
                 var delResp = await broker.PublishAndWaitAsync<AB_Delete_Session_Data_Response>(
-                    new AB_Delete_Session_Data_Request { SessionId = sessionId }, TimeSpan.FromSeconds(5));
+                    new AB_Delete_Session_Data_Request { SessionId = long.Parse(sessionId) }, TimeSpan.FromSeconds(5));
                 Assert("Delete 성공", delResp.Success, delResp.Error ?? "");
 
                 Step("최종 GetAllSessionData == 0");
                 var final = await broker.PublishAndWaitAsync<AB_Get_All_Session_Data_Response>(
-                    new AB_Get_All_Session_Data_Request { SessionId = sessionId }, TimeSpan.FromSeconds(5));
+                    new AB_Get_All_Session_Data_Request { SessionId = long.Parse(sessionId) }, TimeSpan.FromSeconds(5));
                 Log("final.Count", final.Data.Count);
                 Assert("0개", final.Data.Count == 0);
             }

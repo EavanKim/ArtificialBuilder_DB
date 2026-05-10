@@ -270,7 +270,7 @@ namespace ArtificialBuilder
                     }
                     case AB_Insert_Chat_Embedding_Request req:
                     {
-                        await AB_Persona_Db_Proxy.I.InsertChatEmbeddingAsync(req.SessionId, req.NodeId,
+                        await AB_Persona_Db_Proxy.I.InsertChatEmbeddingAsync(req.SessionId.ToString(), req.NodeId,
                             req.TurnIndex, req.RefreshIndex, req.EmissionOrder, req.Embedding);
                         m_broker?.Publish(new AB_Insert_Chat_Embedding_Response
                         { CorrelationId = req.CorrelationId, Success = true });
@@ -278,14 +278,14 @@ namespace ArtificialBuilder
                     }
                     case AB_Delete_Chat_Embeddings_By_Session_Request req:
                     {
-                        await AB_Persona_Db_Proxy.I.DeleteChatEmbeddingsBySessionAsync(req.SessionId);
+                        await AB_Persona_Db_Proxy.I.DeleteChatEmbeddingsBySessionAsync(req.SessionId.ToString());
                         m_broker?.Publish(new AB_Delete_Chat_Embeddings_By_Session_Response
                         { CorrelationId = req.CorrelationId, Success = true });
                         break;
                     }
                     case AB_Delete_Chat_Embedding_By_Record_Request req:
                     {
-                        await AB_Persona_Db_Proxy.I.DeleteChatEmbeddingByRecordAsync(req.SessionId, req.NodeId,
+                        await AB_Persona_Db_Proxy.I.DeleteChatEmbeddingByRecordAsync(req.SessionId.ToString(), req.NodeId,
                             req.TurnIndex, req.RefreshIndex, req.EmissionOrder);
                         m_broker?.Publish(new AB_Delete_Chat_Embedding_By_Record_Response
                         { CorrelationId = req.CorrelationId, Success = true });
@@ -293,7 +293,7 @@ namespace ArtificialBuilder
                     }
                     case AB_Get_Chat_Embeddings_By_Session_Request req:
                     {
-                        var data = await AB_Persona_Db_Proxy.I.GetChatEmbeddingsBySessionAsync(req.SessionId);
+                        var data = await AB_Persona_Db_Proxy.I.GetChatEmbeddingsBySessionAsync(req.SessionId.ToString());
                         m_broker?.Publish(new AB_Get_Chat_Embeddings_By_Session_Response
                         { CorrelationId = req.CorrelationId, Data = data });
                         break;
@@ -358,7 +358,7 @@ namespace ArtificialBuilder
                         List<AB_Character_Data_Model> data = new();
                         if (dbId != 0)
                         {
-                            string sid = req.SessionId;
+                            string sid = req.SessionId.ToString();
                             var all = await AB_Board.Db.FindAsync<AB_Character_Data_Model>(dbId, _d => _d.SessionId_ == sid);
                             data.AddRange(all);
                         }
@@ -381,7 +381,7 @@ namespace ArtificialBuilder
                     }
                     case AB_Delete_Session_Data_Request req:
                     {
-                        bool ok = await CharacterDataDeleteBySessionAsync(req.SessionId);
+                        bool ok = await CharacterDataDeleteBySessionAsync(req.SessionId.ToString());
                         m_broker?.Publish(new AB_Delete_Session_Data_Response
                         { CorrelationId = req.CorrelationId, Success = ok });
                         break;
@@ -402,7 +402,7 @@ namespace ArtificialBuilder
                     }
                     case AB_Copy_Circuit_Data_To_Session_Request req:
                     {
-                        bool ok = await CharacterDataCopyCircuitToSessionAsync(req.SessionId);
+                        bool ok = await CharacterDataCopyCircuitToSessionAsync(req.SessionId.ToString());
                         m_broker?.Publish(new AB_Copy_Circuit_Data_To_Session_Response
                         { CorrelationId = req.CorrelationId, Success = ok });
                         break;
@@ -414,7 +414,7 @@ namespace ArtificialBuilder
                         if (dbId != 0)
                         {
                             string cid = req.CharacterId;
-                            string? sid = req.SessionId;
+                            string? sid = req.SessionId == 0L ? null : req.SessionId.ToString();
                             string catId = req.CategoryId;
                             var all = await AB_Board.Db.FindAsync<AB_Character_Data_Model>(dbId,
                                 _d => _d.CharacterId_ == cid && _d.SessionId_ == sid && _d.CategoryId_ == catId);
@@ -432,7 +432,7 @@ namespace ArtificialBuilder
                             var item = new AB_Character_Data_Model
                             {
                                 CharacterId_ = req.CharacterId,
-                                SessionId_ = req.SessionId,
+                                SessionId_ = req.SessionId == 0L ? null : req.SessionId.ToString(),
                                 CategoryId_ = req.CategoryId,
                                 FieldName_ = req.FieldName,
                                 FieldValue_ = req.FieldValue,
