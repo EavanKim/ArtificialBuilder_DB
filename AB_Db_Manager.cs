@@ -58,7 +58,7 @@ namespace ArtificialBuilder
         public override void OnDetach() { /* disposal handled by Program.Main */ }
 
         /// <summary>단일 스레드 dirty 엔트리 flush. Tick 단계 — 경쟁 없음. [[blackboard-db]].</summary>
-        public override IEnumerator<EDP_Coroutine_State> Tick(double _deltaSec)
+        public override IEnumerator<EDP_Coroutine_State> run(double _deltaSec)
         {
             try
             {

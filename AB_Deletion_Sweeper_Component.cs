@@ -26,7 +26,7 @@ namespace ArtificialBuilder_EDP.Components
         private int m_idleSkip;
         private bool m_inFlight;
 
-        public override IEnumerator<EDP_Coroutine_State> Tick(double _deltaSec)
+        public override IEnumerator<EDP_Coroutine_State> run(double _deltaSec)
         {
             if (m_inFlight) yield break;
             if (m_idleSkip > 0)
