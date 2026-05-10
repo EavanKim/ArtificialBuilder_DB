@@ -70,7 +70,7 @@ namespace ArtificialBuilder
             {
                 AB_Logic_Meta_Model meta = new()
                 {
-                    Id_ = "meta",
+                    Id_ = 1,
                     LogicUuid_ = safeUuid,
                     DisplayName_ = _name ?? "",
                 };

@@ -8,10 +8,10 @@ namespace ArtificialBuilder.Models
     [Table("logic_meta")]
     public class AB_Logic_Meta_Model
     {
-        private string m_id_ = "meta";
+        private long m_id_ = 1;
         [Key]
         [Column("id")]
-        public string Id_
+        public long Id_
         {
             get { return m_id_; }
             set { m_id_ = value; }

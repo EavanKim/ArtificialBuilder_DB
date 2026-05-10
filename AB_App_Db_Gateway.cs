@@ -79,7 +79,7 @@ namespace ArtificialBuilder
                         bool isOk = false;
                         if (handle != 0)
                         {
-                            var found = await m_engine.FindAsync<AB_Model_Config_Model>(handle, _m => _m.Id_ == req.Id);
+                            var found = await m_engine.FindAsync<AB_Model_Config_Model>(handle, _m => _m.Id_.ToString() == req.Id);
                             data = found.FirstOrDefault();
                             isOk = data != null;
                         }

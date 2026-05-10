@@ -13,10 +13,10 @@ namespace ArtificialBuilder.Models
     [Table("circuit_hosted_logic_ui_mappings")]
     public class AB_Hosted_Ui_Mapping_Model
     {
-        private string m_id_ = Guid.NewGuid().ToString();
+        private long m_id_ = ArtificialBuilder.AB_Id_Issuer.Issue();
         [Key]
         [Column("id")]
-        public string Id_ { get { return m_id_; } set { m_id_ = value; } }
+        public long Id_ { get { return m_id_; } set { m_id_ = value; } }
 
         /// <summary>FK → AB_Circuit_Hosted_Logic_Model.Id_</summary>
         private string m_hostedLogicId_ = "";
