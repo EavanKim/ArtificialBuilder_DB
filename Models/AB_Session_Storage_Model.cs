@@ -31,10 +31,10 @@ namespace ArtificialBuilder.Models
         }
 
         /// <summary>소속 채팅 세션 ID. 소프트웨어 FK → chat_sessions.id (cascade delete).</summary>
-        private string m_sessionId_ = "";
+        private long m_sessionId_;
         [Required]
         [Column("session_id")]
-        public string SessionId_
+        public long SessionId_
         {
             get { return m_sessionId_; }
             set { m_sessionId_ = value; }

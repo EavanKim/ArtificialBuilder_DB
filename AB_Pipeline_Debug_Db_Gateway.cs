@@ -102,13 +102,14 @@ namespace ArtificialBuilder
                         List<AB_Pipeline_Debug_Entry_Model> data = new();
                         if (handle != 0)
                         {
+                            long sid = long.Parse(req.SessionId);
                             IEnumerable<AB_Pipeline_Debug_Entry_Model> all;
                             if (req.EntryType != null)
                                 all = await m_engine.FindAsync<AB_Pipeline_Debug_Entry_Model>(handle,
-                                    _e => _e.SessionId_ == req.SessionId && _e.EntryType_ == req.EntryType);
+                                    _e => _e.SessionId_ == sid && _e.EntryType_ == req.EntryType);
                             else
                                 all = await m_engine.FindAsync<AB_Pipeline_Debug_Entry_Model>(handle,
-                                    _e => _e.SessionId_ == req.SessionId);
+                                    _e => _e.SessionId_ == sid);
 
                             var sorted = new List<AB_Pipeline_Debug_Entry_Model>(all);
                             int CompareDesc(AB_Pipeline_Debug_Entry_Model _a, AB_Pipeline_Debug_Entry_Model _b) => _b.TimestampUtc_.CompareTo(_a.TimestampUtc_);

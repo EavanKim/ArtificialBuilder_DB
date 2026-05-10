@@ -129,12 +129,13 @@ namespace ArtificialBuilder
                             // 마킹된 슬롯이 NextId_=null 인 경우가 있는데 (마킹은 IsDeleted_ 만 켜고 포인터는 안 건드림),
                             // 그걸 tail 로 잡으면 새 슬롯이 marked 슬롯의 PrevId 를 가리킴 → sweep 시점에
                             // marked 슬롯이 "live ref 있다" 로 revive 됨 → 삭제했던 turn 이 부활.
+                            long sid = long.Parse(req.SessionId);
                             var tail = (await m_engine.FindAsync<AB_Session_Storage_Model>(handle,
-                                _s => _s.SessionId_ == req.SessionId && _s.NextId_ == null && !_s.IsDeleted_)).FirstOrDefault();
+                                _s => _s.SessionId_ == sid && _s.NextId_ == null && !_s.IsDeleted_)).FirstOrDefault();
 
                             AB_Session_Storage_Model row = new()
                             {
-                                SessionId_ = req.SessionId,
+                                SessionId_ = sid,
                                 PrevId_ = tail?.Id_,
                                 NextId_ = null,
                                 InputResourceId_ = req.InputResourceId,
@@ -177,7 +178,8 @@ namespace ArtificialBuilder
                         List<AB_Session_Storage_Model> data = new();
                         if (handle != 0)
                         {
-                            var all = await m_engine.FindAsync<AB_Session_Storage_Model>(handle, _s => _s.SessionId_ == req.SessionId && !_s.IsDeleted_);
+                            long sid = long.Parse(req.SessionId);
+                            var all = await m_engine.FindAsync<AB_Session_Storage_Model>(handle, _s => _s.SessionId_ == sid && !_s.IsDeleted_);
                             // head 부터 next_id 따라가며 정렬 (마킹된 슬롯은 이미 제외)
                             Dictionary<long, AB_Session_Storage_Model> byId = new();
                             foreach (AB_Session_Storage_Model s in all) byId[s.Id_] = s;
@@ -271,7 +273,7 @@ namespace ArtificialBuilder
                         {
                             AB_Context_Storage_Model row = new()
                             {
-                                SessionId_ = req.SessionId,
+                                SessionId_ = long.Parse(req.SessionId),
                                 TurnId_ = req.TurnId,
                                 CreatedAt_ = DateTime.UtcNow,
                             };
@@ -670,8 +672,9 @@ namespace ArtificialBuilder
                         if (handle != 0)
                         {
                             // 1) 세션의 슬롯 / 컨텍스트 / 노드 수집.
-                            var slots = (await m_engine.FindAsync<AB_Session_Storage_Model>(handle, _s => _s.SessionId_ == req.SessionId)).ToList();
-                            var contexts = (await m_engine.FindAsync<AB_Context_Storage_Model>(handle, _c => _c.SessionId_ == req.SessionId)).ToList();
+                            long sid = long.Parse(req.SessionId);
+                            var slots = (await m_engine.FindAsync<AB_Session_Storage_Model>(handle, _s => _s.SessionId_ == sid)).ToList();
+                            var contexts = (await m_engine.FindAsync<AB_Context_Storage_Model>(handle, _c => _c.SessionId_ == sid)).ToList();
                             HashSet<long> ctxIds = new();
                             foreach (AB_Context_Storage_Model c in contexts) ctxIds.Add(c.Id_);
                             var nodes = (await m_engine.FindAsync<AB_Logic_Storage_Model>(handle, _n => ctxIds.Contains(_n.ContextId_))).ToList();

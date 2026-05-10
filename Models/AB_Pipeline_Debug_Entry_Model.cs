@@ -21,9 +21,9 @@ namespace ArtificialBuilder.Models
             set { m_id = value; }
         }
 
-        private string m_sessionId = "";
+        private long m_sessionId;
         [Column("session_id")]
-        public string SessionId_
+        public long SessionId_
         {
             get { return m_sessionId; }
             set { m_sessionId = value; }
