@@ -162,7 +162,8 @@ namespace ArtificialBuilder
                         AB_Chat_Session_Model? session = null;
                         if (handle != 0)
                         {
-                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == req.SessionId);
+                            long sid = long.Parse(req.SessionId);
+                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             session = sessions.FirstOrDefault();
                         }
                         m_broker?.Publish(new AB_Get_Session_Response
@@ -224,7 +225,8 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (handle != 0)
                         {
-                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == req.SessionId);
+                            long sid = long.Parse(req.SessionId);
+                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
                             {
@@ -244,7 +246,8 @@ namespace ArtificialBuilder
                         AB_Chat_Session_Model? newSession = null;
                         if (handle != 0)
                         {
-                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == req.SessionId);
+                            long sid = long.Parse(req.SessionId);
+                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
                             {
@@ -268,7 +271,8 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (handle != 0)
                         {
-                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == req.SessionId);
+                            long sid = long.Parse(req.SessionId);
+                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
                             {
@@ -288,7 +292,8 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (handle != 0)
                         {
-                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == req.SessionId);
+                            long sid = long.Parse(req.SessionId);
+                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
                             {
@@ -307,7 +312,8 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (handle != 0)
                         {
-                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == req.SessionId);
+                            long sid = long.Parse(req.SessionId);
+                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
                             {
@@ -326,7 +332,8 @@ namespace ArtificialBuilder
                         string? title = null;
                         if (handle != 0)
                         {
-                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == req.SessionId);
+                            long sid = long.Parse(req.SessionId);
+                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
                             {
@@ -369,7 +376,8 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (handle != 0)
                         {
-                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == req.SessionId);
+                            long sid = long.Parse(req.SessionId);
+                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
                             {
@@ -389,7 +397,8 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (handle != 0)
                         {
-                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == req.SessionId);
+                            long sid = long.Parse(req.SessionId);
+                            var sessions = await m_engine.FindAsync<AB_Chat_Session_Model>(handle, _s => _s.Id_ == sid);
                             var session = sessions.FirstOrDefault();
                             if (session != null)
                             {
