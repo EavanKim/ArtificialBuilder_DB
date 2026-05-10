@@ -101,7 +101,7 @@ namespace ArtificialBuilder
                     {
                         AB_Logic_Meta_Model? data = dbId == 0
                             ? null
-                            : await AB_Board.Db.GetByIdAsync<AB_Logic_Meta_Model>(dbId, "meta");
+                            : await AB_Board.Db.GetByIdAsync<AB_Logic_Meta_Model>(dbId, 1L);
                         m_broker?.Publish(new AB_Get_Logic_Meta_Response
                         { CorrelationId = req.CorrelationId, Data = data });
                         break;

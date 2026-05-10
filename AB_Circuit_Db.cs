@@ -147,7 +147,7 @@ namespace ArtificialBuilder
                     // 현재 활성 Circuit은 기존 핸들에서 직접 읽기
                     if (Handle != 0 && name == ActiveName)
                     {
-                        var settings = await m_engine.GetByIdAsync<AB_Circuit_Settings_Model>(Handle, "settings");
+                        var settings = await m_engine.GetByIdAsync<AB_Circuit_Settings_Model>(Handle, 1L);
                         if (settings != null)
                         {
                             if (!string.IsNullOrEmpty(settings.CircuitType_))
@@ -221,7 +221,7 @@ namespace ArtificialBuilder
             // Circuit 타입은 파일 내부 circuit_settings.circuit_type에서 읽음 (엔진 직결)
             try
             {
-                var settings = await m_engine.GetByIdAsync<AB_Circuit_Settings_Model>(Handle, "settings");
+                var settings = await m_engine.GetByIdAsync<AB_Circuit_Settings_Model>(Handle, 1L);
                 ActiveType = settings?.CircuitType_ ?? "chat";
             }
             catch { ActiveType = "chat"; }

@@ -126,7 +126,7 @@ namespace ArtificialBuilder
                 string name = "";
                 if (Handle != 0 && string.Equals(ActiveUuid, uuid, StringComparison.Ordinal))
                 {
-                    AB_Logic_Meta_Model? meta = await AB_Board.Db.GetByIdAsync<AB_Logic_Meta_Model>(Handle, "meta");
+                    AB_Logic_Meta_Model? meta = await AB_Board.Db.GetByIdAsync<AB_Logic_Meta_Model>(Handle, 1L);
                     if (meta != null) name = meta.DisplayName_ ?? "";
                 }
                 else
@@ -135,7 +135,7 @@ namespace ArtificialBuilder
                         dbPath, _options => new AB_Logic_Db_Context(_options));
                     try
                     {
-                        AB_Logic_Meta_Model? meta = await AB_Board.Db.GetByIdAsync<AB_Logic_Meta_Model>(h, "meta");
+                        AB_Logic_Meta_Model? meta = await AB_Board.Db.GetByIdAsync<AB_Logic_Meta_Model>(h, 1L);
                         if (meta != null) name = meta.DisplayName_ ?? "";
                     }
                     finally

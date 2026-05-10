@@ -564,7 +564,7 @@ namespace ArtificialBuilder
                     {
                         int dbId = ActiveDbId;
                         AB_Circuit_Settings_Model? data = dbId == 0 ? null
-                            : await AB_Board.Db.GetByIdAsync<AB_Circuit_Settings_Model>(dbId, "settings");
+                            : await AB_Board.Db.GetByIdAsync<AB_Circuit_Settings_Model>(dbId, 1L);
                         m_broker?.Publish(new AB_Get_Circuit_Settings_Response
                         {
                             CorrelationId = req.CorrelationId,
