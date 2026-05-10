@@ -104,10 +104,10 @@ namespace ArtificialBuilder
             return resp.Data;
         }
 
-        public async Task<AB_Chat_Session_Model?> GetSessionAsync(string _sessionId)
+        public async Task<AB_Chat_Session_Model?> GetSessionAsync(long _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Session_Response>(
-                new AB_Get_Session_Request { SessionId = long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Get_Session_Request { SessionId = _sessionId }, DefaultTimeout);
             return resp.Data;
         }
 
@@ -132,60 +132,60 @@ namespace ArtificialBuilder
             return resp.Count;
         }
 
-        public async Task RenameSessionAsync(string _sessionId, string _newTitle)
+        public async Task RenameSessionAsync(long _sessionId, string _newTitle)
         {
             await GetBroker().PublishAndWaitAsync<AB_Rename_Session_Response>(
-                new AB_Rename_Session_Request { SessionId = long.Parse(_sessionId), NewTitle = _newTitle }, DefaultTimeout);
+                new AB_Rename_Session_Request { SessionId = _sessionId, NewTitle = _newTitle }, DefaultTimeout);
         }
 
-        public async Task<AB_Chat_Session_Model?> CopySessionAsync(string _sessionId)
+        public async Task<AB_Chat_Session_Model?> CopySessionAsync(long _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Copy_Session_Response>(
-                new AB_Copy_Session_Request { SessionId = long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Copy_Session_Request { SessionId = _sessionId }, DefaultTimeout);
             return resp.Data;
         }
 
-        public async Task MoveSessionAsync(string _sessionId, string _targetPersonaName)
+        public async Task MoveSessionAsync(long _sessionId, string _targetPersonaName)
         {
             await GetBroker().PublishAndWaitAsync<AB_Move_Session_Response>(
-                new AB_Move_Session_Request { SessionId = long.Parse(_sessionId), TargetPersonaName = _targetPersonaName }, DefaultTimeout);
+                new AB_Move_Session_Request { SessionId = _sessionId, TargetPersonaName = _targetPersonaName }, DefaultTimeout);
         }
 
-        public async Task DeleteSessionAsync(string _sessionId)
+        public async Task DeleteSessionAsync(long _sessionId)
         {
             await GetBroker().PublishAndWaitAsync<AB_Delete_Session_Response>(
-                new AB_Delete_Session_Request { SessionId = long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Delete_Session_Request { SessionId = _sessionId }, DefaultTimeout);
         }
 
-        public async Task TouchSessionAsync(string _sessionId)
+        public async Task TouchSessionAsync(long _sessionId)
         {
             await GetBroker().PublishAndWaitAsync<AB_Touch_Session_Response>(
-                new AB_Touch_Session_Request { SessionId = long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Touch_Session_Request { SessionId = _sessionId }, DefaultTimeout);
         }
 
-        public async Task<string?> UpdateSessionTitleFromFirstMessageAsync(string _sessionId, string _text)
+        public async Task<string?> UpdateSessionTitleFromFirstMessageAsync(long _sessionId, string _text)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Update_Session_Title_From_First_Message_Response>(
-                new AB_Update_Session_Title_From_First_Message_Request { SessionId = long.Parse(_sessionId), Text = _text }, DefaultTimeout);
+                new AB_Update_Session_Title_From_First_Message_Request { SessionId = _sessionId, Text = _text }, DefaultTimeout);
             return resp.Title;
         }
 
-        public async Task UpdateSessionCostAsync(string _sessionId, long _inputTokens, long _outputTokens, decimal _cost)
+        public async Task UpdateSessionCostAsync(long _sessionId, long _inputTokens, long _outputTokens, decimal _cost)
         {
             await GetBroker().PublishAndWaitAsync<AB_Update_Session_Cost_Response>(
                 new AB_Update_Session_Cost_Request
                 {
-                    SessionId = long.Parse(_sessionId),
+                    SessionId = _sessionId,
                     InputTokens = _inputTokens,
                     OutputTokens = _outputTokens,
                     Cost = _cost
                 }, DefaultTimeout);
         }
 
-        public async Task<(long inputTokens, long outputTokens, decimal cost)> GetSessionCostAsync(string _sessionId)
+        public async Task<(long inputTokens, long outputTokens, decimal cost)> GetSessionCostAsync(long _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Session_Cost_Response>(
-                new AB_Get_Session_Cost_Request { SessionId = long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Get_Session_Cost_Request { SessionId = _sessionId }, DefaultTimeout);
             return (resp.InputTokens, resp.OutputTokens, resp.Cost);
         }
 
@@ -193,24 +193,24 @@ namespace ArtificialBuilder
         // 4 계층 storage ([[storage-layers]]) 의 Context_Storage / Node_Storage / Session_Storage 가 정본.
 
         /// <summary>세션 TurnShardSize 값만 갱신. 호출자가 사전에 데이터 wipe 를 책임짐.</summary>
-        public async Task<bool> UpdateSessionTurnShardSizeAsync(string _sessionId, int _newSize)
+        public async Task<bool> UpdateSessionTurnShardSizeAsync(long _sessionId, int _newSize)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Update_Session_Turn_Shard_Size_Response>(
                 new AB_Update_Session_Turn_Shard_Size_Request
                 {
-                    SessionId = long.Parse(_sessionId),
+                    SessionId = _sessionId,
                     NewTurnShardSize = _newSize
                 }, DefaultTimeout);
             return resp.Success;
         }
 
         /// <summary>세션 CircuitName_ 만 갱신. chat 진행 중 circuit 교체용 (history 보존).</summary>
-        public async Task<bool> UpdateSessionCircuitAsync(string _sessionId, string _circuitName)
+        public async Task<bool> UpdateSessionCircuitAsync(long _sessionId, string _circuitName)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Update_Session_Circuit_Response>(
                 new AB_Update_Session_Circuit_Request
                 {
-                    SessionId = long.Parse(_sessionId),
+                    SessionId = _sessionId,
                     CircuitName = _circuitName
                 }, DefaultTimeout);
             return resp.Success;
@@ -240,13 +240,13 @@ namespace ArtificialBuilder
             return resp.Hits;
         }
 
-        public async Task InsertChatEmbeddingAsync(string _sessionId, string _nodeId,
+        public async Task InsertChatEmbeddingAsync(long _sessionId, string _nodeId,
             int _turnIndex, int _refreshIndex, int _emissionOrder, float[] _embedding)
         {
             await GetBroker().PublishAndWaitAsync<AB_Persona_Insert_Chat_Embedding_Response>(
                 new AB_Persona_Insert_Chat_Embedding_Request
                 {
-                    SessionId = long.Parse(_sessionId),
+                    SessionId = _sessionId,
                     NodeId = _nodeId,
                     TurnIndex = _turnIndex,
                     RefreshIndex = _refreshIndex,
@@ -255,19 +255,19 @@ namespace ArtificialBuilder
                 }, DefaultTimeout);
         }
 
-        public async Task DeleteChatEmbeddingsBySessionAsync(string _sessionId)
+        public async Task DeleteChatEmbeddingsBySessionAsync(long _sessionId)
         {
             await GetBroker().PublishAndWaitAsync<AB_Persona_Delete_Chat_Embeddings_By_Session_Response>(
-                new AB_Persona_Delete_Chat_Embeddings_By_Session_Request { SessionId = long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Persona_Delete_Chat_Embeddings_By_Session_Request { SessionId = _sessionId }, DefaultTimeout);
         }
 
-        public async Task DeleteChatEmbeddingByRecordAsync(string _sessionId, string _nodeId,
+        public async Task DeleteChatEmbeddingByRecordAsync(long _sessionId, string _nodeId,
             int _turnIndex, int _refreshIndex, int _emissionOrder)
         {
             await GetBroker().PublishAndWaitAsync<AB_Persona_Delete_Chat_Embedding_By_Record_Response>(
                 new AB_Persona_Delete_Chat_Embedding_By_Record_Request
                 {
-                    SessionId = long.Parse(_sessionId),
+                    SessionId = _sessionId,
                     NodeId = _nodeId,
                     TurnIndex = _turnIndex,
                     RefreshIndex = _refreshIndex,
@@ -275,10 +275,10 @@ namespace ArtificialBuilder
                 }, DefaultTimeout);
         }
 
-        public async Task<List<AB_Chat_Embedding_Info>> GetChatEmbeddingsBySessionAsync(string _sessionId)
+        public async Task<List<AB_Chat_Embedding_Info>> GetChatEmbeddingsBySessionAsync(long _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Persona_Get_Chat_Embeddings_By_Session_Response>(
-                new AB_Persona_Get_Chat_Embeddings_By_Session_Request { SessionId = long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Persona_Get_Chat_Embeddings_By_Session_Request { SessionId = _sessionId }, DefaultTimeout);
             return resp.Data;
         }
     }

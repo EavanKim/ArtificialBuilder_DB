@@ -67,12 +67,12 @@ namespace ArtificialBuilder
         // ============================================================
 
         /// <summary>세션 list 의 tail 에 새 turn 슬롯 추가. prev/next 포인터 자동 연결.</summary>
-        public async Task<long> AppendSessionSlotAsync(string _sessionId, long? _inputResourceId)
+        public async Task<long> AppendSessionSlotAsync(long _sessionId, long? _inputResourceId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Append_Session_Slot_Response>(
                 new AB_Append_Session_Slot_Request
                 {
-                    SessionId = long.Parse(_sessionId),
+                    SessionId = _sessionId,
                     InputResourceId = _inputResourceId,
                 }, DefaultTimeout);
             return resp.Success ? resp.Id : 0;
@@ -87,10 +87,10 @@ namespace ArtificialBuilder
         }
 
         /// <summary>세션의 모든 슬롯 head→tail 순회.</summary>
-        public async Task<List<AB_Session_Storage_Model>> GetSessionSlotsAsync(string _sessionId)
+        public async Task<List<AB_Session_Storage_Model>> GetSessionSlotsAsync(long _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Session_Slots_Response>(
-                new AB_Get_Session_Slots_Request { SessionId = long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Get_Session_Slots_Request { SessionId = _sessionId }, DefaultTimeout);
             return resp.Data ?? new();
         }
 
@@ -119,12 +119,12 @@ namespace ArtificialBuilder
         // ============================================================
 
         /// <summary>새 context (실행 변종) 추가. 같은 turn_id 의 변종으로 누적.</summary>
-        public async Task<long> AddContextAsync(string _sessionId, long _turnId)
+        public async Task<long> AddContextAsync(long _sessionId, long _turnId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Context_Response>(
                 new AB_Add_Context_Request
                 {
-                    SessionId = long.Parse(_sessionId),
+                    SessionId = _sessionId,
                     TurnId = _turnId,
                 }, DefaultTimeout);
             return resp.Success ? resp.Id : 0;
@@ -206,10 +206,10 @@ namespace ArtificialBuilder
         // ============================================================
 
         /// <summary>세션의 모든 신 storage row cascade 삭제 (slots + contexts + nodes + 그것들이 가리키던 resources).</summary>
-        public async Task<AB_Delete_Session_Storage_Response> DeleteSessionStorageAsync(string _sessionId)
+        public async Task<AB_Delete_Session_Storage_Response> DeleteSessionStorageAsync(long _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Session_Storage_Response>(
-                new AB_Delete_Session_Storage_Request { SessionId = long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Delete_Session_Storage_Request { SessionId = _sessionId }, DefaultTimeout);
             return resp;
         }
     }

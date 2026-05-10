@@ -38,10 +38,10 @@ namespace ArtificialBuilder
         // --- 5개 시범 메서드 ---
 
         /// <summary>활성 circuit의 캐릭터 목록.</summary>
-        public async Task<List<AB_Character_Model>> GetAllCharactersAsync(string? _sessionId = null)
+        public async Task<List<AB_Character_Model>> GetAllCharactersAsync(long _sessionId = 0L)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Characters_Response>(
-                new AB_Get_All_Characters_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Get_All_Characters_Request { SessionId = _sessionId }, DefaultTimeout);
             return resp.Data ?? new();
         }
 
@@ -54,10 +54,10 @@ namespace ArtificialBuilder
         }
 
         /// <summary>캐릭터 추가.</summary>
-        public async Task<bool> AddCharacterAsync(AB_Character_Model _character, string? _sessionId = null)
+        public async Task<bool> AddCharacterAsync(AB_Character_Model _character, long _sessionId = 0L)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Character_Response>(
-                new AB_Add_Character_Request { Character = _character, SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Add_Character_Request { Character = _character, SessionId = _sessionId }, DefaultTimeout);
             return resp.Success;
         }
 
@@ -78,26 +78,26 @@ namespace ArtificialBuilder
         }
 
         /// <summary>관계 전체.</summary>
-        public async Task<List<AB_Character_Relationship_Model>> GetAllRelationshipsAsync(string? _sessionId = null)
+        public async Task<List<AB_Character_Relationship_Model>> GetAllRelationshipsAsync(long _sessionId = 0L)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Relationships_Response>(
-                new AB_Get_All_Relationships_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Get_All_Relationships_Request { SessionId = _sessionId }, DefaultTimeout);
             return resp.Data ?? new();
         }
 
         /// <summary>장소 전체.</summary>
-        public async Task<List<AB_Location_Model>> GetAllLocationsAsync(string? _sessionId = null)
+        public async Task<List<AB_Location_Model>> GetAllLocationsAsync(long _sessionId = 0L)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Locations_Response>(
-                new AB_Get_All_Locations_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Get_All_Locations_Request { SessionId = _sessionId }, DefaultTimeout);
             return resp.Data ?? new();
         }
 
         /// <summary>장소 연결 전체.</summary>
-        public async Task<List<AB_Location_Connection_Model>> GetAllLocationConnectionsAsync(string? _sessionId = null)
+        public async Task<List<AB_Location_Connection_Model>> GetAllLocationConnectionsAsync(long _sessionId = 0L)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Location_Connections_Response>(
-                new AB_Get_All_Location_Connections_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Get_All_Location_Connections_Request { SessionId = _sessionId }, DefaultTimeout);
             return resp.Data ?? new();
         }
 
@@ -192,10 +192,10 @@ namespace ArtificialBuilder
         }
 
         /// <summary>세션 캐릭터 데이터 전체.</summary>
-        public async Task<List<AB_Character_Data_Model>> GetAllSessionDataAsync(string _sessionId)
+        public async Task<List<AB_Character_Data_Model>> GetAllSessionDataAsync(long _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Session_Data_Response>(
-                new AB_Get_All_Session_Data_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Get_All_Session_Data_Request { SessionId = _sessionId }, DefaultTimeout);
             return resp.Data ?? new();
         }
 
@@ -208,10 +208,10 @@ namespace ArtificialBuilder
         }
 
         /// <summary>세션 데이터 일괄 삭제.</summary>
-        public async Task<bool> DeleteSessionDataAsync(string _sessionId)
+        public async Task<bool> DeleteSessionDataAsync(long _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Session_Data_Response>(
-                new AB_Delete_Session_Data_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Delete_Session_Data_Request { SessionId = _sessionId }, DefaultTimeout);
             return resp.Success;
         }
 
@@ -232,34 +232,34 @@ namespace ArtificialBuilder
         }
 
         /// <summary>Circuit 데이터를 세션으로 복사.</summary>
-        public async Task<bool> CopyCircuitDataToSessionAsync(string _sessionId)
+        public async Task<bool> CopyCircuitDataToSessionAsync(long _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Copy_Circuit_Data_To_Session_Response>(
-                new AB_Copy_Circuit_Data_To_Session_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Copy_Circuit_Data_To_Session_Request { SessionId = _sessionId }, DefaultTimeout);
             return resp.Success;
         }
 
         /// <summary>카테고리별 캐릭터 데이터 조회.</summary>
         public async Task<List<AB_Character_Data_Model>> GetCharacterDataByCategoryAsync(
-            string _characterId, string? _sessionId, string _categoryId)
+            string _characterId, long _sessionId, string _categoryId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Character_Data_By_Category_Response>(
                 new AB_Get_Character_Data_By_Category_Request
-                { CharacterId = _characterId, SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId), CategoryId = _categoryId },
+                { CharacterId = _characterId, SessionId = _sessionId, CategoryId = _categoryId },
                 DefaultTimeout);
             return resp.Data ?? new();
         }
 
         /// <summary>캐릭터 데이터 upsert.</summary>
         public async Task<bool> UpsertCharacterDataAsync(
-            string _characterId, string? _sessionId, string _categoryId,
+            string _characterId, long _sessionId, string _categoryId,
             string _fieldName, string? _fieldValue, string? _narrative,
             string _source, long? _messageId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Upsert_Character_Data_Response>(
                 new AB_Upsert_Character_Data_Request
                 {
-                    CharacterId = _characterId, SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId), CategoryId = _categoryId,
+                    CharacterId = _characterId, SessionId = _sessionId, CategoryId = _categoryId,
                     FieldName = _fieldName, FieldValue = _fieldValue, Narrative = _narrative,
                     Source = _source, MessageId = _messageId
                 }, DefaultTimeout);
@@ -584,13 +584,13 @@ namespace ArtificialBuilder
         }
 
         /// <summary>채팅 임베딩 삽입. 키 튜플은 context_records 와 동일.</summary>
-        public async Task<bool> InsertChatEmbeddingAsync(string _sessionId, string _nodeId,
+        public async Task<bool> InsertChatEmbeddingAsync(long _sessionId, string _nodeId,
             int _turnIndex, int _refreshIndex, int _emissionOrder, float[] _embedding)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Insert_Chat_Embedding_Response>(
                 new AB_Insert_Chat_Embedding_Request
                 {
-                    SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId),
+                    SessionId = _sessionId,
                     NodeId = _nodeId,
                     TurnIndex = _turnIndex,
                     RefreshIndex = _refreshIndex,
@@ -601,21 +601,21 @@ namespace ArtificialBuilder
         }
 
         /// <summary>세션 채팅 임베딩 일괄 삭제.</summary>
-        public async Task<bool> DeleteChatEmbeddingsBySessionAsync(string _sessionId)
+        public async Task<bool> DeleteChatEmbeddingsBySessionAsync(long _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Chat_Embeddings_By_Session_Response>(
-                new AB_Delete_Chat_Embeddings_By_Session_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Delete_Chat_Embeddings_By_Session_Request { SessionId = _sessionId }, DefaultTimeout);
             return resp.Success;
         }
 
         /// <summary>특정 컨텍스트 레코드의 채팅 임베딩 삭제.</summary>
-        public async Task<bool> DeleteChatEmbeddingByRecordAsync(string _sessionId, string _nodeId,
+        public async Task<bool> DeleteChatEmbeddingByRecordAsync(long _sessionId, string _nodeId,
             int _turnIndex, int _refreshIndex, int _emissionOrder)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Chat_Embedding_By_Record_Response>(
                 new AB_Delete_Chat_Embedding_By_Record_Request
                 {
-                    SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId),
+                    SessionId = _sessionId,
                     NodeId = _nodeId,
                     TurnIndex = _turnIndex,
                     RefreshIndex = _refreshIndex,
@@ -625,10 +625,10 @@ namespace ArtificialBuilder
         }
 
         /// <summary>세션 임베딩 메타 목록.</summary>
-        public async Task<List<AB_Chat_Embedding_Info>> GetChatEmbeddingsBySessionAsync(string _sessionId)
+        public async Task<List<AB_Chat_Embedding_Info>> GetChatEmbeddingsBySessionAsync(long _sessionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Chat_Embeddings_By_Session_Response>(
-                new AB_Get_Chat_Embeddings_By_Session_Request { SessionId = string.IsNullOrEmpty(_sessionId) ? 0L : long.Parse(_sessionId) }, DefaultTimeout);
+                new AB_Get_Chat_Embeddings_By_Session_Request { SessionId = _sessionId }, DefaultTimeout);
             return resp.Data ?? new();
         }
 

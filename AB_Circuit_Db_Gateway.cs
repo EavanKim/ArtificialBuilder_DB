@@ -270,7 +270,7 @@ namespace ArtificialBuilder
                     }
                     case AB_Insert_Chat_Embedding_Request req:
                     {
-                        await AB_Persona_Db_Proxy.I.InsertChatEmbeddingAsync(req.SessionId.ToString(), req.NodeId,
+                        await AB_Persona_Db_Proxy.I.InsertChatEmbeddingAsync(req.SessionId, req.NodeId,
                             req.TurnIndex, req.RefreshIndex, req.EmissionOrder, req.Embedding);
                         m_broker?.Publish(new AB_Insert_Chat_Embedding_Response
                         { CorrelationId = req.CorrelationId, Success = true });
@@ -278,14 +278,14 @@ namespace ArtificialBuilder
                     }
                     case AB_Delete_Chat_Embeddings_By_Session_Request req:
                     {
-                        await AB_Persona_Db_Proxy.I.DeleteChatEmbeddingsBySessionAsync(req.SessionId.ToString());
+                        await AB_Persona_Db_Proxy.I.DeleteChatEmbeddingsBySessionAsync(req.SessionId);
                         m_broker?.Publish(new AB_Delete_Chat_Embeddings_By_Session_Response
                         { CorrelationId = req.CorrelationId, Success = true });
                         break;
                     }
                     case AB_Delete_Chat_Embedding_By_Record_Request req:
                     {
-                        await AB_Persona_Db_Proxy.I.DeleteChatEmbeddingByRecordAsync(req.SessionId.ToString(), req.NodeId,
+                        await AB_Persona_Db_Proxy.I.DeleteChatEmbeddingByRecordAsync(req.SessionId, req.NodeId,
                             req.TurnIndex, req.RefreshIndex, req.EmissionOrder);
                         m_broker?.Publish(new AB_Delete_Chat_Embedding_By_Record_Response
                         { CorrelationId = req.CorrelationId, Success = true });
@@ -293,7 +293,7 @@ namespace ArtificialBuilder
                     }
                     case AB_Get_Chat_Embeddings_By_Session_Request req:
                     {
-                        var data = await AB_Persona_Db_Proxy.I.GetChatEmbeddingsBySessionAsync(req.SessionId.ToString());
+                        var data = await AB_Persona_Db_Proxy.I.GetChatEmbeddingsBySessionAsync(req.SessionId);
                         m_broker?.Publish(new AB_Get_Chat_Embeddings_By_Session_Response
                         { CorrelationId = req.CorrelationId, Data = data });
                         break;

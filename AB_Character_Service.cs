@@ -24,7 +24,7 @@ namespace ArtificialBuilder
         public override async Task RefreshAsync()
         {
             // 게이트웨이 경유
-            m_items = await AB_Circuit_Db_Proxy.I.GetAllCharactersAsync(ActiveSessionId);
+            m_items = await AB_Circuit_Db_Proxy.I.GetAllCharactersAsync(string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
             Emit(new Character_List_Changed { Characters_ = m_items });
         }
 
@@ -36,7 +36,7 @@ namespace ArtificialBuilder
                 Name_ = _name,
                 SortOrder_ = _sortOrder
             };
-            await AB_Circuit_Db_Proxy.I.AddCharacterAsync(newChar, ActiveSessionId);
+            await AB_Circuit_Db_Proxy.I.AddCharacterAsync(newChar, string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
             await RefreshAsync();
             return newChar;
         }
@@ -66,7 +66,7 @@ namespace ArtificialBuilder
         /// <summary>현재 컨텍스트의 관계 전체 조회.</summary>
         public async Task<List<AB_Character_Relationship_Model>> GetAllRelationshipsAsync()
         {
-            return await AB_Circuit_Db_Proxy.I.GetAllRelationshipsAsync(ActiveSessionId);
+            return await AB_Circuit_Db_Proxy.I.GetAllRelationshipsAsync(string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
         }
 
         // --- 장소 ---
@@ -74,13 +74,13 @@ namespace ArtificialBuilder
         /// <summary>현재 컨텍스트의 장소 전체 조회.</summary>
         public async Task<List<AB_Location_Model>> GetAllLocationsAsync()
         {
-            return await AB_Circuit_Db_Proxy.I.GetAllLocationsAsync(ActiveSessionId);
+            return await AB_Circuit_Db_Proxy.I.GetAllLocationsAsync(string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
         }
 
         /// <summary>현재 컨텍스트의 장소 연결 전체 조회.</summary>
         public async Task<List<AB_Location_Connection_Model>> GetAllLocationConnectionsAsync()
         {
-            return await AB_Circuit_Db_Proxy.I.GetAllLocationConnectionsAsync(ActiveSessionId);
+            return await AB_Circuit_Db_Proxy.I.GetAllLocationConnectionsAsync(string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
         }
 
         // --- 내보내기/가져오기 ---

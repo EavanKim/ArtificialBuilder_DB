@@ -48,12 +48,12 @@ namespace ArtificialBuilder
 
         /// <summary>세션 기준 페이징 조회.</summary>
         public async Task<List<AB_Pipeline_Debug_Entry_Model>> QueryAsync(
-            string _sessionId, string? _entryType = null, int _offset = 0, int _limit = 50)
+            long _sessionId, string? _entryType = null, int _offset = 0, int _limit = 50)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Query_Pipeline_Debug_Response>(
                 new AB_Query_Pipeline_Debug_Request
                 {
-                    SessionId = long.Parse(_sessionId),
+                    SessionId = _sessionId,
                     EntryType = _entryType,
                     Offset = _offset,
                     Limit = _limit
