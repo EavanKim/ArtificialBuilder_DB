@@ -1274,7 +1274,8 @@ namespace ArtificialBuilder
                         if (dbId != 0)
                         {
                             string logicId = req.Logic_Id;
-                            string slotId = req.Slot_Id;
+                            // Hosted_Logic_Slot_Value_Model.SlotId_ 는 string FK (본 그룹 외 사안 — 별도 보고). req.Slot_Id long → string 변환 후 비교.
+                            string slotId = req.Slot_Id.ToString();
                             var all = await AB_Board.Db.FindAsync<AB_Circuit_Hosted_Logic_Slot_Value_Model>(dbId,
                                 _v => _v.LogicId_ == logicId && _v.SlotId_ == slotId);
                             foreach (var v in all) { data = v; break; }

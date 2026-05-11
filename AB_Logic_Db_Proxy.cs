@@ -194,7 +194,7 @@ namespace ArtificialBuilder
             return resp.Success;
         }
 
-        public async Task<bool> RemoveVariableSlotAsync(string _slotId)
+        public async Task<bool> RemoveVariableSlotAsync(long _slotId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Remove_Logic_Variable_Slot_Response>(
                 new AB_Remove_Logic_Variable_Slot_Request { Slot_Id = _slotId }, DefaultTimeout);

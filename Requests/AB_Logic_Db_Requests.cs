@@ -223,7 +223,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Remove_Logic_Variable_Slot_Request : AB_Message
     {
-        public string Slot_Id = "";
+        public long Slot_Id = 0L;
         public AB_Remove_Logic_Variable_Slot_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
     }
     public class AB_Remove_Logic_Variable_Slot_Response : AB_Message
