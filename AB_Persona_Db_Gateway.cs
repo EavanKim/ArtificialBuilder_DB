@@ -255,7 +255,7 @@ namespace ArtificialBuilder
                                 {
                                     PersonaId_ = session.PersonaId_,
                                     CircuitName_ = session.CircuitName_,
-                                    Title_ = session.Title_ + AB_Localization.I.Get("chat.copy_suffix")
+                                    Title_ = session.Title_ + global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Localization>().Get("chat.copy_suffix")
                                 };
                                 await m_engine.AddAsync(handle, newSession);
                                 await m_engine.SaveChangesAsync(handle);
@@ -339,7 +339,7 @@ namespace ArtificialBuilder
                             {
                                 // 첫 user 입력이 들어올 때 한 번 세팅.
                                 // chat_messages 카운트 체크 대신 "기본 제목일 때만 갱신" 로 전환.
-                                string defaultTitle = AB_Localization.I.Get("chat.new_session_title");
+                                string defaultTitle = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Localization>().Get("chat.new_session_title");
                                 if (string.IsNullOrEmpty(session.Title_) || session.Title_ == defaultTitle)
                                 {
                                     session.Title_ = req.Text.Length > 28 ? req.Text[..28] + "..." : req.Text;

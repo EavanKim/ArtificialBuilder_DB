@@ -80,7 +80,7 @@ namespace ArtificialBuilder
         {
             var result = new Apply_Result();
 
-            AB_Circuit_Def? circuitDef = AB_Resource_Loader.I.LoadCircuitDef(_circuitType);
+            AB_Circuit_Def? circuitDef = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Resource_Loader>().LoadCircuitDef(_circuitType);
             if (circuitDef == null)
             {
                 AB_Log.Warn("WinSeed", $"Circuit 정의 없음: {_circuitType} — 빈 결과 반환");
