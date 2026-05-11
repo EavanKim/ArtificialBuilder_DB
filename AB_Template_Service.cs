@@ -16,33 +16,33 @@ namespace ArtificialBuilder
         /// <summary>글로벌 템플릿 전체 조회.</summary>
         public async Task<List<AB_Ui_Template_Model>> GetAllGlobalAsync()
         {
-            return await AB_App_Db_Proxy.I.GetAllUiTemplatesAsync();
+            return await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>().GetAllUiTemplatesAsync();
         }
 
         /// <summary>글로벌 템플릿 ID로 조회.</summary>
         public async Task<AB_Db_Result<AB_Ui_Template_Model>> GetGlobalByIdAsync(string _id)
         {
-            return await AB_App_Db_Proxy.I.GetUiTemplateByIdAsync(_id);
+            return await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>().GetUiTemplateByIdAsync(_id);
         }
 
         /// <summary>글로벌 템플릿 추가.</summary>
         public async Task AddGlobalAsync(AB_Ui_Template_Model _template)
         {
-            await AB_App_Db_Proxy.I.AddUiTemplateAsync(_template);
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>().AddUiTemplateAsync(_template);
             Emit(new Template_List_Changed());
         }
 
         /// <summary>글로벌 템플릿 수정.</summary>
         public async Task UpdateGlobalAsync(AB_Ui_Template_Model _template)
         {
-            await AB_App_Db_Proxy.I.UpdateUiTemplateAsync(_template);
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>().UpdateUiTemplateAsync(_template);
             Emit(new Template_List_Changed());
         }
 
         /// <summary>글로벌 템플릿 삭제.</summary>
         public async Task DeleteGlobalAsync(AB_Ui_Template_Model _template)
         {
-            await AB_App_Db_Proxy.I.DeleteUiTemplateAsync(_template);
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>().DeleteUiTemplateAsync(_template);
             Emit(new Template_List_Changed());
         }
 
@@ -51,45 +51,45 @@ namespace ArtificialBuilder
         /// <summary>Circuit 템플릿 전체 조회 (게이트웨이 경유).</summary>
         public async Task<List<AB_Response_Ui_Template_Model>> GetAllCircuitAsync()
         {
-            return await AB_Circuit_Db_Proxy.I.GetAllUiTemplatesAsync();
+            return await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllUiTemplatesAsync();
         }
 
         /// <summary>Circuit 템플릿 추가.</summary>
         public async Task AddCircuitAsync(AB_Response_Ui_Template_Model _template)
         {
-            await AB_Circuit_Db_Proxy.I.AddUiTemplateAsync(_template);
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddUiTemplateAsync(_template);
             Emit(new Template_List_Changed());
         }
 
         /// <summary>Circuit 템플릿 저장.</summary>
         public async Task SaveCircuitAsync(AB_Response_Ui_Template_Model _template)
         {
-            await AB_Circuit_Db_Proxy.I.SaveUiTemplateAsync(_template);
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().SaveUiTemplateAsync(_template);
             Emit(new Template_List_Changed());
         }
 
         /// <summary>Circuit 템플릿 삭제. 마지막 템플릿이면 false 반환.</summary>
         public async Task<bool> DeleteCircuitAsync(AB_Response_Ui_Template_Model _template)
         {
-            return await AB_Circuit_Db_Proxy.I.DeleteUiTemplateAsync(_template);
+            return await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().DeleteUiTemplateAsync(_template);
         }
 
         /// <summary>Circuit 활성 템플릿 설정.</summary>
         public async Task SetActiveCircuitAsync(string _templateId)
         {
-            await AB_Circuit_Db_Proxy.I.SetActiveUiTemplateAsync(_templateId);
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().SetActiveUiTemplateAsync(_templateId);
         }
 
         /// <summary>Circuit 활성 템플릿 조회.</summary>
         public async Task<AB_Response_Ui_Template_Model?> GetActiveCircuitAsync()
         {
-            return await AB_Circuit_Db_Proxy.I.GetActiveUiTemplateAsync();
+            return await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetActiveUiTemplateAsync();
         }
 
         /// <summary>글로벌 → Circuit으로 템플릿 가져오기.</summary>
         public async Task ImportFromGlobalAsync(string _globalTemplateId, int _sortOrder)
         {
-            var sourceResult = await AB_App_Db_Proxy.I.GetUiTemplateByIdAsync(_globalTemplateId);
+            var sourceResult = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>().GetUiTemplateByIdAsync(_globalTemplateId);
             if (sourceResult.IsOk)
             {
                 var source = sourceResult.Data;
@@ -101,7 +101,7 @@ namespace ArtificialBuilder
                     IsActive_ = false,
                     SortOrder_ = _sortOrder
                 };
-                await AB_Circuit_Db_Proxy.I.AddUiTemplateAsync(imported);
+                await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddUiTemplateAsync(imported);
                 Emit(new Template_List_Changed());
             }
         }

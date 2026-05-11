@@ -14,10 +14,6 @@ namespace ArtificialBuilder
     /// </summary>
     public class AB_App_Db_Proxy
     {
-        private static AB_App_Db_Proxy? g_instance;
-        /// <summary>전역 단일 인스턴스.</summary>
-        public static AB_App_Db_Proxy I => g_instance ??= new AB_App_Db_Proxy();
-
         private TimeSpan m_defaultTimeout = TimeSpan.FromSeconds(10);
         public TimeSpan DefaultTimeout
         {

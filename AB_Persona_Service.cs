@@ -27,7 +27,7 @@ namespace ArtificialBuilder
         /// <summary>현재 페르소나 설정 로드.</summary>
         public async Task<AB_Db_Result<AB_Persona_Settings_Model>> GetSettingsAsync()
         {
-            return await AB_Persona_Db_Proxy.I.GetSettingsAsync();
+            return await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>().GetSettingsAsync();
         }
 
         // --- 전환 ---
@@ -47,7 +47,7 @@ namespace ArtificialBuilder
         {
             await AB_Board.Persona.OpenAsync(_name);
             AB_Persona_Settings_Model settings = new AB_Persona_Settings_Model();
-            await AB_Persona_Db_Proxy.I.AddSettingsAsync(settings);
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>().AddSettingsAsync(settings);
 
             Emit(new Persona_Switched { Name_ = _name });
             Emit(new Persona_List_Changed
@@ -65,21 +65,21 @@ namespace ArtificialBuilder
         /// </summary>
         public async Task SaveSettingsAsync(string _oldName, string _newName, string? _prompt)
         {
-            var sR = await AB_Persona_Db_Proxy.I.GetSettingsAsync();
+            var sR = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>().GetSettingsAsync();
             AB_Persona_Settings_Model s;
             if (!sR.IsOk)
             {
                 s = new AB_Persona_Settings_Model();
                 s.Prompt_ = _prompt;
                 s.UpdatedAt_ = DateTime.UtcNow;
-                await AB_Persona_Db_Proxy.I.AddSettingsAsync(s);
+                await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>().AddSettingsAsync(s);
             }
             else
             {
                 s = sR.Data;
                 s.Prompt_ = _prompt;
                 s.UpdatedAt_ = DateTime.UtcNow;
-                await AB_Persona_Db_Proxy.I.SaveSettingsAsync(s);
+                await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>().SaveSettingsAsync(s);
             }
 
             // 이름 변경 시 .psna 파일 리네임
@@ -108,7 +108,7 @@ namespace ArtificialBuilder
         /// <summary>페르소나 파일명 변경 — DB 레이어의 RenameAsync 를 경유. UI 는 이 메서드만 호출.</summary>
         public async Task RenameAsync(string _oldName, string _newName)
         {
-            await AB_Persona_Db_Proxy.I.RenameAsync(_oldName, _newName);
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>().RenameAsync(_oldName, _newName);
         }
 
         // --- 삭제 ---
@@ -120,7 +120,7 @@ namespace ArtificialBuilder
         /// </summary>
         public async Task<bool> DeleteAsync(string _name)
         {
-            var deleteR = await AB_Persona_Db_Proxy.I.DeleteAsync(_name);
+            var deleteR = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>().DeleteAsync(_name);
             if (!deleteR.Success) return false;
 
             List<string> remaining = GetNames();

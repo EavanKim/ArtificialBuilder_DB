@@ -24,7 +24,7 @@ namespace ArtificialBuilder
         public override async Task RefreshAsync()
         {
             // 게이트웨이 경유
-            m_items = await AB_Circuit_Db_Proxy.I.GetAllCharactersAsync(string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
+            m_items = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllCharactersAsync(string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
             Emit(new Character_List_Changed { Characters_ = m_items });
         }
 
@@ -36,7 +36,7 @@ namespace ArtificialBuilder
                 Name_ = _name,
                 SortOrder_ = _sortOrder
             };
-            await AB_Circuit_Db_Proxy.I.AddCharacterAsync(newChar, string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddCharacterAsync(newChar, string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
             await RefreshAsync();
             return newChar;
         }
@@ -44,20 +44,20 @@ namespace ArtificialBuilder
         /// <summary>ID로 캐릭터 조회 (게이트웨이 경유).</summary>
         public async Task<AB_Character_Model?> GetAsync(string _id)
         {
-            return await AB_Circuit_Db_Proxy.I.GetCharacterAsync(_id);
+            return await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetCharacterAsync(_id);
         }
 
         /// <summary>캐릭터 저장 후 목록 갱신 (게이트웨이 경유).</summary>
         public async Task SaveAsync(AB_Character_Model _character)
         {
-            await AB_Circuit_Db_Proxy.I.SaveCharacterAsync(_character);
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().SaveCharacterAsync(_character);
             await RefreshAsync();
         }
 
         /// <summary>캐릭터 삭제 후 목록 갱신 (게이트웨이 경유).</summary>
         public async Task DeleteAsync(AB_Character_Model _character)
         {
-            await AB_Circuit_Db_Proxy.I.DeleteCharacterAsync(_character);
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().DeleteCharacterAsync(_character);
             await RefreshAsync();
         }
 
@@ -66,7 +66,7 @@ namespace ArtificialBuilder
         /// <summary>현재 컨텍스트의 관계 전체 조회.</summary>
         public async Task<List<AB_Character_Relationship_Model>> GetAllRelationshipsAsync()
         {
-            return await AB_Circuit_Db_Proxy.I.GetAllRelationshipsAsync(string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
+            return await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllRelationshipsAsync(string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
         }
 
         // --- 장소 ---
@@ -74,13 +74,13 @@ namespace ArtificialBuilder
         /// <summary>현재 컨텍스트의 장소 전체 조회.</summary>
         public async Task<List<AB_Location_Model>> GetAllLocationsAsync()
         {
-            return await AB_Circuit_Db_Proxy.I.GetAllLocationsAsync(string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
+            return await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllLocationsAsync(string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
         }
 
         /// <summary>현재 컨텍스트의 장소 연결 전체 조회.</summary>
         public async Task<List<AB_Location_Connection_Model>> GetAllLocationConnectionsAsync()
         {
-            return await AB_Circuit_Db_Proxy.I.GetAllLocationConnectionsAsync(string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
+            return await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllLocationConnectionsAsync(string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
         }
 
         // --- 내보내기/가져오기 ---
@@ -88,8 +88,8 @@ namespace ArtificialBuilder
         /// <summary>캐릭터 데이터를 파일로 내보내기.</summary>
         public async Task ExportAsync(string _filePath)
         {
-            var characters = await AB_Circuit_Db_Proxy.I.GetAllCharactersAsync();
-            var relationships = await AB_Circuit_Db_Proxy.I.GetAllRelationshipsAsync();
+            var characters = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllCharactersAsync();
+            var relationships = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllRelationshipsAsync();
             var data = new { Characters = characters, Relationships = relationships };
             string json = System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
             await System.IO.File.WriteAllTextAsync(_filePath, json);

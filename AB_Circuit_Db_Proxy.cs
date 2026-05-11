@@ -15,15 +15,11 @@ namespace ArtificialBuilder
     /// 내부적으로 publish/await 사이클을 거쳐 트랜잭셔널 보장 + 향후 컨텍스트 라우팅 진입점.
     ///
     /// 사용:
-    ///   var proxy = AB_Circuit_Db_Proxy.I;
+    ///   var proxy = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>();
     ///   var chars = await proxy.GetAllCharactersAsync();
     /// </summary>
     public class AB_Circuit_Db_Proxy
     {
-        private static AB_Circuit_Db_Proxy? g_instance;
-        /// <summary>전역 단일 인스턴스 (브로커 lazy 참조).</summary>
-        public static AB_Circuit_Db_Proxy I => g_instance ??= new AB_Circuit_Db_Proxy();
-
         /// <summary>요청-응답 기본 타임아웃.</summary>
         private TimeSpan m_defaultTimeout = TimeSpan.FromSeconds(10);
         public TimeSpan DefaultTimeout

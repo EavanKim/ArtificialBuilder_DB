@@ -98,32 +98,32 @@ namespace ArtificialBuilder
 
         private void HandleAppModelGetAll(AB_DDO_Command _cmd)
         {
-            _ = AB_App_Db_Proxy.I.GetAllModelsAsync();
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>().GetAllModelsAsync();
         }
 
         private void HandleAppModelGet(AB_DDO_Command _cmd)
         {
             string id = _cmd.DataKey;
             if (string.IsNullOrEmpty(id)) { AB_Log.Warn("AB_Db_Service", "AppModelGet — DataKey 비어있음"); return; }
-            _ = AB_App_Db_Proxy.I.GetModelByIdAsync(id);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>().GetModelByIdAsync(id);
         }
 
         private void HandleAppModelAdd(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Model_Config_Model model) { AB_Log.Warn("AB_Db_Service", "AppModelAdd — Payload 타입 mismatch"); return; }
-            _ = AB_App_Db_Proxy.I.AddModelAsync(model);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>().AddModelAsync(model);
         }
 
         private void HandleAppModelSave(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Model_Config_Model model) { AB_Log.Warn("AB_Db_Service", "AppModelSave — Payload 타입 mismatch"); return; }
-            _ = AB_App_Db_Proxy.I.UpdateModelAsync(model);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>().UpdateModelAsync(model);
         }
 
         private void HandleAppModelDelete(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Model_Config_Model model) { AB_Log.Warn("AB_Db_Service", "AppModelDelete — Payload 타입 mismatch"); return; }
-            _ = AB_App_Db_Proxy.I.DeleteModelAsync(model);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>().DeleteModelAsync(model);
         }
 
         // ================ Persona DB ================
@@ -202,81 +202,81 @@ namespace ArtificialBuilder
 
         private void HandleLogicMetaGet(AB_DDO_Command _cmd)
         {
-            _ = AB_Logic_Db_Proxy.I.GetMetaAsync();
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>().GetMetaAsync();
         }
 
         private void HandleLogicMetaSave(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Logic_Meta_Model meta) { AB_Log.Warn("AB_Db_Service", "LogicMetaSave — Payload 타입 mismatch"); return; }
-            _ = AB_Logic_Db_Proxy.I.SaveMetaAsync(meta);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>().SaveMetaAsync(meta);
         }
 
         private void HandleLogicUsedCircuitGetAll(AB_DDO_Command _cmd)
         {
-            _ = AB_Logic_Db_Proxy.I.GetUsedCircuitsAsync();
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>().GetUsedCircuitsAsync();
         }
 
         private void HandleLogicUsedCircuitAdd(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Logic_Used_Circuit_Model item) { AB_Log.Warn("AB_Db_Service", "LogicUsedCircuitAdd — Payload 타입 mismatch"); return; }
-            _ = AB_Logic_Db_Proxy.I.AddUsedCircuitAsync(item);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>().AddUsedCircuitAsync(item);
         }
 
         private void HandleLogicUsedCircuitSave(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Logic_Used_Circuit_Model item) { AB_Log.Warn("AB_Db_Service", "LogicUsedCircuitSave — Payload 타입 mismatch"); return; }
-            _ = AB_Logic_Db_Proxy.I.SaveUsedCircuitAsync(item);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>().SaveUsedCircuitAsync(item);
         }
 
         private void HandleLogicUsedCircuitDelete(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Logic_Used_Circuit_Model item) { AB_Log.Warn("AB_Db_Service", "LogicUsedCircuitDelete — Payload 타입 mismatch"); return; }
-            _ = AB_Logic_Db_Proxy.I.DeleteUsedCircuitAsync(item);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>().DeleteUsedCircuitAsync(item);
         }
 
         private void HandleLogicUsedResponseUiGetAll(AB_DDO_Command _cmd)
         {
-            _ = AB_Logic_Db_Proxy.I.GetUsedResponseUiAsync();
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>().GetUsedResponseUiAsync();
         }
 
         private void HandleLogicUsedResponseUiAdd(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Logic_Used_Response_Ui_Model item) { AB_Log.Warn("AB_Db_Service", "LogicUsedResponseUiAdd — Payload 타입 mismatch"); return; }
-            _ = AB_Logic_Db_Proxy.I.AddUsedResponseUiAsync(item);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>().AddUsedResponseUiAsync(item);
         }
 
         private void HandleLogicUsedResponseUiDelete(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Logic_Used_Response_Ui_Model item) { AB_Log.Warn("AB_Db_Service", "LogicUsedResponseUiDelete — Payload 타입 mismatch"); return; }
-            _ = AB_Logic_Db_Proxy.I.DeleteUsedResponseUiAsync(item);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>().DeleteUsedResponseUiAsync(item);
         }
 
         private void HandleLogicSubLogicGetAll(AB_DDO_Command _cmd)
         {
-            _ = AB_Logic_Db_Proxy.I.GetSubLogicsAsync();
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>().GetSubLogicsAsync();
         }
 
         private void HandleLogicSubLogicAdd(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Logic_Sub_Logic_Model item) { AB_Log.Warn("AB_Db_Service", "LogicSubLogicAdd — Payload 타입 mismatch"); return; }
-            _ = AB_Logic_Db_Proxy.I.AddSubLogicAsync(item);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>().AddSubLogicAsync(item);
         }
 
         private void HandleLogicSubLogicDelete(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Logic_Sub_Logic_Model item) { AB_Log.Warn("AB_Db_Service", "LogicSubLogicDelete — Payload 타입 mismatch"); return; }
-            _ = AB_Logic_Db_Proxy.I.DeleteSubLogicAsync(item);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>().DeleteSubLogicAsync(item);
         }
 
         private void HandleLogicHistoryGetAll(AB_DDO_Command _cmd)
         {
-            _ = AB_Logic_Db_Proxy.I.GetHistoryTurnsAsync();
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>().GetHistoryTurnsAsync();
         }
 
         private void HandleLogicHistoryAppend(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Logic_History_Turn_Model turn) { AB_Log.Warn("AB_Db_Service", "LogicHistoryAppend — Payload 타입 mismatch"); return; }
-            _ = AB_Logic_Db_Proxy.I.AppendHistoryTurnAsync(turn);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>().AppendHistoryTurnAsync(turn);
         }
 
         // ================ Response UI DB ================
@@ -295,36 +295,36 @@ namespace ArtificialBuilder
 
         private void HandleResponseUiMetaGet(AB_DDO_Command _cmd)
         {
-            _ = AB_Response_Ui_Db_Proxy.I.GetMetaAsync();
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Response_Ui_Db_Proxy>().GetMetaAsync();
         }
 
         private void HandleResponseUiMetaSave(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Response_Ui_Meta_Model meta) { AB_Log.Warn("AB_Db_Service", "ResponseUiMetaSave — Payload 타입 mismatch"); return; }
-            _ = AB_Response_Ui_Db_Proxy.I.SaveMetaAsync(meta);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Response_Ui_Db_Proxy>().SaveMetaAsync(meta);
         }
 
         private void HandleResponseUiLayerGetAll(AB_DDO_Command _cmd)
         {
-            _ = AB_Response_Ui_Db_Proxy.I.GetLayersAsync();
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Response_Ui_Db_Proxy>().GetLayersAsync();
         }
 
         private void HandleResponseUiLayerAdd(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Response_Ui_Layer_Model item) { AB_Log.Warn("AB_Db_Service", "ResponseUiLayerAdd — Payload 타입 mismatch"); return; }
-            _ = AB_Response_Ui_Db_Proxy.I.AddLayerAsync(item);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Response_Ui_Db_Proxy>().AddLayerAsync(item);
         }
 
         private void HandleResponseUiLayerSave(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Response_Ui_Layer_Model item) { AB_Log.Warn("AB_Db_Service", "ResponseUiLayerSave — Payload 타입 mismatch"); return; }
-            _ = AB_Response_Ui_Db_Proxy.I.SaveLayerAsync(item);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Response_Ui_Db_Proxy>().SaveLayerAsync(item);
         }
 
         private void HandleResponseUiLayerDelete(AB_DDO_Command _cmd)
         {
             if (_cmd.Payload is not AB_Response_Ui_Layer_Model item) { AB_Log.Warn("AB_Db_Service", "ResponseUiLayerDelete — Payload 타입 mismatch"); return; }
-            _ = AB_Response_Ui_Db_Proxy.I.DeleteLayerAsync(item);
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Response_Ui_Db_Proxy>().DeleteLayerAsync(item);
         }
 
         // ================ helpers (Used_Sub_Circuit / Hosted_Logic CRUD — Proxy 미존재) ================

@@ -15,9 +15,6 @@ namespace ArtificialBuilder
     /// </summary>
     public class AB_Storage_Proxy
     {
-        private static AB_Storage_Proxy? g_instance;
-        public static AB_Storage_Proxy I => g_instance ??= new AB_Storage_Proxy();
-
         private TimeSpan m_defaultTimeout = TimeSpan.FromSeconds(10);
         public TimeSpan DefaultTimeout
         {

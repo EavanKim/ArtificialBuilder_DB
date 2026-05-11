@@ -12,15 +12,11 @@ namespace ArtificialBuilder
     /// <summary>
     /// Logic DB 외부 진입 프록시 (얇은 wrapper). 메시지 브로커 + AB_Logic_Db_Gateway 경유 호출.
     /// 사용:
-    ///   var proxy = AB_Logic_Db_Proxy.I;
+    ///   var proxy = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>();
     ///   var meta = await proxy.GetMetaAsync();
     /// </summary>
     public class AB_Logic_Db_Proxy
     {
-        private static AB_Logic_Db_Proxy? g_instance;
-        /// <summary>전역 단일 인스턴스.</summary>
-        public static AB_Logic_Db_Proxy I => g_instance ??= new AB_Logic_Db_Proxy();
-
         private TimeSpan m_defaultTimeout = TimeSpan.FromSeconds(10);
         public TimeSpan DefaultTimeout
         {

@@ -239,7 +239,7 @@ namespace ArtificialBuilder
                     case AB_Search_Chat_Vec_Request req:
                     {
                         // 채팅 임베딩은 페르소나 DB 소관 — PersonaDbProxy 경유
-                        var hits = await AB_Persona_Db_Proxy.I.SearchChatAsync(req.Query, req.TopK, req.ExcludeSessionId);
+                        var hits = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>().SearchChatAsync(req.Query, req.TopK, req.ExcludeSessionId);
                         m_broker?.Publish(new AB_Search_Chat_Vec_Response
                         { CorrelationId = req.CorrelationId, Hits = hits });
                         break;
@@ -270,7 +270,7 @@ namespace ArtificialBuilder
                     }
                     case AB_Insert_Chat_Embedding_Request req:
                     {
-                        await AB_Persona_Db_Proxy.I.InsertChatEmbeddingAsync(req.SessionId, req.NodeId,
+                        await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>().InsertChatEmbeddingAsync(req.SessionId, req.NodeId,
                             req.TurnIndex, req.RefreshIndex, req.EmissionOrder, req.Embedding);
                         m_broker?.Publish(new AB_Insert_Chat_Embedding_Response
                         { CorrelationId = req.CorrelationId, Success = true });
@@ -278,14 +278,14 @@ namespace ArtificialBuilder
                     }
                     case AB_Delete_Chat_Embeddings_By_Session_Request req:
                     {
-                        await AB_Persona_Db_Proxy.I.DeleteChatEmbeddingsBySessionAsync(req.SessionId);
+                        await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>().DeleteChatEmbeddingsBySessionAsync(req.SessionId);
                         m_broker?.Publish(new AB_Delete_Chat_Embeddings_By_Session_Response
                         { CorrelationId = req.CorrelationId, Success = true });
                         break;
                     }
                     case AB_Delete_Chat_Embedding_By_Record_Request req:
                     {
-                        await AB_Persona_Db_Proxy.I.DeleteChatEmbeddingByRecordAsync(req.SessionId, req.NodeId,
+                        await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>().DeleteChatEmbeddingByRecordAsync(req.SessionId, req.NodeId,
                             req.TurnIndex, req.RefreshIndex, req.EmissionOrder);
                         m_broker?.Publish(new AB_Delete_Chat_Embedding_By_Record_Response
                         { CorrelationId = req.CorrelationId, Success = true });
@@ -293,7 +293,7 @@ namespace ArtificialBuilder
                     }
                     case AB_Get_Chat_Embeddings_By_Session_Request req:
                     {
-                        var data = await AB_Persona_Db_Proxy.I.GetChatEmbeddingsBySessionAsync(req.SessionId);
+                        var data = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>().GetChatEmbeddingsBySessionAsync(req.SessionId);
                         m_broker?.Publish(new AB_Get_Chat_Embeddings_By_Session_Response
                         { CorrelationId = req.CorrelationId, Data = data });
                         break;

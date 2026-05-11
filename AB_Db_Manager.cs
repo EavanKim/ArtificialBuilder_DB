@@ -38,15 +38,15 @@ namespace ArtificialBuilder
         // --- 도메인 Proxy 단축 (read/write 진입 — sub 5 에서 DDO 옵저버로 보강) ---
 
         /// <summary>App DB Proxy ([[ddo-command-only]] sub 5 에서 DDO 옵저버 추가).</summary>
-        public AB_App_Db_Proxy AppProxy => AB_App_Db_Proxy.I;
+        public AB_App_Db_Proxy AppProxy => global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>();
         /// <summary>Persona DB Proxy.</summary>
-        public AB_Persona_Db_Proxy PersonaProxy => AB_Persona_Db_Proxy.I;
+        public AB_Persona_Db_Proxy PersonaProxy => global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>();
         /// <summary>Circuit DB Proxy.</summary>
-        public AB_Circuit_Db_Proxy CircuitProxy => AB_Circuit_Db_Proxy.I;
+        public AB_Circuit_Db_Proxy CircuitProxy => global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>();
         /// <summary>Logic DB Proxy.</summary>
-        public AB_Logic_Db_Proxy LogicProxy => AB_Logic_Db_Proxy.I;
+        public AB_Logic_Db_Proxy LogicProxy => global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>();
         /// <summary>Response UI DB Proxy.</summary>
-        public AB_Response_Ui_Db_Proxy ResponseUiProxy => AB_Response_Ui_Db_Proxy.I;
+        public AB_Response_Ui_Db_Proxy ResponseUiProxy => global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Response_Ui_Db_Proxy>();
 
         /// <summary>5 도메인 DB lifecycle 초기화 + 활성 페르소나 로드.</summary>
         public async Task InitializeAsync()

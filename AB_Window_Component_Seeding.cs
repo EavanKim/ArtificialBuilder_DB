@@ -30,10 +30,10 @@ namespace ArtificialBuilder
         /// </summary>
         public static async Task EnsureDefaultComponentsAsync()
         {
-            List<AB_Response_Ui_Window_Model> windows = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
+            List<AB_Response_Ui_Window_Model> windows = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllWindowsAsync();
             if (windows.Count == 0) return;
 
-            List<AB_Response_Ui_Component_Model> allComps = await AB_Circuit_Db_Proxy.I.GetAllWindowComponentsAsync();
+            List<AB_Response_Ui_Component_Model> allComps = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllWindowComponentsAsync();
             var hasComps = new HashSet<long>();
             foreach (var c in allComps) hasComps.Add(c.WindowId_);
 
@@ -106,7 +106,7 @@ namespace ArtificialBuilder
                         window.Id_ = reuseId;
                         AB_Log.Info("WinSeed", $"ApplyCircuitDef: {entry.Name} 과거 Id 재사용 {reuseId}");
                     }
-                    bool added = await AB_Circuit_Db_Proxy.I.AddWindowAsync(window);
+                    bool added = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowAsync(window);
                     if (!added)
                     {
                         AB_Log.Warn("WinSeed", $"ApplyCircuitDef: {entry.Name} 윈도우 생성 실패 (DB 미준비).");
@@ -118,7 +118,7 @@ namespace ArtificialBuilder
                     foreach (var compEntry in entry.Components)
                     {
                         string configJson = SerializeComponentConfig(compEntry);
-                        await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Response_Ui_Component_Model
+                        await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(new AB_Response_Ui_Component_Model
                         {
                             WindowId_ = window.Id_,
                             ComponentType_ = compEntry.Type,
@@ -181,12 +181,12 @@ namespace ArtificialBuilder
         {
             var circuitDef = new AB_Circuit_Def { CircuitType = _circuitType };
 
-            List<AB_Response_Ui_Window_Model> windows = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
-            List<AB_Response_Ui_Component_Model> comps = await AB_Circuit_Db_Proxy.I.GetAllWindowComponentsAsync();
+            List<AB_Response_Ui_Window_Model> windows = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllWindowsAsync();
+            List<AB_Response_Ui_Component_Model> comps = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllWindowComponentsAsync();
 
             // envelope (캔버스 비율 배치) 는 settings.WindowLayout_ 에 저장되어 있음
             Window_Layout_Envelope? envelope = null;
-            var settingsR = await AB_Circuit_Db_Proxy.I.GetSettingsAsync();
+            var settingsR = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetSettingsAsync();
             if (settingsR.IsOk && !string.IsNullOrEmpty(settingsR.Data.WindowLayout_))
             {
                 try { envelope = JsonSerializer.Deserialize<Window_Layout_Envelope>(settingsR.Data.WindowLayout_); }
@@ -280,11 +280,11 @@ namespace ArtificialBuilder
         /// </summary>
         public static async Task ReplaceWithCircuitDefAsync(AB_Circuit_Def _circuitDef)
         {
-            List<AB_Response_Ui_Window_Model> existing = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
+            List<AB_Response_Ui_Window_Model> existing = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllWindowsAsync();
             foreach (AB_Response_Ui_Window_Model w in existing)
             {
-                await AB_Circuit_Db_Proxy.I.DeleteWindowComponentsByWindowAsync(w.Id_);
-                await AB_Circuit_Db_Proxy.I.DeleteWindowAsync(w.Id_);
+                await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().DeleteWindowComponentsByWindowAsync(w.Id_);
+                await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().DeleteWindowAsync(w.Id_);
             }
             AB_Log.Info("WinSeed", $"Replace: 기존 윈도우 {existing.Count} 개 삭제 완료");
 
@@ -300,7 +300,7 @@ namespace ArtificialBuilder
                     Enabled_ = true,
                     SortOrder_ = entry.SortOrder,
                 };
-                bool added = await AB_Circuit_Db_Proxy.I.AddWindowAsync(window);
+                bool added = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowAsync(window);
                 if (!added)
                 {
                     AB_Log.Warn("WinSeed", $"Replace: {entry.Name} 윈도우 생성 실패 (DB 미준비)");
@@ -313,7 +313,7 @@ namespace ArtificialBuilder
                 foreach (AB_Circuit_Def_Component compEntry in entry.Components)
                 {
                     string configJson = SerializeComponentConfig(compEntry);
-                    await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Response_Ui_Component_Model
+                    await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(new AB_Response_Ui_Component_Model
                     {
                         WindowId_ = window.Id_,
                         ComponentType_ = compEntry.Type,
@@ -334,7 +334,7 @@ namespace ArtificialBuilder
             }
 
             // envelope + primary chat 을 settings 에 반영
-            var settingsR = await AB_Circuit_Db_Proxy.I.GetSettingsAsync();
+            var settingsR = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetSettingsAsync();
             if (!settingsR.IsOk)
             {
                 AB_Log.Warn("WinSeed", "Replace: settings 없음 — envelope/primary 저장 스킵");
@@ -354,7 +354,7 @@ namespace ArtificialBuilder
                 settings.PrimaryChatWindowId_ = pid;
             }
             settings.UpdatedAt_ = DateTime.UtcNow;
-            await AB_Circuit_Db_Proxy.I.SaveSettingsAsync(settings);
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().SaveSettingsAsync(settings);
             AB_Log.Info("WinSeed", $"Replace 완료 — 새 윈도우 {envelopeWindows.Count} 개, primaryChat={_circuitDef.PrimaryChatWindowName ?? "(미지정)"}");
         }
 
@@ -364,7 +364,7 @@ namespace ArtificialBuilder
         /// </summary>
         private static async Task AddFrameLayoutDepthAsync(long _windowId, string _title, string _position, int _sortOrder, AB_Circuit_Def_Layout? _layout = null)
         {
-            await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Response_Ui_Component_Model
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(new AB_Response_Ui_Component_Model
             {
                 WindowId_ = _windowId, ComponentType_ = "frame", SortOrder_ = 0,
                 ConfigJson_ = JsonSerializer.Serialize(new Frame_Config { Title = _title })
@@ -381,12 +381,12 @@ namespace ArtificialBuilder
             {
                 FillDefaultRatios(layoutCfg, _position);
             }
-            await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Response_Ui_Component_Model
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(new AB_Response_Ui_Component_Model
             {
                 WindowId_ = _windowId, ComponentType_ = "layout", SortOrder_ = 0,
                 ConfigJson_ = JsonSerializer.Serialize(layoutCfg)
             });
-            await AB_Circuit_Db_Proxy.I.AddWindowComponentAsync(new AB_Response_Ui_Component_Model
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(new AB_Response_Ui_Component_Model
             {
                 WindowId_ = _windowId, ComponentType_ = "depth", SortOrder_ = 0,
                 ConfigJson_ = JsonSerializer.Serialize(new Depth_Config())
@@ -476,7 +476,7 @@ namespace ArtificialBuilder
 
         private static async Task<AB_Response_Ui_Window_Model?> FindWindowByNameAsync(string _name)
         {
-            List<AB_Response_Ui_Window_Model> all = await AB_Circuit_Db_Proxy.I.GetAllWindowsAsync();
+            List<AB_Response_Ui_Window_Model> all = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllWindowsAsync();
             foreach (var w in all)
             {
                 if (w.Name_ == _name) return w;

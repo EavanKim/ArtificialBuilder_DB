@@ -13,9 +13,6 @@ namespace ArtificialBuilder
     /// <summary>Response UI DB 외부 진입 프록시 (Meta + Layer 신설 영역).</summary>
     public class AB_Response_Ui_Db_Proxy
     {
-        private static AB_Response_Ui_Db_Proxy? g_instance;
-        public static AB_Response_Ui_Db_Proxy I => g_instance ??= new AB_Response_Ui_Db_Proxy();
-
         private TimeSpan m_defaultTimeout = TimeSpan.FromSeconds(10);
         public TimeSpan DefaultTimeout
         {

@@ -44,7 +44,7 @@ namespace ArtificialBuilder_EDP.Components
         {
             try
             {
-                var (rowsDeleted, drained) = await AB_Storage_Proxy.I.SweepDeletionStepAsync(g_BUDGET_MICROS);
+                var (rowsDeleted, drained) = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Storage_Proxy>().SweepDeletionStepAsync(g_BUDGET_MICROS);
                 if (drained)
                     m_idleSkip = g_IDLE_SKIP_TICKS;
                 else if (rowsDeleted > 0)
