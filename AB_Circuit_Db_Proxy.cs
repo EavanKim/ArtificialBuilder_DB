@@ -689,7 +689,7 @@ namespace ArtificialBuilder
             return resp.Success;
         }
 
-        public async Task<bool> RemoveInputSlotAsync(long _slotId)
+        public async Task<bool> RemoveInputSlotAsync(AB_Slot_Id _slotId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Remove_Circuit_Input_Slot_Response>(
                 new AB_Remove_Circuit_Input_Slot_Request { Slot_Id = _slotId }, DefaultTimeout);
@@ -717,7 +717,7 @@ namespace ArtificialBuilder
             return resp.Success;
         }
 
-        public async Task<bool> RemoveOutputSlotAsync(long _slotId)
+        public async Task<bool> RemoveOutputSlotAsync(AB_Slot_Id _slotId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Remove_Circuit_Output_Slot_Response>(
                 new AB_Remove_Circuit_Output_Slot_Request { Slot_Id = _slotId }, DefaultTimeout);
@@ -731,7 +731,7 @@ namespace ArtificialBuilder
             return resp.Data ?? new();
         }
 
-        public async Task<AB_Circuit_Hosted_Logic_Slot_Value_Model?> GetHostedLogicSlotValueAsync(string _logicId, long _slotId)
+        public async Task<AB_Circuit_Hosted_Logic_Slot_Value_Model?> GetHostedLogicSlotValueAsync(string _logicId, AB_Slot_Id _slotId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Hosted_Logic_Slot_Value_Response>(
                 new AB_Get_Hosted_Logic_Slot_Value_Request { Logic_Id = _logicId, Slot_Id = _slotId }, DefaultTimeout);

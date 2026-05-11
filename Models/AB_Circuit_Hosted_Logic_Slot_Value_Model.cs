@@ -28,11 +28,11 @@ namespace ArtificialBuilder.Models
             set { m_logicId_ = value; }
         }
 
-        /// <summary>대상 슬롯의 Slot_Id_ (= AB_Logic_Variable_Slot_Model.Id_).</summary>
-        private string m_slotId_ = "";
+        /// <summary>대상 슬롯의 Slot_Id_ (= AB_Logic_Variable_Slot_Model.Id_). 2026-05-11 — string FK → long FK 정합.</summary>
+        private long m_slotId_ = 0L;
         [Required]
         [Column("slot_id")]
-        public string SlotId_
+        public long SlotId_
         {
             get { return m_slotId_; }
             set { m_slotId_ = value; }

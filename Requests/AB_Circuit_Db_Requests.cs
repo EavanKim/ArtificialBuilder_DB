@@ -1622,7 +1622,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Remove_Circuit_Input_Slot_Request : AB_Message
     {
-        public long Slot_Id = 0L;
+        public AB_Slot_Id Slot_Id = 0L;
         public AB_Remove_Circuit_Input_Slot_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
     public class AB_Remove_Circuit_Input_Slot_Response : AB_Message
@@ -1671,7 +1671,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Remove_Circuit_Output_Slot_Request : AB_Message
     {
-        public long Slot_Id = 0L;
+        public AB_Slot_Id Slot_Id = 0L;
         public AB_Remove_Circuit_Output_Slot_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
     public class AB_Remove_Circuit_Output_Slot_Response : AB_Message
@@ -1721,7 +1721,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Get_Hosted_Logic_Slot_Value_Request : AB_Message
     {
         public string Logic_Id = "";
-        public long Slot_Id = 0L;
+        public AB_Slot_Id Slot_Id = 0L;
         public AB_Get_Hosted_Logic_Slot_Value_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
     public class AB_Get_Hosted_Logic_Slot_Value_Response : AB_Message
