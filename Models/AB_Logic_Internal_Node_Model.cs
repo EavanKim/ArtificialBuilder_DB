@@ -84,6 +84,19 @@ namespace ArtificialBuilder.Models
             set { m_outputsJson_ = value; }
         }
 
+        /// <summary>
+        /// 별도 벡터 저장소 사용자 토글 — 사용 가능 콘크리트 (AB_Logic_Node.HasVectorStorage_ override true, 예: LLM) 안에서만 의미.
+        /// 사용 불가능 콘크리트는 false 고정. Phase C 에서 인터프리터가 콘크리트 virtual + 본 toggle 검사 후 Factory.Create.
+        /// 정본: docs/plans/todo/node-vector-storage-factory/README.md.
+        /// </summary>
+        private bool m_vectorStorageEnabled_;
+        [Column("vector_storage_enabled")]
+        public bool VectorStorageEnabled_
+        {
+            get { return m_vectorStorageEnabled_; }
+            set { m_vectorStorageEnabled_ = value; }
+        }
+
         private DateTime m_createdAt_ = DateTime.UtcNow;
         [Column("created_at")]
         public DateTime CreatedAt_
