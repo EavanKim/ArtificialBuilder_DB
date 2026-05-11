@@ -150,8 +150,8 @@ namespace ArtificialBuilder
         // Node Storage — 1 노드 1 회 실행
         // ============================================================
 
-        /// <summary>로직 실행 결과 추가. resource_id 단일 키만 보관.</summary>
-        public async Task<long> AddNodeAsync(long _contextId, string _nodeId, int _emissionOrder, long? _resourceId, string? _metaJson)
+        /// <summary>로직 실행 결과 추가. resource_id 단일 키만 보관. 2026-05-11 — NodeId string → long.</summary>
+        public async Task<long> AddNodeAsync(long _contextId, long _nodeId, int _emissionOrder, long? _resourceId, string? _metaJson)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Node_Response>(
                 new AB_Add_Node_Request

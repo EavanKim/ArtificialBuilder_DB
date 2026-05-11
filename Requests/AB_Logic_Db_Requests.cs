@@ -272,7 +272,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Remove_Logic_Internal_Node_Request : AB_Message
     {
-        public string Node_Id = "";
+        public long Node_Id;
         public AB_Remove_Logic_Internal_Node_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
     }
     public class AB_Remove_Logic_Internal_Node_Response : AB_Message
@@ -309,7 +309,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Remove_Logic_Internal_Connection_Request : AB_Message
     {
-        public string Connection_Id = "";
+        public long Connection_Id;
         public AB_Remove_Logic_Internal_Connection_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
     }
     public class AB_Remove_Logic_Internal_Connection_Response : AB_Message

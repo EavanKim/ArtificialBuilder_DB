@@ -215,7 +215,7 @@ namespace ArtificialBuilder
             return resp.Success;
         }
 
-        public async Task<bool> RemoveInternalNodeAsync(string _nodeId)
+        public async Task<bool> RemoveInternalNodeAsync(long _nodeId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Remove_Logic_Internal_Node_Response>(
                 new AB_Remove_Logic_Internal_Node_Request { Node_Id = _nodeId }, DefaultTimeout);
@@ -243,7 +243,7 @@ namespace ArtificialBuilder
             return resp.Success;
         }
 
-        public async Task<bool> RemoveInternalConnectionAsync(string _connectionId)
+        public async Task<bool> RemoveInternalConnectionAsync(long _connectionId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Remove_Logic_Internal_Connection_Response>(
                 new AB_Remove_Logic_Internal_Connection_Request { Connection_Id = _connectionId }, DefaultTimeout);

@@ -18,11 +18,10 @@ namespace ArtificialBuilder.Models
             set { m_id_ = value; }
         }
 
-        /// <summary>호출하는 노드(로직) id (그래프 안).</summary>
-        private string m_callerNodeId_ = "";
-        [Required]
+        /// <summary>호출하는 노드(로직) id (그래프 안, long). 2026-05-11 — string → long 정합.</summary>
+        private long m_callerNodeId_ = 0;
         [Column("caller_node_id")]
-        public string CallerNodeId_
+        public long CallerNodeId_
         {
             get { return m_callerNodeId_; }
             set { m_callerNodeId_ = value; }

@@ -38,21 +38,19 @@ namespace ArtificialBuilder.Models
             set { m_valueKind_ = value; }
         }
 
-        /// <summary>매핑된 로직 (LogicId).</summary>
-        private string m_mappedLogicId_ = "";
-        [Required]
+        /// <summary>매핑된 로직 (Logic 인스턴스 FK, long PK). 2026-05-11 — string Guid → long 마이그.</summary>
+        private long m_mappedLogicId_ = 0;
         [Column("mapped_logic_id")]
-        public string MappedLogicId_
+        public long MappedLogicId_
         {
             get { return m_mappedLogicId_; }
             set { m_mappedLogicId_ = value; }
         }
 
-        /// <summary>매핑된 로직 안의 Output sentinel 노드 (NodeId).</summary>
-        private string m_mappedOutputSentinelId_ = "";
-        [Required]
+        /// <summary>매핑된 로직 안의 Output sentinel 노드 (NodeId, long PK). 2026-05-11 — string Guid → long 마이그.</summary>
+        private long m_mappedOutputSentinelId_ = 0;
         [Column("mapped_output_sentinel_id")]
-        public string MappedOutputSentinelId_
+        public long MappedOutputSentinelId_
         {
             get { return m_mappedOutputSentinelId_; }
             set { m_mappedOutputSentinelId_ = value; }

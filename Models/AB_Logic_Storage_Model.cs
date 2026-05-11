@@ -39,11 +39,10 @@ namespace ArtificialBuilder.Models
             set { m_contextId_ = value; }
         }
 
-        /// <summary>그래프 노드 식별자 (UI 노드 그래프의 논리 ID 문자열). DB row FK 아님.</summary>
-        private string m_nodeId_ = "";
-        [Required]
+        /// <summary>그래프 노드 식별자 (UI 노드 그래프의 논리 ID, long). DB row FK 아님. 2026-05-11 — string → long 정합.</summary>
+        private long m_nodeId_ = 0;
         [Column("logic_id")]
-        public string NodeId_
+        public long NodeId_
         {
             get { return m_nodeId_; }
             set { m_nodeId_ = value; }

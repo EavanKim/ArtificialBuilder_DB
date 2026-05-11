@@ -38,9 +38,9 @@ namespace ArtificialBuilder.Models
             set { m_entryType = value; }
         }
 
-        private string m_nodeId = "";
+        private long m_nodeId = 0;
         [Column("logic_id")]
-        public string NodeId_
+        public long NodeId_
         {
             get { return m_nodeId; }
             set { m_nodeId = value; }

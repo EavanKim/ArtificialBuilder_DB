@@ -17,11 +17,10 @@ namespace ArtificialBuilder.Models
             set { m_id_ = value; }
         }
 
-        /// <summary>출발 노드 (logic_internal_nodes.id).</summary>
-        private string m_fromNodeId_ = "";
-        [Required]
+        /// <summary>출발 노드 (logic_internal_nodes.id, long FK). 2026-05-11 — string → long 정합.</summary>
+        private long m_fromNodeId_ = 0;
         [Column("from_node_id")]
-        public string FromNodeId_
+        public long FromNodeId_
         {
             get { return m_fromNodeId_; }
             set { m_fromNodeId_ = value; }
@@ -36,11 +35,10 @@ namespace ArtificialBuilder.Models
             set { m_fromPortIdx_ = value; }
         }
 
-        /// <summary>도착 노드 (logic_internal_nodes.id).</summary>
-        private string m_toNodeId_ = "";
-        [Required]
+        /// <summary>도착 노드 (logic_internal_nodes.id, long FK). 2026-05-11 — string → long 정합.</summary>
+        private long m_toNodeId_ = 0;
         [Column("to_node_id")]
-        public string ToNodeId_
+        public long ToNodeId_
         {
             get { return m_toNodeId_; }
             set { m_toNodeId_ = value; }

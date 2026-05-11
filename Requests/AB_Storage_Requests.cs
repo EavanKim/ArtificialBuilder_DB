@@ -189,11 +189,11 @@ namespace ArtificialBuilder.Requests
     // Node Storage — 1 노드 1 회 실행
     // ============================================================
 
-    /// <summary>로직 실행 결과 추가. resource_id 단일 키만 보관.</summary>
+    /// <summary>로직 실행 결과 추가. resource_id 단일 키만 보관. 2026-05-11 — NodeId string → long.</summary>
     public class AB_Add_Node_Request : AB_Message
     {
         public long ContextId;
-        public string NodeId = "";
+        public long NodeId;
         public int EmissionOrder;
         public long? ResourceId;
         public string? MetaJson;
