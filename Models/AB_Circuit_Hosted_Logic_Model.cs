@@ -18,11 +18,11 @@ namespace ArtificialBuilder.Models
             set { m_id_ = value; }
         }
 
-        /// <summary>호스팅 대상 Logic 의 UUID (Logic DB 참조).</summary>
-        private string m_logicUuid_ = "";
+        /// <summary>호스팅 대상 Logic 의 LogicId (long, Logic DB 참조). 2026-05-11 — string Guid 폐기.</summary>
+        private long m_logicUuid_;
         [Required]
         [Column("logic_uuid")]
-        public string LogicUuid_
+        public long LogicUuid_
         {
             get { return m_logicUuid_; }
             set { m_logicUuid_ = value; }

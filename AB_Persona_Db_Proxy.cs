@@ -240,7 +240,7 @@ namespace ArtificialBuilder
             return resp.Hits;
         }
 
-        public async Task InsertChatEmbeddingAsync(long _sessionId, string _nodeId,
+        public async Task InsertChatEmbeddingAsync(long _sessionId, long _nodeId,
             int _turnIndex, int _refreshIndex, int _emissionOrder, float[] _embedding)
         {
             await GetBroker().PublishAndWaitAsync<AB_Persona_Insert_Chat_Embedding_Response>(
@@ -261,7 +261,7 @@ namespace ArtificialBuilder
                 new AB_Persona_Delete_Chat_Embeddings_By_Session_Request { SessionId = _sessionId }, DefaultTimeout);
         }
 
-        public async Task DeleteChatEmbeddingByRecordAsync(long _sessionId, string _nodeId,
+        public async Task DeleteChatEmbeddingByRecordAsync(long _sessionId, long _nodeId,
             int _turnIndex, int _refreshIndex, int _emissionOrder)
         {
             await GetBroker().PublishAndWaitAsync<AB_Persona_Delete_Chat_Embedding_By_Record_Response>(

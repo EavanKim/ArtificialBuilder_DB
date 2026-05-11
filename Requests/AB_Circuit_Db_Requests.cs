@@ -1422,13 +1422,13 @@ namespace ArtificialBuilder.Requests
 
     // --- InsertChatEmbedding ---
 
-    /// <summary>채팅 임베딩 삽입. 키 튜플은 context_records 와 동일.</summary>
+    /// <summary>채팅 임베딩 삽입. 키 튜플은 context_records 와 동일. 2026-05-11 — node_id string → long.</summary>
     public class AB_Insert_Chat_Embedding_Request : AB_Message
     {
         /// <summary>세션 ID.</summary>
         public long SessionId;
         /// <summary>소스 노드 ID.</summary>
-        public string NodeId = "";
+        public long NodeId;
         /// <summary>턴 인덱스.</summary>
         public int TurnIndex;
         /// <summary>refresh 레이어 인덱스.</summary>
@@ -1474,13 +1474,13 @@ namespace ArtificialBuilder.Requests
 
     // --- DeleteChatEmbeddingByRecord ---
 
-    /// <summary>특정 컨텍스트 레코드의 채팅 임베딩 삭제.</summary>
+    /// <summary>특정 컨텍스트 레코드의 채팅 임베딩 삭제. 2026-05-11 — node_id string → long.</summary>
     public class AB_Delete_Chat_Embedding_By_Record_Request : AB_Message
     {
         /// <summary>세션 ID.</summary>
         public long SessionId;
         /// <summary>소스 노드 ID.</summary>
-        public string NodeId = "";
+        public long NodeId;
         /// <summary>턴 인덱스.</summary>
         public int TurnIndex;
         /// <summary>refresh 레이어 인덱스.</summary>
@@ -1720,7 +1720,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Get_Hosted_Logic_Slot_Value_Request : AB_Message
     {
-        public string Logic_Id = "";
+        public AB_Logic_Id Logic_Id = 0L;
         public AB_Slot_Id Slot_Id = 0L;
         public AB_Get_Hosted_Logic_Slot_Value_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }

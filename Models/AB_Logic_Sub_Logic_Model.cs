@@ -17,10 +17,10 @@ namespace ArtificialBuilder.Models
             set { m_id_ = value; }
         }
 
-        private string m_subLogicUuid_ = "";
+        private long m_subLogicUuid_;
         [Required]
         [Column("sub_logic_uuid")]
-        public string SubLogicUuid_
+        public long SubLogicUuid_
         {
             get { return m_subLogicUuid_; }
             set { m_subLogicUuid_ = value; }

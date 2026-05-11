@@ -372,7 +372,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Persona_Insert_Chat_Embedding_Request : AB_Message
     {
         public long SessionId;
-        public string NodeId = "";
+        public long NodeId;
         public int TurnIndex;
         public int RefreshIndex;
         public int EmissionOrder;
@@ -399,7 +399,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Persona_Delete_Chat_Embedding_By_Record_Request : AB_Message
     {
         public long SessionId;
-        public string NodeId = "";
+        public long NodeId;
         public int TurnIndex;
         public int RefreshIndex;
         public int EmissionOrder;

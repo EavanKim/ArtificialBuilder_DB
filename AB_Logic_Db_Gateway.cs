@@ -60,7 +60,7 @@ namespace ArtificialBuilder
                     // --- 로직 라이브러리 (main-tabs-and-package-system sub 2) — 디렉터리 단위, dbId 무관 ---
                     case AB_Create_Logic_Request req:
                     {
-                        string? newUuid = await AB_Board.Logic.CreateLogicFileAsync(req.Uuid, req.Name);
+                        long newUuid = await AB_Board.Logic.CreateLogicFileAsync(req.Uuid, req.Name);
                         m_broker?.Publish(new AB_Create_Logic_Response
                         { CorrelationId = req.CorrelationId, Uuid = newUuid });
                         break;

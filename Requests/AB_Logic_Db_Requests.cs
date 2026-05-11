@@ -332,18 +332,18 @@ namespace ArtificialBuilder.Requests
 
     // --- 로직 라이브러리 (main-tabs-and-package-system sub 2) ---
 
-    /// <summary>신규 Logic 파일 생성 요청. UUID 미지정 시 새 UUID 생성.</summary>
+    /// <summary>신규 Logic 파일 생성 요청. Uuid 0 시 새 long 발급.</summary>
     public class AB_Create_Logic_Request : AB_Message
     {
-        public string? Uuid;
+        public long Uuid;
         public string? Name;
         public AB_Create_Logic_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
     }
 
-    /// <summary>신규 Logic 파일 생성 응답. 생성 실패 시 Uuid = null.</summary>
+    /// <summary>신규 Logic 파일 생성 응답. 생성 실패 시 Uuid = 0.</summary>
     public class AB_Create_Logic_Response : AB_Message
     {
-        public string? Uuid;
+        public long Uuid;
         public string? Error;
         public AB_Create_Logic_Response() { Topic = AB_Logic_Db_Topics.ActiveLogic; IsResponse = true; }
     }
@@ -351,7 +351,7 @@ namespace ArtificialBuilder.Requests
     /// <summary>Logic 파일 삭제 요청. 활성 open 시 차단.</summary>
     public class AB_Delete_Logic_Request : AB_Message
     {
-        public string Uuid = "";
+        public long Uuid;
         public AB_Delete_Logic_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
     }
 
@@ -380,7 +380,7 @@ namespace ArtificialBuilder.Requests
     /// <summary>Logic open 요청 (UI 가 ack 받기 위해). DDO LOGIC_DB_OPEN 의 Request/Response 변형.</summary>
     public class AB_Open_Logic_Request : AB_Message
     {
-        public string Uuid = "";
+        public long Uuid;
         public AB_Open_Logic_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
     }
 

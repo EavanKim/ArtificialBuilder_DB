@@ -74,7 +74,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                     new AB_Insert_Chat_Embedding_Request
                     {
                         SessionId = 1L,
-                        NodeId = "node_test",
+                        NodeId = 1L,
                         TurnIndex = 1,
                         RefreshIndex = 0,
                         EmissionOrder = 0,
@@ -85,7 +85,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                     new AB_Delete_Chat_Embedding_By_Record_Request
                     {
                         SessionId = 1L,
-                        NodeId = "node_test",
+                        NodeId = 1L,
                         TurnIndex = 1,
                         RefreshIndex = 0,
                         EmissionOrder = 0

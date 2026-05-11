@@ -17,10 +17,10 @@ namespace ArtificialBuilder.Models
             set { m_id_ = value; }
         }
 
-        private string m_logicUuid_ = Guid.NewGuid().ToString();
+        private long m_logicUuid_;
         [Required]
         [Column("logic_uuid")]
-        public string LogicUuid_
+        public long LogicUuid_
         {
             get { return m_logicUuid_; }
             set { m_logicUuid_ = value; }

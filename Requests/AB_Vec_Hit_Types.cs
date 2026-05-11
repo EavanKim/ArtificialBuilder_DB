@@ -9,13 +9,13 @@ namespace ArtificialBuilder.Requests
         public double Distance;
     }
 
-    /// <summary>채팅 임베딩 검색 결과. 키 튜플: (session_id, node_id, turn_index, refresh_index, emission_order).</summary>
+    /// <summary>채팅 임베딩 검색 결과. 키 튜플: (session_id, node_id, turn_index, refresh_index, emission_order). 2026-05-11 — node_id string → long.</summary>
     public class AB_Vec_Chat_Hit
     {
         /// <summary>세션 ID.</summary>
         public long SessionId;
         /// <summary>소스 노드 ID.</summary>
-        public string NodeId = "";
+        public long NodeId;
         /// <summary>턴 인덱스.</summary>
         public int TurnIndex;
         /// <summary>refresh 레이어 인덱스.</summary>
@@ -26,11 +26,11 @@ namespace ArtificialBuilder.Requests
         public double Distance;
     }
 
-    /// <summary>세션 임베딩 메타 (컨텍스트 키 + 차원수).</summary>
+    /// <summary>세션 임베딩 메타 (컨텍스트 키 + 차원수). 2026-05-11 — node_id string → long.</summary>
     public class AB_Chat_Embedding_Info
     {
         /// <summary>소스 노드 ID.</summary>
-        public string NodeId = "";
+        public long NodeId;
         /// <summary>턴 인덱스.</summary>
         public int TurnIndex;
         /// <summary>refresh 레이어 인덱스.</summary>

@@ -1273,7 +1273,7 @@ namespace ArtificialBuilder
                         AB_Circuit_Hosted_Logic_Slot_Value_Model? data = null;
                         if (dbId != 0)
                         {
-                            string logicId = req.Logic_Id;
+                            long logicId = req.Logic_Id;
                             long slotId = req.Slot_Id;
                             var all = await AB_Board.Db.FindAsync<AB_Circuit_Hosted_Logic_Slot_Value_Model>(dbId,
                                 _v => _v.LogicId_ == logicId && _v.SlotId_ == slotId);

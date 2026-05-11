@@ -584,7 +584,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>채팅 임베딩 삽입. 키 튜플은 context_records 와 동일.</summary>
-        public async Task<bool> InsertChatEmbeddingAsync(long _sessionId, string _nodeId,
+        public async Task<bool> InsertChatEmbeddingAsync(long _sessionId, long _nodeId,
             int _turnIndex, int _refreshIndex, int _emissionOrder, float[] _embedding)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Insert_Chat_Embedding_Response>(
@@ -609,7 +609,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>특정 컨텍스트 레코드의 채팅 임베딩 삭제.</summary>
-        public async Task<bool> DeleteChatEmbeddingByRecordAsync(long _sessionId, string _nodeId,
+        public async Task<bool> DeleteChatEmbeddingByRecordAsync(long _sessionId, long _nodeId,
             int _turnIndex, int _refreshIndex, int _emissionOrder)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Chat_Embedding_By_Record_Response>(
@@ -731,7 +731,7 @@ namespace ArtificialBuilder
             return resp.Data ?? new();
         }
 
-        public async Task<AB_Circuit_Hosted_Logic_Slot_Value_Model?> GetHostedLogicSlotValueAsync(string _logicId, AB_Slot_Id _slotId)
+        public async Task<AB_Circuit_Hosted_Logic_Slot_Value_Model?> GetHostedLogicSlotValueAsync(AB_Logic_Id _logicId, AB_Slot_Id _slotId)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Hosted_Logic_Slot_Value_Response>(
                 new AB_Get_Hosted_Logic_Slot_Value_Request { Logic_Id = _logicId, Slot_Id = _slotId }, DefaultTimeout);

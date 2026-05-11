@@ -33,14 +33,14 @@ namespace ArtificialBuilder
 
         // --- 로직 라이브러리 (main-tabs-and-package-system sub 2) ---
 
-        public async Task<string?> CreateLogicAsync(string? _name = null, string? _uuid = null)
+        public async Task<long> CreateLogicAsync(string? _name = null, long _uuid = 0L)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Create_Logic_Response>(
                 new AB_Create_Logic_Request { Uuid = _uuid, Name = _name }, DefaultTimeout);
             return resp.Uuid;
         }
 
-        public async Task<bool> DeleteLogicAsync(string _uuid)
+        public async Task<bool> DeleteLogicAsync(long _uuid)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Logic_Response>(
                 new AB_Delete_Logic_Request { Uuid = _uuid }, DefaultTimeout);
@@ -54,7 +54,7 @@ namespace ArtificialBuilder
             return resp.Data ?? new();
         }
 
-        public async Task<bool> OpenLogicAsync(string _uuid)
+        public async Task<bool> OpenLogicAsync(long _uuid)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Open_Logic_Response>(
                 new AB_Open_Logic_Request { Uuid = _uuid }, DefaultTimeout);

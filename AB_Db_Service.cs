@@ -187,7 +187,12 @@ namespace ArtificialBuilder
         {
             string uuid = _cmd.DataKey;
             if (string.IsNullOrEmpty(uuid)) { AB_Log.Warn("AB_Db_Service", "LogicOpen — DataKey 비어있음"); return; }
-            _ = AB_Board.Logic.OpenAsync(uuid);
+            if (!long.TryParse(uuid, out long uuidLong) || uuidLong == 0L)
+            {
+                AB_Log.Warn("AB_Db_Service", $"LogicOpen — DataKey 비-long: {uuid}");
+                return;
+            }
+            _ = AB_Board.Logic.OpenAsync(uuidLong);
         }
 
         private void HandleLogicClose(AB_DDO_Command _cmd)

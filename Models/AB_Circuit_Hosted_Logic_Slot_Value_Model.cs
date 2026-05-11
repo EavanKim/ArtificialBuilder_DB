@@ -18,11 +18,11 @@ namespace ArtificialBuilder.Models
             set { m_id_ = value; }
         }
 
-        /// <summary>대상 hosted logic 의 LogicId — LogicUuid (= .alogic 파일명 외부 식별자 string 보존). 본 컬럼이 AB_Logic.LogicId 와 매치하는 정합 정본. hosted_logic.Id_ (long PK) 와 다른 동심원 — 본 row 는 LogicUuid 기준 cross-table.</summary>
-        private string m_logicId_ = "";
+        /// <summary>대상 hosted logic 의 LogicId — AB_Logic.LogicId (long) 와 매치 정본. 2026-05-11 — string Guid 폐기.</summary>
+        private long m_logicId_;
         [Required]
         [Column("logic_id")]
-        public string LogicId_
+        public long LogicId_
         {
             get { return m_logicId_; }
             set { m_logicId_ = value; }
