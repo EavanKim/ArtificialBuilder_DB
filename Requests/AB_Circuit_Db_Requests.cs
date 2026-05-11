@@ -1769,7 +1769,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Remove_Hosted_Logic_Request : AB_Message
     {
-        public string Hosted_Logic_Id = "";
+        public AB_Logic_Id Hosted_Logic_Id = 0L;
         public AB_Remove_Hosted_Logic_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
     public class AB_Remove_Hosted_Logic_Response : AB_Message
@@ -1783,7 +1783,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Get_Hosted_Logic_Slot_Mappings_Request : AB_Message
     {
-        public string Hosted_Logic_Id = "";
+        public AB_Logic_Id Hosted_Logic_Id = 0L;
         public AB_Get_Hosted_Logic_Slot_Mappings_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
     public class AB_Get_Hosted_Logic_Slot_Mappings_Response : AB_Message
@@ -1795,7 +1795,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Replace_Hosted_Logic_Slot_Mappings_Request : AB_Message
     {
-        public string Hosted_Logic_Id = "";
+        public AB_Logic_Id Hosted_Logic_Id = 0L;
         public List<AB_Hosted_Slot_Mapping_Model> Items = new();
         public AB_Replace_Hosted_Logic_Slot_Mappings_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
@@ -1808,7 +1808,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Get_Hosted_Logic_Ui_Mappings_Request : AB_Message
     {
-        public string Hosted_Logic_Id = "";
+        public AB_Logic_Id Hosted_Logic_Id = 0L;
         public AB_Get_Hosted_Logic_Ui_Mappings_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
     public class AB_Get_Hosted_Logic_Ui_Mappings_Response : AB_Message
@@ -1820,7 +1820,7 @@ namespace ArtificialBuilder.Requests
 
     public class AB_Replace_Hosted_Logic_Ui_Mappings_Request : AB_Message
     {
-        public string Hosted_Logic_Id = "";
+        public AB_Logic_Id Hosted_Logic_Id = 0L;
         public List<AB_Hosted_Ui_Mapping_Model> Items = new();
         public AB_Replace_Hosted_Logic_Ui_Mappings_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }

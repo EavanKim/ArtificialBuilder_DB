@@ -17,11 +17,11 @@ namespace ArtificialBuilder.Models
         [Column("id")]
         public long Id_ { get { return m_id_; } set { m_id_ = value; } }
 
-        /// <summary>FK → AB_Circuit_Hosted_Logic_Model.Id_</summary>
-        private string m_hostedLogicId_ = "";
+        /// <summary>FK → AB_Circuit_Hosted_Logic_Model.Id_ (long PK). 2026-05-11 — string FK → long FK 정합.</summary>
+        private long m_hostedLogicId_ = 0L;
         [Required]
         [Column("hosted_logic_id")]
-        public string HostedLogicId_ { get { return m_hostedLogicId_; } set { m_hostedLogicId_ = value; } }
+        public long HostedLogicId_ { get { return m_hostedLogicId_; } set { m_hostedLogicId_ = value; } }
 
         /// <summary>로직 schema 의 빈 슬롯명 (예: "vector_store" / "asset_image" / "var_user_name").</summary>
         private string m_slotName_ = "";

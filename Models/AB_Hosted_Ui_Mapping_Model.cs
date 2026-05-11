@@ -18,17 +18,17 @@ namespace ArtificialBuilder.Models
         [Column("id")]
         public long Id_ { get { return m_id_; } set { m_id_ = value; } }
 
-        /// <summary>FK → AB_Circuit_Hosted_Logic_Model.Id_</summary>
-        private string m_hostedLogicId_ = "";
+        /// <summary>FK → AB_Circuit_Hosted_Logic_Model.Id_ (long PK). 2026-05-11 — string FK → long FK 정합.</summary>
+        private long m_hostedLogicId_ = 0L;
         [Required]
         [Column("hosted_logic_id")]
-        public string HostedLogicId_ { get { return m_hostedLogicId_; } set { m_hostedLogicId_ = value; } }
+        public long HostedLogicId_ { get { return m_hostedLogicId_; } set { m_hostedLogicId_ = value; } }
 
-        /// <summary>로직 안의 내부 노드 id (Logic DB 의 logic_internal_nodes.id 참조).</summary>
-        private string m_internalNodeId_ = "";
+        /// <summary>로직 안의 내부 노드 id (Logic DB 의 logic_internal_nodes.id 참조 — long PK). 2026-05-11 — string FK → long FK 정합.</summary>
+        private long m_internalNodeId_ = 0L;
         [Required]
         [Column("internal_node_id")]
-        public string InternalNodeId_ { get { return m_internalNodeId_; } set { m_internalNodeId_ = value; } }
+        public long InternalNodeId_ { get { return m_internalNodeId_; } set { m_internalNodeId_ = value; } }
 
         /// <summary>대상 Response UI 슬롯명 (예: "message" / "image" / "model_3d").</summary>
         private string m_uiSlotName_ = "";

@@ -1274,7 +1274,6 @@ namespace ArtificialBuilder
                         if (dbId != 0)
                         {
                             string logicId = req.Logic_Id;
-                            // 2026-05-11 — Hosted_Logic_Slot_Value_Model.SlotId_ string → long FK 정합. 변환 불필요.
                             long slotId = req.Slot_Id;
                             var all = await AB_Board.Db.FindAsync<AB_Circuit_Hosted_Logic_Slot_Value_Model>(dbId,
                                 _v => _v.LogicId_ == logicId && _v.SlotId_ == slotId);
@@ -1338,7 +1337,7 @@ namespace ArtificialBuilder
                         System.Collections.Generic.List<AB_Hosted_Slot_Mapping_Model> data = new();
                         if (dbId != 0)
                         {
-                            string hostedLogicId = req.Hosted_Logic_Id;
+                            long hostedLogicId = req.Hosted_Logic_Id;
                             var found = await AB_Board.Db.FindAsync<AB_Hosted_Slot_Mapping_Model>(dbId,
                                 _m => _m.HostedLogicId_ == hostedLogicId);
                             data.AddRange(found);
@@ -1351,7 +1350,7 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (dbId != 0)
                         {
-                            string hostedLogicId = req.Hosted_Logic_Id;
+                            long hostedLogicId = req.Hosted_Logic_Id;
                             var existing = await AB_Board.Db.FindAsync<AB_Hosted_Slot_Mapping_Model>(dbId,
                                 _m => _m.HostedLogicId_ == hostedLogicId);
                             foreach (var row in existing) AB_Board.Db.Remove(dbId, row);
@@ -1372,7 +1371,7 @@ namespace ArtificialBuilder
                         System.Collections.Generic.List<AB_Hosted_Ui_Mapping_Model> data = new();
                         if (dbId != 0)
                         {
-                            string hostedLogicId = req.Hosted_Logic_Id;
+                            long hostedLogicId = req.Hosted_Logic_Id;
                             var found = await AB_Board.Db.FindAsync<AB_Hosted_Ui_Mapping_Model>(dbId,
                                 _m => _m.HostedLogicId_ == hostedLogicId);
                             data.AddRange(found);
@@ -1385,7 +1384,7 @@ namespace ArtificialBuilder
                         bool ok = false;
                         if (dbId != 0)
                         {
-                            string hostedLogicId = req.Hosted_Logic_Id;
+                            long hostedLogicId = req.Hosted_Logic_Id;
                             var existing = await AB_Board.Db.FindAsync<AB_Hosted_Ui_Mapping_Model>(dbId,
                                 _m => _m.HostedLogicId_ == hostedLogicId);
                             foreach (var row in existing) AB_Board.Db.Remove(dbId, row);
