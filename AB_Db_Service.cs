@@ -103,9 +103,8 @@ namespace ArtificialBuilder
 
         private void HandleAppModelGet(AB_DDO_Command _cmd)
         {
-            string id = _cmd.DataKey;
-            if (string.IsNullOrEmpty(id)) { AB_Log.Warn("AB_Db_Service", "AppModelGet — DataKey 비어있음"); return; }
-            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>().GetModelByIdAsync(id);
+            if (_cmd.DataKey is not AB_Model_Id modelId) { AB_Log.Warn("AB_Db_Service", "AppModelGet — DataKey AB_Model_Id mismatch (ddo-datakey-typed sub 2)"); return; }
+            _ = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>().GetModelByIdAsync(modelId);
         }
 
         private void HandleAppModelAdd(AB_DDO_Command _cmd)
@@ -137,9 +136,8 @@ namespace ArtificialBuilder
 
         private void HandleCircuitOpen(AB_DDO_Command _cmd)
         {
-            string circuitName = _cmd.DataKey;
-            if (string.IsNullOrEmpty(circuitName)) { AB_Log.Warn("AB_Db_Service", "CircuitOpen — DataKey 비어있음"); return; }
-            _ = AB_Board.Circuit.OpenAsync(circuitName);
+            if (_cmd.Payload is not AB_Circuit_Db_Open_Request req || string.IsNullOrEmpty(req.CircuitName_)) { AB_Log.Warn("AB_Db_Service", "CircuitOpen — Payload AB_Circuit_Db_Open_Request mismatch (ddo-datakey-typed sub 2)"); return; }
+            _ = AB_Board.Circuit.OpenAsync(req.CircuitName_);
         }
 
         private void HandleCircuitClose(AB_DDO_Command _cmd)
@@ -185,14 +183,8 @@ namespace ArtificialBuilder
 
         private void HandleLogicOpen(AB_DDO_Command _cmd)
         {
-            string uuid = _cmd.DataKey;
-            if (string.IsNullOrEmpty(uuid)) { AB_Log.Warn("AB_Db_Service", "LogicOpen — DataKey 비어있음"); return; }
-            if (!long.TryParse(uuid, out long uuidLong) || uuidLong == 0L)
-            {
-                AB_Log.Warn("AB_Db_Service", $"LogicOpen — DataKey 비-long: {uuid}");
-                return;
-            }
-            _ = AB_Board.Logic.OpenAsync(uuidLong);
+            if (_cmd.DataKey is not AB_Logic_Id logicId) { AB_Log.Warn("AB_Db_Service", "LogicOpen — DataKey AB_Logic_Id mismatch (ddo-datakey-typed sub 2)"); return; }
+            _ = AB_Board.Logic.OpenAsync(logicId);
         }
 
         private void HandleLogicClose(AB_DDO_Command _cmd)
@@ -283,9 +275,8 @@ namespace ArtificialBuilder
 
         private void HandleResponseUiOpen(AB_DDO_Command _cmd)
         {
-            string uuid = _cmd.DataKey;
-            if (string.IsNullOrEmpty(uuid)) { AB_Log.Warn("AB_Db_Service", "ResponseUiOpen — DataKey 비어있음"); return; }
-            _ = AB_Board.ResponseUi.OpenAsync(uuid);
+            if (_cmd.Payload is not AB_Response_Ui_Db_Open_Request req || string.IsNullOrEmpty(req.Uuid_)) { AB_Log.Warn("AB_Db_Service", "ResponseUiOpen — Payload AB_Response_Ui_Db_Open_Request mismatch (ddo-datakey-typed sub 2)"); return; }
+            _ = AB_Board.ResponseUi.OpenAsync(req.Uuid_);
         }
 
         private void HandleResponseUiClose(AB_DDO_Command _cmd)

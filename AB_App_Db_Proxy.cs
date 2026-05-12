@@ -36,8 +36,8 @@ namespace ArtificialBuilder
             return resp.Data ?? new();
         }
 
-        /// <summary>ID로 모델 단건.</summary>
-        public async Task<AB_Db_Result<AB_Model_Config_Model>> GetModelByIdAsync(string _id)
+        /// <summary>ID로 모델 단건. (ddo-datakey-typed sub 2) string → long 시그니처 마이그.</summary>
+        public async Task<AB_Db_Result<AB_Model_Config_Model>> GetModelByIdAsync(long _id)
         {
             var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Model_By_Id_Response>(
                 new AB_Get_Model_By_Id_Request { Id = _id }, DefaultTimeout);

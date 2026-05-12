@@ -35,10 +35,10 @@ namespace ArtificialBuilder.Requests
         public AB_Get_All_Models_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
     }
 
-    /// <summary>ID로 모델 단건 조회.</summary>
+    /// <summary>ID로 모델 단건 조회. (ddo-datakey-typed sub 2) Id string → long 마이그 — AB_Model_Config_Model.Id_ 본체 long 정합.</summary>
     public class AB_Get_Model_By_Id_Request : AB_Message
     {
-        public string Id = "";
+        public long Id;
         public AB_Get_Model_By_Id_Request() { Topic = AB_App_Db_Topics.App; }
     }
 
