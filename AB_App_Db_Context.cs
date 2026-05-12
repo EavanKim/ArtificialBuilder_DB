@@ -42,6 +42,13 @@ namespace ArtificialBuilder
             get { return m_llamaModels; }
             set { m_llamaModels = value; }
         }
+        /// <summary>HF 다운로드 큐 entity 테이블 (typed-id-edp-rebase chunk 4p).</summary>
+        private DbSet<AB_HF_Download> m_hfDownloads = null!;
+        public DbSet<AB_HF_Download> HfDownloads
+        {
+            get { return m_hfDownloads; }
+            set { m_hfDownloads = value; }
+        }
 
         /// <summary>EF Core 옵션 주입 생성자.</summary>
         public AB_App_Db_Context(DbContextOptions<AB_App_Db_Context> _options)
