@@ -253,4 +253,86 @@ namespace ArtificialBuilder.Requests
         public string? Error;
         public AB_Delete_Pipeline_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
     }
+
+    // ============================================================
+    // Llama_Model (typed-id-edp-rebase chunk 4o)
+    // 로컬 GGUF 모델 entity. PK = long (AB_Model_Id 매핑). filename = entity attribute.
+    // ============================================================
+
+    /// <summary>Llama 모델 전체 조회.</summary>
+    public class AB_Get_All_Llama_Models_Request : AB_Message
+    {
+        public AB_Get_All_Llama_Models_Request() { Topic = AB_App_Db_Topics.App; }
+    }
+
+    /// <summary>Llama 모델 전체 응답.</summary>
+    public class AB_Get_All_Llama_Models_Response : AB_Message
+    {
+        public List<AB_Llama_Model> Data = new();
+        public string? Error;
+        public AB_Get_All_Llama_Models_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
+    }
+
+    /// <summary>ID로 Llama 모델 단건.</summary>
+    public class AB_Get_Llama_Model_By_Id_Request : AB_Message
+    {
+        public long Id;
+        public AB_Get_Llama_Model_By_Id_Request() { Topic = AB_App_Db_Topics.App; }
+    }
+
+    /// <summary>Llama 모델 단건 응답.</summary>
+    public class AB_Get_Llama_Model_By_Id_Response : AB_Message
+    {
+        public AB_Llama_Model? Data;
+        public bool IsOk;
+        public string? Error;
+        public AB_Get_Llama_Model_By_Id_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
+    }
+
+    /// <summary>FileName 으로 Llama 모델 단건 조회 (scan-on-load upsert 용).</summary>
+    public class AB_Get_Llama_Model_By_File_Name_Request : AB_Message
+    {
+        public string FileName = "";
+        public AB_Get_Llama_Model_By_File_Name_Request() { Topic = AB_App_Db_Topics.App; }
+    }
+
+    /// <summary>FileName 으로 Llama 모델 단건 응답.</summary>
+    public class AB_Get_Llama_Model_By_File_Name_Response : AB_Message
+    {
+        public AB_Llama_Model? Data;
+        public bool IsOk;
+        public string? Error;
+        public AB_Get_Llama_Model_By_File_Name_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
+    }
+
+    /// <summary>Llama 모델 upsert (filename unique key — 존재 시 update, 없으면 add).</summary>
+    public class AB_Upsert_Llama_Model_Request : AB_Message
+    {
+        public AB_Llama_Model Model = new();
+        public AB_Upsert_Llama_Model_Request() { Topic = AB_App_Db_Topics.App; }
+    }
+
+    /// <summary>Llama 모델 upsert 응답. Data = 저장된 row (Id 포함).</summary>
+    public class AB_Upsert_Llama_Model_Response : AB_Message
+    {
+        public AB_Llama_Model? Data;
+        public bool Success;
+        public string? Error;
+        public AB_Upsert_Llama_Model_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
+    }
+
+    /// <summary>Llama 모델 삭제 (Id 기반).</summary>
+    public class AB_Delete_Llama_Model_Request : AB_Message
+    {
+        public long Id;
+        public AB_Delete_Llama_Model_Request() { Topic = AB_App_Db_Topics.App; }
+    }
+
+    /// <summary>Llama 모델 삭제 응답.</summary>
+    public class AB_Delete_Llama_Model_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Delete_Llama_Model_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
+    }
 }
