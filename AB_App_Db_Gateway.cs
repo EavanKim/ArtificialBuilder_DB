@@ -402,6 +402,98 @@ namespace ArtificialBuilder
                         { CorrelationId = req.CorrelationId, Success = success });
                         break;
                     }
+
+                    // ============================================================
+                    // HF_Repo (typed-id-edp-rebase chunk 4q)
+                    // ============================================================
+                    case AB_Get_All_HF_Repos_Request req:
+                    {
+                        List<AB_HF_Repo> data = new();
+                        if (handle != 0)
+                        {
+                            var all = await m_engine.GetAllAsync<AB_HF_Repo>(handle);
+                            data = all.ToList();
+                        }
+                        m_broker?.Publish(new AB_Get_All_HF_Repos_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_HF_Repo_By_Id_Request req:
+                    {
+                        AB_HF_Repo? data = null;
+                        bool isOk = false;
+                        if (handle != 0)
+                        {
+                            var found = await m_engine.FindAsync<AB_HF_Repo>(handle, _m => _m.Id_ == req.Id);
+                            data = found.FirstOrDefault();
+                            isOk = data != null;
+                        }
+                        m_broker?.Publish(new AB_Get_HF_Repo_By_Id_Response
+                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        break;
+                    }
+                    case AB_Get_HF_Repo_By_Repo_Id_Request req:
+                    {
+                        AB_HF_Repo? data = null;
+                        bool isOk = false;
+                        if (handle != 0)
+                        {
+                            var found = await m_engine.FindAsync<AB_HF_Repo>(handle, _m => _m.RepoId_ == req.RepoId);
+                            data = found.FirstOrDefault();
+                            isOk = data != null;
+                        }
+                        m_broker?.Publish(new AB_Get_HF_Repo_By_Repo_Id_Response
+                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        break;
+                    }
+                    case AB_Upsert_HF_Repo_Request req:
+                    {
+                        AB_HF_Repo? saved = null;
+                        bool success = false;
+                        if (handle != 0)
+                        {
+                            var existingList = await m_engine.FindAsync<AB_HF_Repo>(handle, _m => _m.RepoId_ == req.Model.RepoId_);
+                            AB_HF_Repo? existing = existingList.FirstOrDefault();
+                            if (existing != null)
+                            {
+                                existing.Description_ = req.Model.Description_;
+                                existing.License_ = req.Model.License_;
+                                existing.UpdatedAt_ = DateTime.UtcNow;
+                                m_engine.Update(handle, existing);
+                                saved = existing;
+                            }
+                            else
+                            {
+                                req.Model.CreatedAt_ = DateTime.UtcNow;
+                                req.Model.UpdatedAt_ = DateTime.UtcNow;
+                                await m_engine.AddAsync(handle, req.Model);
+                                saved = req.Model;
+                            }
+                            await m_engine.SaveChangesAsync(handle);
+                            success = true;
+                        }
+                        m_broker?.Publish(new AB_Upsert_HF_Repo_Response
+                        { CorrelationId = req.CorrelationId, Data = saved, Success = success });
+                        break;
+                    }
+                    case AB_Delete_HF_Repo_Request req:
+                    {
+                        bool success = false;
+                        if (handle != 0)
+                        {
+                            var found = await m_engine.FindAsync<AB_HF_Repo>(handle, _m => _m.Id_ == req.Id);
+                            AB_HF_Repo? row = found.FirstOrDefault();
+                            if (row != null)
+                            {
+                                m_engine.Remove(handle, row);
+                                await m_engine.SaveChangesAsync(handle);
+                                success = true;
+                            }
+                        }
+                        m_broker?.Publish(new AB_Delete_HF_Repo_Response
+                        { CorrelationId = req.CorrelationId, Success = success });
+                        break;
+                    }
                 }
             }
             catch (Exception ex)

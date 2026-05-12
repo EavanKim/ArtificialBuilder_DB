@@ -400,4 +400,85 @@ namespace ArtificialBuilder.Requests
         public string? Error;
         public AB_Delete_HF_Download_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
     }
+
+    // ============================================================
+    // HF_Repo (typed-id-edp-rebase chunk 4q)
+    // ============================================================
+
+    /// <summary>HF repo 전체 조회.</summary>
+    public class AB_Get_All_HF_Repos_Request : AB_Message
+    {
+        public AB_Get_All_HF_Repos_Request() { Topic = AB_App_Db_Topics.App; }
+    }
+
+    /// <summary>HF repo 전체 응답.</summary>
+    public class AB_Get_All_HF_Repos_Response : AB_Message
+    {
+        public List<AB_HF_Repo> Data = new();
+        public string? Error;
+        public AB_Get_All_HF_Repos_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
+    }
+
+    /// <summary>Id 로 HF repo 단건.</summary>
+    public class AB_Get_HF_Repo_By_Id_Request : AB_Message
+    {
+        public long Id;
+        public AB_Get_HF_Repo_By_Id_Request() { Topic = AB_App_Db_Topics.App; }
+    }
+
+    /// <summary>HF repo 단건 응답.</summary>
+    public class AB_Get_HF_Repo_By_Id_Response : AB_Message
+    {
+        public AB_HF_Repo? Data;
+        public bool IsOk;
+        public string? Error;
+        public AB_Get_HF_Repo_By_Id_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
+    }
+
+    /// <summary>RepoId ("owner/repo") 로 HF repo 단건 조회 (upsert 용).</summary>
+    public class AB_Get_HF_Repo_By_Repo_Id_Request : AB_Message
+    {
+        public string RepoId = "";
+        public AB_Get_HF_Repo_By_Repo_Id_Request() { Topic = AB_App_Db_Topics.App; }
+    }
+
+    /// <summary>RepoId 로 HF repo 단건 응답.</summary>
+    public class AB_Get_HF_Repo_By_Repo_Id_Response : AB_Message
+    {
+        public AB_HF_Repo? Data;
+        public bool IsOk;
+        public string? Error;
+        public AB_Get_HF_Repo_By_Repo_Id_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
+    }
+
+    /// <summary>HF repo upsert (repo_id unique). 반환 = 저장된 row (Id 포함).</summary>
+    public class AB_Upsert_HF_Repo_Request : AB_Message
+    {
+        public AB_HF_Repo Model = new();
+        public AB_Upsert_HF_Repo_Request() { Topic = AB_App_Db_Topics.App; }
+    }
+
+    /// <summary>HF repo upsert 응답.</summary>
+    public class AB_Upsert_HF_Repo_Response : AB_Message
+    {
+        public AB_HF_Repo? Data;
+        public bool Success;
+        public string? Error;
+        public AB_Upsert_HF_Repo_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
+    }
+
+    /// <summary>HF repo 삭제 (Id 기반).</summary>
+    public class AB_Delete_HF_Repo_Request : AB_Message
+    {
+        public long Id;
+        public AB_Delete_HF_Repo_Request() { Topic = AB_App_Db_Topics.App; }
+    }
+
+    /// <summary>HF repo 삭제 응답.</summary>
+    public class AB_Delete_HF_Repo_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Delete_HF_Repo_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
+    }
 }

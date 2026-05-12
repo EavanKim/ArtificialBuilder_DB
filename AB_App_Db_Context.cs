@@ -49,6 +49,13 @@ namespace ArtificialBuilder
             get { return m_hfDownloads; }
             set { m_hfDownloads = value; }
         }
+        /// <summary>HuggingFace repo entity 테이블 (typed-id-edp-rebase chunk 4q).</summary>
+        private DbSet<AB_HF_Repo> m_hfRepos = null!;
+        public DbSet<AB_HF_Repo> HfRepos
+        {
+            get { return m_hfRepos; }
+            set { m_hfRepos = value; }
+        }
 
         /// <summary>EF Core 옵션 주입 생성자.</summary>
         public AB_App_Db_Context(DbContextOptions<AB_App_Db_Context> _options)
@@ -66,6 +73,10 @@ namespace ArtificialBuilder
 
             _modelBuilder.Entity<AB_Llama_Model>()
                 .HasIndex(_m => _m.FileName_)
+                .IsUnique();
+
+            _modelBuilder.Entity<AB_HF_Repo>()
+                .HasIndex(_r => _r.RepoId_)
                 .IsUnique();
         }
     }

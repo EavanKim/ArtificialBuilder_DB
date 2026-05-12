@@ -232,5 +232,51 @@ namespace ArtificialBuilder
                 new AB_Delete_HF_Download_Request { Id = _id }, DefaultTimeout);
             return resp.Success;
         }
+
+        // ============================================================
+        // HF_Repo (typed-id-edp-rebase chunk 4q)
+        // ============================================================
+
+        /// <summary>HF repo 전체 조회.</summary>
+        public async Task<List<AB_HF_Repo>> GetAllHfReposAsync()
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_HF_Repos_Response>(
+                new AB_Get_All_HF_Repos_Request(), DefaultTimeout);
+            return resp.Data ?? new();
+        }
+
+        /// <summary>Id 로 HF repo 단건.</summary>
+        public async Task<AB_Db_Result<AB_HF_Repo>> GetHfRepoByIdAsync(long _id)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_HF_Repo_By_Id_Response>(
+                new AB_Get_HF_Repo_By_Id_Request { Id = _id }, DefaultTimeout);
+            if (resp.IsOk && resp.Data != null) return AB_Db_Result<AB_HF_Repo>.Ok(resp.Data);
+            return AB_Db_Result<AB_HF_Repo>.NotFound();
+        }
+
+        /// <summary>RepoId ("owner/repo") 로 HF repo 단건.</summary>
+        public async Task<AB_Db_Result<AB_HF_Repo>> GetHfRepoByRepoIdAsync(string _repoId)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_HF_Repo_By_Repo_Id_Response>(
+                new AB_Get_HF_Repo_By_Repo_Id_Request { RepoId = _repoId }, DefaultTimeout);
+            if (resp.IsOk && resp.Data != null) return AB_Db_Result<AB_HF_Repo>.Ok(resp.Data);
+            return AB_Db_Result<AB_HF_Repo>.NotFound();
+        }
+
+        /// <summary>HF repo upsert (repo_id unique). 반환 = 저장된 row.</summary>
+        public async Task<AB_HF_Repo?> UpsertHfRepoAsync(AB_HF_Repo _model)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Upsert_HF_Repo_Response>(
+                new AB_Upsert_HF_Repo_Request { Model = _model }, DefaultTimeout);
+            return resp.Data;
+        }
+
+        /// <summary>HF repo 삭제 (Id 기반).</summary>
+        public async Task<bool> DeleteHfRepoAsync(long _id)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_HF_Repo_Response>(
+                new AB_Delete_HF_Repo_Request { Id = _id }, DefaultTimeout);
+            return resp.Success;
+        }
     }
 }
