@@ -35,6 +35,13 @@ namespace ArtificialBuilder
             get { return m_pipelines; }
             set { m_pipelines = value; }
         }
+        /// <summary>로컬 GGUF 모델 entity 테이블 (typed-id-edp-rebase chunk 4o).</summary>
+        private DbSet<AB_Llama_Model> m_llamaModels = null!;
+        public DbSet<AB_Llama_Model> LlamaModels
+        {
+            get { return m_llamaModels; }
+            set { m_llamaModels = value; }
+        }
 
         /// <summary>EF Core 옵션 주입 생성자.</summary>
         public AB_App_Db_Context(DbContextOptions<AB_App_Db_Context> _options)
@@ -48,6 +55,10 @@ namespace ArtificialBuilder
 
             _modelBuilder.Entity<AB_Model_Config_Model>()
                 .HasIndex(_m => _m.Name_)
+                .IsUnique();
+
+            _modelBuilder.Entity<AB_Llama_Model>()
+                .HasIndex(_m => _m.FileName_)
                 .IsUnique();
         }
     }
