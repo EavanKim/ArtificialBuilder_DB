@@ -335,4 +335,69 @@ namespace ArtificialBuilder.Requests
         public string? Error;
         public AB_Delete_Llama_Model_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
     }
+
+    // ============================================================
+    // HF_Download (typed-id-edp-rebase chunk 4p)
+    // ============================================================
+
+    /// <summary>HF 다운로드 전체 조회.</summary>
+    public class AB_Get_All_HF_Downloads_Request : AB_Message
+    {
+        public AB_Get_All_HF_Downloads_Request() { Topic = AB_App_Db_Topics.App; }
+    }
+
+    /// <summary>HF 다운로드 전체 응답.</summary>
+    public class AB_Get_All_HF_Downloads_Response : AB_Message
+    {
+        public List<AB_HF_Download> Data = new();
+        public string? Error;
+        public AB_Get_All_HF_Downloads_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
+    }
+
+    /// <summary>Id 로 HF 다운로드 단건.</summary>
+    public class AB_Get_HF_Download_By_Id_Request : AB_Message
+    {
+        public long Id;
+        public AB_Get_HF_Download_By_Id_Request() { Topic = AB_App_Db_Topics.App; }
+    }
+
+    /// <summary>HF 다운로드 단건 응답.</summary>
+    public class AB_Get_HF_Download_By_Id_Response : AB_Message
+    {
+        public AB_HF_Download? Data;
+        public bool IsOk;
+        public string? Error;
+        public AB_Get_HF_Download_By_Id_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
+    }
+
+    /// <summary>HF 다운로드 추가 (Enqueue 시점 — long Id 발급). 반환 = 저장된 row.</summary>
+    public class AB_Add_HF_Download_Request : AB_Message
+    {
+        public AB_HF_Download Model = new();
+        public AB_Add_HF_Download_Request() { Topic = AB_App_Db_Topics.App; }
+    }
+
+    /// <summary>HF 다운로드 추가 응답.</summary>
+    public class AB_Add_HF_Download_Response : AB_Message
+    {
+        public AB_HF_Download? Data;
+        public bool Success;
+        public string? Error;
+        public AB_Add_HF_Download_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
+    }
+
+    /// <summary>HF 다운로드 삭제 (Id 기반).</summary>
+    public class AB_Delete_HF_Download_Request : AB_Message
+    {
+        public long Id;
+        public AB_Delete_HF_Download_Request() { Topic = AB_App_Db_Topics.App; }
+    }
+
+    /// <summary>HF 다운로드 삭제 응답.</summary>
+    public class AB_Delete_HF_Download_Response : AB_Message
+    {
+        public bool Success;
+        public string? Error;
+        public AB_Delete_HF_Download_Response() { Topic = AB_App_Db_Topics.App; IsResponse = true; }
+    }
 }

@@ -337,6 +337,71 @@ namespace ArtificialBuilder
                         { CorrelationId = req.CorrelationId, Success = success });
                         break;
                     }
+
+                    // ============================================================
+                    // HF_Download (typed-id-edp-rebase chunk 4p)
+                    // ============================================================
+                    case AB_Get_All_HF_Downloads_Request req:
+                    {
+                        List<AB_HF_Download> data = new();
+                        if (handle != 0)
+                        {
+                            var all = await m_engine.GetAllAsync<AB_HF_Download>(handle);
+                            data = all.ToList();
+                        }
+                        m_broker?.Publish(new AB_Get_All_HF_Downloads_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_HF_Download_By_Id_Request req:
+                    {
+                        AB_HF_Download? data = null;
+                        bool isOk = false;
+                        if (handle != 0)
+                        {
+                            var found = await m_engine.FindAsync<AB_HF_Download>(handle, _m => _m.Id_ == req.Id);
+                            data = found.FirstOrDefault();
+                            isOk = data != null;
+                        }
+                        m_broker?.Publish(new AB_Get_HF_Download_By_Id_Response
+                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        break;
+                    }
+                    case AB_Add_HF_Download_Request req:
+                    {
+                        AB_HF_Download? saved = null;
+                        bool success = false;
+                        if (handle != 0)
+                        {
+                            req.Model.CreatedAt_ = DateTime.UtcNow;
+                            req.Model.UpdatedAt_ = DateTime.UtcNow;
+                            await m_engine.AddAsync(handle, req.Model);
+                            await m_engine.SaveChangesAsync(handle);
+                            saved = req.Model;
+                            success = true;
+                        }
+                        m_broker?.Publish(new AB_Add_HF_Download_Response
+                        { CorrelationId = req.CorrelationId, Data = saved, Success = success });
+                        break;
+                    }
+                    case AB_Delete_HF_Download_Request req:
+                    {
+                        bool success = false;
+                        if (handle != 0)
+                        {
+                            var found = await m_engine.FindAsync<AB_HF_Download>(handle, _m => _m.Id_ == req.Id);
+                            AB_HF_Download? row = found.FirstOrDefault();
+                            if (row != null)
+                            {
+                                m_engine.Remove(handle, row);
+                                await m_engine.SaveChangesAsync(handle);
+                                success = true;
+                            }
+                        }
+                        m_broker?.Publish(new AB_Delete_HF_Download_Response
+                        { CorrelationId = req.CorrelationId, Success = success });
+                        break;
+                    }
                 }
             }
             catch (Exception ex)

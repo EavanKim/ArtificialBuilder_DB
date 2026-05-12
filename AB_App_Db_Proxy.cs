@@ -195,5 +195,42 @@ namespace ArtificialBuilder
                 new AB_Delete_Llama_Model_Request { Id = _id }, DefaultTimeout);
             return resp.Success;
         }
+
+        // ============================================================
+        // HF_Download (typed-id-edp-rebase chunk 4p)
+        // ============================================================
+
+        /// <summary>HF 다운로드 전체 조회.</summary>
+        public async Task<List<AB_HF_Download>> GetAllHfDownloadsAsync()
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_HF_Downloads_Response>(
+                new AB_Get_All_HF_Downloads_Request(), DefaultTimeout);
+            return resp.Data ?? new();
+        }
+
+        /// <summary>Id 로 HF 다운로드 단건.</summary>
+        public async Task<AB_Db_Result<AB_HF_Download>> GetHfDownloadByIdAsync(long _id)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_HF_Download_By_Id_Response>(
+                new AB_Get_HF_Download_By_Id_Request { Id = _id }, DefaultTimeout);
+            if (resp.IsOk && resp.Data != null) return AB_Db_Result<AB_HF_Download>.Ok(resp.Data);
+            return AB_Db_Result<AB_HF_Download>.NotFound();
+        }
+
+        /// <summary>HF 다운로드 추가 (Enqueue 시 — long Id 발급). 반환 = 저장된 row.</summary>
+        public async Task<AB_HF_Download?> AddHfDownloadAsync(AB_HF_Download _model)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Add_HF_Download_Response>(
+                new AB_Add_HF_Download_Request { Model = _model }, DefaultTimeout);
+            return resp.Data;
+        }
+
+        /// <summary>HF 다운로드 삭제 (Id 기반).</summary>
+        public async Task<bool> DeleteHfDownloadAsync(long _id)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_HF_Download_Response>(
+                new AB_Delete_HF_Download_Request { Id = _id }, DefaultTimeout);
+            return resp.Success;
+        }
     }
 }
