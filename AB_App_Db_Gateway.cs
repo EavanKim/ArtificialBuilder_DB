@@ -244,6 +244,99 @@ namespace ArtificialBuilder
                         { CorrelationId = req.CorrelationId, Success = handle != 0 });
                         break;
                     }
+
+                    // ============================================================
+                    // Llama_Model (typed-id-edp-rebase chunk 4o)
+                    // ============================================================
+                    case AB_Get_All_Llama_Models_Request req:
+                    {
+                        List<AB_Llama_Model> data = new();
+                        if (handle != 0)
+                        {
+                            var all = await m_engine.GetAllAsync<AB_Llama_Model>(handle);
+                            data = all.ToList();
+                        }
+                        m_broker?.Publish(new AB_Get_All_Llama_Models_Response
+                        { CorrelationId = req.CorrelationId, Data = data });
+                        break;
+                    }
+                    case AB_Get_Llama_Model_By_Id_Request req:
+                    {
+                        AB_Llama_Model? data = null;
+                        bool isOk = false;
+                        if (handle != 0)
+                        {
+                            var found = await m_engine.FindAsync<AB_Llama_Model>(handle, _m => _m.Id_ == req.Id);
+                            data = found.FirstOrDefault();
+                            isOk = data != null;
+                        }
+                        m_broker?.Publish(new AB_Get_Llama_Model_By_Id_Response
+                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        break;
+                    }
+                    case AB_Get_Llama_Model_By_File_Name_Request req:
+                    {
+                        AB_Llama_Model? data = null;
+                        bool isOk = false;
+                        if (handle != 0)
+                        {
+                            var found = await m_engine.FindAsync<AB_Llama_Model>(handle, _m => _m.FileName_ == req.FileName);
+                            data = found.FirstOrDefault();
+                            isOk = data != null;
+                        }
+                        m_broker?.Publish(new AB_Get_Llama_Model_By_File_Name_Response
+                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        break;
+                    }
+                    case AB_Upsert_Llama_Model_Request req:
+                    {
+                        AB_Llama_Model? saved = null;
+                        bool success = false;
+                        if (handle != 0)
+                        {
+                            // filename unique key — 존재 시 update, 없으면 add
+                            var existingList = await m_engine.FindAsync<AB_Llama_Model>(handle, _m => _m.FileName_ == req.Model.FileName_);
+                            AB_Llama_Model? existing = existingList.FirstOrDefault();
+                            if (existing != null)
+                            {
+                                existing.FilePath_ = req.Model.FilePath_;
+                                existing.FileSizeBytes_ = req.Model.FileSizeBytes_;
+                                existing.UpdatedAt_ = DateTime.UtcNow;
+                                m_engine.Update(handle, existing);
+                                saved = existing;
+                            }
+                            else
+                            {
+                                req.Model.CreatedAt_ = DateTime.UtcNow;
+                                req.Model.UpdatedAt_ = DateTime.UtcNow;
+                                await m_engine.AddAsync(handle, req.Model);
+                                saved = req.Model;
+                            }
+                            await m_engine.SaveChangesAsync(handle);
+                            success = true;
+                        }
+                        m_broker?.Publish(new AB_Upsert_Llama_Model_Response
+                        { CorrelationId = req.CorrelationId, Data = saved, Success = success });
+                        break;
+                    }
+                    case AB_Delete_Llama_Model_Request req:
+                    {
+                        bool success = false;
+                        if (handle != 0)
+                        {
+                            var found = await m_engine.FindAsync<AB_Llama_Model>(handle, _m => _m.Id_ == req.Id);
+                            AB_Llama_Model? row = found.FirstOrDefault();
+                            if (row != null)
+                            {
+                                m_engine.Remove(handle, row);
+                                await m_engine.SaveChangesAsync(handle);
+                                success = true;
+                            }
+                        }
+                        m_broker?.Publish(new AB_Delete_Llama_Model_Response
+                        { CorrelationId = req.CorrelationId, Success = success });
+                        break;
+                    }
                 }
             }
             catch (Exception ex)
