@@ -149,5 +149,51 @@ namespace ArtificialBuilder
             await GetBroker().PublishAndWaitAsync<AB_Delete_Pipeline_Response>(
                 new AB_Delete_Pipeline_Request { Pipeline = _pipeline }, DefaultTimeout);
         }
+
+        // ============================================================
+        // Llama_Model (typed-id-edp-rebase chunk 4o)
+        // ============================================================
+
+        /// <summary>Llama 모델 전체 조회.</summary>
+        public async Task<List<AB_Llama_Model>> GetAllLlamaModelsAsync()
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_All_Llama_Models_Response>(
+                new AB_Get_All_Llama_Models_Request(), DefaultTimeout);
+            return resp.Data ?? new();
+        }
+
+        /// <summary>Id 로 Llama 모델 단건.</summary>
+        public async Task<AB_Db_Result<AB_Llama_Model>> GetLlamaModelByIdAsync(long _id)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Llama_Model_By_Id_Response>(
+                new AB_Get_Llama_Model_By_Id_Request { Id = _id }, DefaultTimeout);
+            if (resp.IsOk && resp.Data != null) return AB_Db_Result<AB_Llama_Model>.Ok(resp.Data);
+            return AB_Db_Result<AB_Llama_Model>.NotFound();
+        }
+
+        /// <summary>FileName 으로 Llama 모델 단건 조회 (scan-on-load upsert 용).</summary>
+        public async Task<AB_Db_Result<AB_Llama_Model>> GetLlamaModelByFileNameAsync(string _fileName)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Llama_Model_By_File_Name_Response>(
+                new AB_Get_Llama_Model_By_File_Name_Request { FileName = _fileName }, DefaultTimeout);
+            if (resp.IsOk && resp.Data != null) return AB_Db_Result<AB_Llama_Model>.Ok(resp.Data);
+            return AB_Db_Result<AB_Llama_Model>.NotFound();
+        }
+
+        /// <summary>Llama 모델 upsert (filename unique). 반환 = 저장된 row (Id 포함).</summary>
+        public async Task<AB_Llama_Model?> UpsertLlamaModelAsync(AB_Llama_Model _model)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Upsert_Llama_Model_Response>(
+                new AB_Upsert_Llama_Model_Request { Model = _model }, DefaultTimeout);
+            return resp.Data;
+        }
+
+        /// <summary>Llama 모델 삭제 (Id 기반).</summary>
+        public async Task<bool> DeleteLlamaModelAsync(long _id)
+        {
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Llama_Model_Response>(
+                new AB_Delete_Llama_Model_Request { Id = _id }, DefaultTimeout);
+            return resp.Success;
+        }
     }
 }
