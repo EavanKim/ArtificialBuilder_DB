@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using ArtificialBuilder.Models;
 using ArtificialBuilder_EDP;
+using ArtificialBuilder_EDP.Core;
 using ArtificialBuilder_EDP.Core.UI.Window;
 
 namespace ArtificialBuilder
@@ -13,8 +14,10 @@ namespace ArtificialBuilder
     /// Circuit 정의(Resources/Circuits/{circuitType}.json) 에서 생성하는 헬퍼.
     /// Circuit 정의는 ResourceBuilder 가 resources.abr 의 "circuit" 카테고리로 패킹합니다.
     /// </summary>
-    public static class AB_Window_Component_Seeding
+    public class AB_Window_Component_Seeding : AB_Object
     {
+        public AB_Window_Component_Seeding() : base("AB_Window_Component_Seeding") { }
+
         /// <summary>ApplyCircuitDefAsync 반환 — 생성된 윈도우 + canvas envelope + primary chat id.</summary>
         public class Apply_Result
         {
@@ -28,7 +31,7 @@ namespace ArtificialBuilder
         /// 성격 컴포넌트 (message/image/3d) 는 사용자가 속성 패널에서 별도 장전 — 빈 윈도우 원칙.
         /// 멱등 — 이미 컴포넌트가 있는 윈도우는 건드리지 않습니다.
         /// </summary>
-        public static async Task EnsureDefaultComponentsAsync()
+        public async Task EnsureDefaultComponentsAsync()
         {
             List<AB_Response_Ui_Window_Model> windows = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllWindowsAsync();
             if (windows.Count == 0) return;
@@ -54,7 +57,7 @@ namespace ArtificialBuilder
         /// false 반환 시 호출측은 envelope 재조립 (예: ApplyCircuitDefAsync 재호출) 을 해야 함.
         /// 순수 함수 — 테스트 가능, DB 접근 없음.
         /// </summary>
-        public static bool EnvelopeMatchesDb(string? _envelopeJson, IEnumerable<long> _dbWindowIds)
+        public bool EnvelopeMatchesDb(string? _envelopeJson, IEnumerable<long> _dbWindowIds)
         {
             if (string.IsNullOrEmpty(_envelopeJson)) return false;
             Window_Layout_Envelope? env;
@@ -76,7 +79,7 @@ namespace ArtificialBuilder
         /// _reuseIdByName 이 주어지면 DB 에서 이름 매칭 실패 시 해당 GUID 를 그대로 재사용 — envelope 에 남아있는
         /// 과거 GUID 를 유지해 context_records.DisplayTargets dead reference 방지. null 이면 기존 동작 (Guid.NewGuid()).
         /// </summary>
-        public static async Task<Apply_Result> ApplyCircuitDefAsync(string _circuitType, IReadOnlyDictionary<string, long>? _reuseIdByName = null)
+        public async Task<Apply_Result> ApplyCircuitDefAsync(string _circuitType, IReadOnlyDictionary<string, long>? _reuseIdByName = null)
         {
             var result = new Apply_Result();
 
@@ -177,7 +180,7 @@ namespace ArtificialBuilder
         /// 현재 DB 의 windows + window_components + canvas envelope + primary chat 를 AB_Circuit_Def JSON 으로 직렬화.
         /// Export 버튼용. 기본 시드 JSON 과 동일 스키마라 그대로 Import 가능.
         /// </summary>
-        public static async Task<string> ExportCurrentToJsonAsync(string _circuitType)
+        public async Task<string> ExportCurrentToJsonAsync(string _circuitType)
         {
             var circuitDef = new AB_Circuit_Def { CircuitType = _circuitType };
 
@@ -278,7 +281,7 @@ namespace ArtificialBuilder
         /// 외부 AB_Circuit_Def 로 현재 DB 의 windows + window_components 를 완전 교체하고 envelope/primary chat 을 settings 에 반영.
         /// Import 버튼 및 Reset 확장용. ApplyCircuitDefAsync 의 "이름 중복 재사용" 멱등성과 달리, 본 메서드는 기존 윈도우를 먼저 삭제한다.
         /// </summary>
-        public static async Task ReplaceWithCircuitDefAsync(AB_Circuit_Def _circuitDef)
+        public async Task ReplaceWithCircuitDefAsync(AB_Circuit_Def _circuitDef)
         {
             List<AB_Response_Ui_Window_Model> existing = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllWindowsAsync();
             foreach (AB_Response_Ui_Window_Model w in existing)
@@ -362,7 +365,7 @@ namespace ArtificialBuilder
         /// Frame/Layout/Depth 공통 3 컴포넌트 DB 시드. _layout 이 있으면 Ratio 를 함께 저장 — circuit def 비율 좌표를
         /// Layout_Config 에 반영. null 이면 Position 기반 도킹 Circuit 기본 ratio 를 채운다 (레거시/단순 경로).
         /// </summary>
-        private static async Task AddFrameLayoutDepthAsync(long _windowId, string _title, string _position, int _sortOrder, AB_Circuit_Def_Layout? _layout = null)
+        private async Task AddFrameLayoutDepthAsync(long _windowId, string _title, string _position, int _sortOrder, AB_Circuit_Def_Layout? _layout = null)
         {
             await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(new AB_Response_Ui_Component_Model
             {
@@ -394,7 +397,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>Position 기반 도킹 Circuit 기본 ratio — circuit def 에 layout 미지정 시 fallback.</summary>
-        public static void FillDefaultRatios(Layout_Config _cfg, string _position)
+        public void FillDefaultRatios(Layout_Config _cfg, string _position)
         {
             if (_position == "top")
             {
@@ -419,7 +422,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>Circuit 정의 JSON 의 config (JsonElement) → 타입에 맞는 POCO 로 재직렬화. 누락 필드는 기본값 유지.</summary>
-        private static string SerializeComponentConfig(AB_Circuit_Def_Component _compEntry)
+        private string SerializeComponentConfig(AB_Circuit_Def_Component _compEntry)
         {
             switch (_compEntry.Type)
             {
@@ -458,7 +461,7 @@ namespace ArtificialBuilder
             }
         }
 
-        private static T ParseOrDefault<T>(JsonElement _el, T _fallback) where T : class
+        private T ParseOrDefault<T>(JsonElement _el, T _fallback) where T : class
         {
             try
             {
@@ -474,7 +477,7 @@ namespace ArtificialBuilder
             }
         }
 
-        private static async Task<AB_Response_Ui_Window_Model?> FindWindowByNameAsync(string _name)
+        private async Task<AB_Response_Ui_Window_Model?> FindWindowByNameAsync(string _name)
         {
             List<AB_Response_Ui_Window_Model> all = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllWindowsAsync();
             foreach (var w in all)
@@ -485,7 +488,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>Kind → window_components.ComponentType_ 태그.</summary>
-        public static string KindToTag(AB_Window_Component_Kind _kind)
+        public string KindToTag(AB_Window_Component_Kind _kind)
         {
             switch (_kind)
             {

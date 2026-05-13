@@ -26,7 +26,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowAsync(win);
 
                 Step("EnsureDefaultComponentsAsync 호출");
-                await AB_Window_Component_Seeding.EnsureDefaultComponentsAsync();
+                await ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Window_Component_Seeding>().EnsureDefaultComponentsAsync();
 
                 Step("window_components 조회 + 구성 검증");
                 List<AB_Response_Ui_Component_Model> comps = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllWindowComponentsAsync();
@@ -65,7 +65,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
     }
 
     /// <summary>
-    /// AB_Window_Component_Seeding.ApplyCircuitDefAsync 멱등성 — 같은 Circuit 타입으로 두 번 호출 시 윈도우 중복 생성 없음.
+    /// ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Window_Component_Seeding>().ApplyCircuitDefAsync 멱등성 — 같은 Circuit 타입으로 두 번 호출 시 윈도우 중복 생성 없음.
     /// FindWindowByNameAsync 가 이름 중복을 재사용하는지 확인.
     /// </summary>
     public class AB_Test_Win_Seed_Apply_Idempotent : AB_Diagnostic_Test
@@ -80,7 +80,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
             try
             {
                 Step("1차 ApplyCircuitDefAsync(chat)");
-                var applied1 = await AB_Window_Component_Seeding.ApplyCircuitDefAsync("chat");
+                var applied1 = await ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Window_Component_Seeding>().ApplyCircuitDefAsync("chat");
                 int count1 = applied1.Windows.Count;
                 Log("1차.Windows.Count", count1);
                 Assert("1차 결과 4 윈도우 (chat.json — back + 3)", count1 == 4, $"got {count1}");
@@ -89,7 +89,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 Log("DB.windows.Count 1차 후", dbAfter1.Count);
 
                 Step("2차 ApplyCircuitDefAsync(chat) — 멱등 확인");
-                var applied2 = await AB_Window_Component_Seeding.ApplyCircuitDefAsync("chat");
+                var applied2 = await ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Window_Component_Seeding>().ApplyCircuitDefAsync("chat");
                 Log("2차.Windows.Count", applied2.Windows.Count);
 
                 List<AB_Response_Ui_Window_Model> dbAfter2 = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllWindowsAsync();
@@ -109,7 +109,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
     }
 
     /// <summary>
-    /// AB_Window_Component_Seeding.EnvelopeMatchesDb 순수 함수 정합성 — 실 envelope 와 DB 를 동시에 만든 뒤
+    /// ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Window_Component_Seeding>().EnvelopeMatchesDb 순수 함수 정합성 — 실 envelope 와 DB 를 동시에 만든 뒤
     /// ApplyCircuitDefAsync 의 EnvelopeJson 이 DB windowId 와 매칭되는지 검증 (envelope stale 아님).
     /// </summary>
     public class AB_Test_Win_Seed_Envelope_Consistency : AB_Diagnostic_Test
@@ -124,7 +124,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
             try
             {
                 Step("ApplyCircuitDefAsync(chat)");
-                var applied = await AB_Window_Component_Seeding.ApplyCircuitDefAsync("chat");
+                var applied = await ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Window_Component_Seeding>().ApplyCircuitDefAsync("chat");
 
                 Step("DB windowIds");
                 List<AB_Response_Ui_Window_Model> db = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllWindowsAsync();
@@ -133,11 +133,11 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 Log("db.windowIds", string.Join(",", ids));
 
                 Step("envelope 이 DB 와 매칭");
-                bool matches = AB_Window_Component_Seeding.EnvelopeMatchesDb(applied.EnvelopeJson, ids);
+                bool matches = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Window_Component_Seeding>().EnvelopeMatchesDb(applied.EnvelopeJson, ids);
                 Assert("matches == true (신규 생성 직후 stale 아님)", matches, "방금 만든 envelope 이 DB 와 매칭되지 않으면 ApplyCircuitDefAsync 가 ID 를 envelope 에 잘못 기록한 것");
 
                 Step("가짜 DB 셋과 매칭 시 stale 검출");
-                bool stale = AB_Window_Component_Seeding.EnvelopeMatchesDb(applied.EnvelopeJson, new long[] { -1L, -2L });
+                bool stale = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Window_Component_Seeding>().EnvelopeMatchesDb(applied.EnvelopeJson, new long[] { -1L, -2L });
                 Assert("가짜 셋은 stale (false)", !stale, "EnvelopeMatchesDb 가 무관한 ID 셋을 true 로 판정하면 잘못된 매칭");
             }
             finally
