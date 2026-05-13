@@ -12,14 +12,14 @@ using System.Threading.Tasks;
 namespace ArtificialBuilder
 {
     /// <summary>
-    /// 전역 App DB 게이트웨이. 브로커 토픽 db.app 구독, EDP_Db_Engine(AB_Board.Db) 직결 호출.
+    /// 전역 App DB 게이트웨이. 브로커 토픽 db.app 구독, AB_DB(AB_Board.Db) 직결 호출.
     /// AB_Board.App.Handle 0 인 경우(미초기화) 빈/false 응답.
     /// </summary>
     public class AB_App_Db_Gateway : ArtificialBuilder_EDP.Core.AB_Component
     {
         private IAB_Message_Broker? m_broker;
         private AB_Subscription_Token? m_sub;
-        private EDP_Db_Engine m_engine => AB_Board.Db;
+        private AB_DB m_engine => AB_Board.Db;
 
         /// <inheritdoc/>
         public override void OnAttach()

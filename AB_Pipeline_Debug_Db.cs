@@ -15,7 +15,7 @@ namespace ArtificialBuilder
         public const string DEBUG_DIR = "telemetry";
         public const string DEFAULT_FILE = "pipeline_debug.pdb";
 
-        private EDP_Db_Engine m_engine = null!;
+        private AB_DB m_engine = null!;
 
         /// <summary>현재 열린 DB 핸들 (0=미열림).</summary>
         private int m_handle;
@@ -25,8 +25,8 @@ namespace ArtificialBuilder
             private set { m_handle = value; }
         }
 
-        /// <summary>EDP_Db_Engine 참조 저장. 실제 파일 열기는 OpenAsync 에서 수행.</summary>
-        public void Initialize(EDP_Db_Engine _engine) { m_engine = _engine; }
+        /// <summary>AB_DB 참조 저장. 실제 파일 열기는 OpenAsync 에서 수행.</summary>
+        public void Initialize(AB_DB _engine) { m_engine = _engine; }
 
         /// <summary>기본 경로(<see cref="DEBUG_DIR"/>/<see cref="DEFAULT_FILE"/>)로 DB 열기.</summary>
         public Task OpenDefaultAsync()

@@ -12,8 +12,8 @@ namespace ArtificialBuilder
     {
         // --- 초기화 ---
 
-        /// <summary>EDP_Db_Engine로 ArtificialBuilder.db 열기.</summary>
-        public void Initialize(EDP_Db_Engine _engine)
+        /// <summary>AB_DB로 ArtificialBuilder.db 열기.</summary>
+        public void Initialize(AB_DB _engine)
         {
             m_engine = _engine;
             Handle = _engine.OpenDatabase<AB_App_Db_Context>(
@@ -48,7 +48,7 @@ namespace ArtificialBuilder
 
         // --- 프로퍼티 ---
 
-        /// <summary>EDP_Db_Engine 내부 핸들 (0=미초기화).</summary>
+        /// <summary>AB_DB 내부 핸들 (0=미초기화).</summary>
         private int m_handle;
         public int Handle
         {
@@ -58,6 +58,6 @@ namespace ArtificialBuilder
 
         // --- 멤버 변수 ---
 
-        private EDP_Db_Engine m_engine = null!;
+        private AB_DB m_engine = null!;
     }
 }

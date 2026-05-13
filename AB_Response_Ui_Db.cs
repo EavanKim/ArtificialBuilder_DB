@@ -19,7 +19,7 @@ namespace ArtificialBuilder
 
         // --- 초기화 ---
 
-        public void Initialize(EDP_Db_Engine _engine)
+        public void Initialize(AB_DB _engine)
         {
             m_engine = _engine;
         }
@@ -114,6 +114,6 @@ namespace ArtificialBuilder
 
         // --- 멤버 변수 ---
 
-        private EDP_Db_Engine m_engine = null!;
+        private AB_DB m_engine = null!;
     }
 }

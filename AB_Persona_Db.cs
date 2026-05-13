@@ -14,8 +14,8 @@ namespace ArtificialBuilder
     {
         // --- 초기화 ---
 
-        /// <summary>EDP_Db_Engine 참조 저장 (실제 파일은 OpenAsync에서 열림).</summary>
-        public void Initialize(EDP_Db_Engine _engine)
+        /// <summary>AB_DB 참조 저장 (실제 파일은 OpenAsync에서 열림).</summary>
+        public void Initialize(AB_DB _engine)
         {
             m_engine = _engine;
         }
@@ -223,7 +223,7 @@ namespace ArtificialBuilder
 
         // --- 멤버 변수 ---
 
-        private EDP_Db_Engine m_engine = null!;
+        private AB_DB m_engine = null!;
 
         private const string PERSONA_DIR = "persona";
         private const string ACTIVE_FILE = "persona/.active";

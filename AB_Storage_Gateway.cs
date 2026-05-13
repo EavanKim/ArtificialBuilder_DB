@@ -21,7 +21,7 @@ namespace ArtificialBuilder
     {
         private IAB_Message_Broker? m_broker;
         private AB_Subscription_Token? m_sub;
-        private EDP_Db_Engine m_engine => AB_Board.Db;
+        private AB_DB m_engine => AB_Board.Db;
 
         public override void OnAttach()
         {

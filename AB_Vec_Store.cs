@@ -10,12 +10,12 @@ namespace ArtificialBuilder
     /// <summary>sqlite-vec 기반 임베딩 저장소 (로어/채팅/캐릭터 데이터).</summary>
     public class AB_Vec_Store
     {
-        private readonly EDP_Db_Engine m_engine;
+        private readonly AB_DB m_engine;
         private int m_dimensions = 0;
         private static string? g_vecExtensionPath;
 
-        /// <summary>EDP_Db_Engine 참조로 생성.</summary>
-        public AB_Vec_Store(EDP_Db_Engine _engine)
+        /// <summary>AB_DB 참조로 생성.</summary>
+        public AB_Vec_Store(AB_DB _engine)
         {
             m_engine = _engine;
         }

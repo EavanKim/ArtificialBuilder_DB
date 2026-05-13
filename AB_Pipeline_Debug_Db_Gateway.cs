@@ -13,7 +13,7 @@ namespace ArtificialBuilder
 {
     /// <summary>
     /// 파이프라인 디버그 DB 게이트웨이. 브로커 토픽 db.pipelinedebug 구독,
-    /// 전용 pipeline_debug.pdb 파일을 OnAttach 에서 열고 EDP_Db_Engine 직결 호출.
+    /// 전용 pipeline_debug.pdb 파일을 OnAttach 에서 열고 AB_DB 직결 호출.
     /// DB 핸들 0 인 경우(미초기화/오픈 실패) 빈/false 응답.
     /// </summary>
     public class AB_Pipeline_Debug_Db_Gateway : ArtificialBuilder_EDP.Core.AB_Component
@@ -21,7 +21,7 @@ namespace ArtificialBuilder
         private IAB_Message_Broker? m_broker;
         private AB_Subscription_Token? m_sub;
         private readonly AB_Pipeline_Debug_Db m_db = new();
-        private EDP_Db_Engine m_engine => AB_Board.Db;
+        private AB_DB m_engine => AB_Board.Db;
 
         /// <summary>
         /// 내부 DB 인스턴스 — 게이트웨이가 수명을 관리한다. 외부 직접 호출은 금지
@@ -140,7 +140,7 @@ namespace ArtificialBuilder
                     }
 
                     // ============================================================
-                    // 보존 정리 (현재 EDP_Db_Engine 삭제 API 부재 — ack 만 반환)
+                    // 보존 정리 (현재 AB_DB 삭제 API 부재 — ack 만 반환)
                     // ============================================================
                     case AB_Retention_Sweep_Pipeline_Debug_Request req:
                     {

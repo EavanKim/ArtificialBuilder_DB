@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace ArtificialBuilder
 {
     /// <summary>
-    /// EDP_Db_Engine 기반 IAB_Db_Backend 공통 베이스 클래스.
+    /// AB_DB 기반 IAB_Db_Backend 공통 베이스 클래스.
     /// 핸들/엔진을 바인딩하면 CRUD는 동일 경로를 따르므로 공통화한다.
     /// 서브클래스는 BackendName과 초기화 의미(파일명 vs 연결문자열)만 제공.
     /// </summary>
@@ -19,16 +19,16 @@ namespace ArtificialBuilder
         /// <inheritdoc/>
         public bool IsConnected => m_handle != 0;
 
-        /// <summary>바인딩된 EDP_Db_Engine 인스턴스.</summary>
-        protected EDP_Db_Engine m_engine = null!;
-        /// <summary>EDP_Db_Engine 핸들 (0 = 미연결).</summary>
+        /// <summary>바인딩된 AB_DB 인스턴스.</summary>
+        protected AB_DB m_engine = null!;
+        /// <summary>AB_DB 핸들 (0 = 미연결).</summary>
         protected int m_handle;
 
         /// <inheritdoc/>
         public abstract Task InitializeAsync(string _connectionString);
 
-        /// <summary>EDP_Db_Engine와 연결.</summary>
-        public void Bind(EDP_Db_Engine _engine, int _handle)
+        /// <summary>AB_DB와 연결.</summary>
+        public void Bind(AB_DB _engine, int _handle)
         {
             m_engine = _engine;
             m_handle = _handle;

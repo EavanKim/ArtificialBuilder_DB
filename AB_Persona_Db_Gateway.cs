@@ -16,13 +16,13 @@ namespace ArtificialBuilder
 {
     /// <summary>
     /// Persona DB 게이트웨이. 브로커 토픽 db.persona 를 구독하고
-    /// EDP_Db_Engine 호출로 직결 변환 (Phase C: CRUD 전량 이주).
+    /// AB_DB 호출로 직결 변환 (Phase C: CRUD 전량 이주).
     /// </summary>
     public class AB_Persona_Db_Gateway : ArtificialBuilder_EDP.Core.AB_Component
     {
         private IAB_Message_Broker? m_broker;
         private AB_Subscription_Token? m_sub;
-        private EDP_Db_Engine m_engine => AB_Board.Db;
+        private AB_DB m_engine => AB_Board.Db;
 
         public override void OnAttach()
         {
