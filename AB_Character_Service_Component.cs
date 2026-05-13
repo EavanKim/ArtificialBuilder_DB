@@ -40,7 +40,7 @@ namespace ArtificialBuilder_EDP.Components
         {
             if (_queryId == null) return;
             if (!AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out var ddo)) return;
-            ddo.Publish(new AB_DDO_Command(_header, null, _result, _toId: _queryId));
+            ddo.Publish(_header, null, _result, _toId: _queryId);
         }
 
         private void HandleRefresh(AB_DDO_Command _cmd)
