@@ -34,5 +34,13 @@ namespace ArtificialBuilder.Models
             get { return m_hostility_; }
             set { m_hostility_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_relationType_ = "";
+            m_hostility_ = 0.5;
+        }
     }
 }

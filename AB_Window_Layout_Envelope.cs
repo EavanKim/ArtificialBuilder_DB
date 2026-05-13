@@ -97,6 +97,24 @@ namespace ArtificialBuilder
             get { return m_visible; }
             set { m_visible = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_templateId = 0L;
+            m_name = null;
+            m_ratioX = 0;
+            m_ratioY = 0;
+            m_ratioW = 0;
+            m_ratioH = 0;
+            m_x = 0;
+            m_y = 0;
+            m_width = 0;
+            m_height = 0;
+            m_opacity = 1.0;
+            m_zIndex = 0;
+            m_visible = true;
+        }
     }
 
     /// <summary>윈도우 레이아웃 직렬화 컨테이너 (캔버스 크기 + 윈도우 목록)</summary>
@@ -122,6 +140,14 @@ namespace ArtificialBuilder
         {
             get { return m_windows; }
             set { m_windows = value; }
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_canvasWidth = 0;
+            m_canvasHeight = 0;
+            m_windows = new();
         }
     }
 }

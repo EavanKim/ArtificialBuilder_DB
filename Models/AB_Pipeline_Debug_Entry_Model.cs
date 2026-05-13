@@ -97,5 +97,20 @@ namespace ArtificialBuilder.Models
             get { return m_error; }
             set { m_error = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id = 0L;
+            m_sessionId = 0L;
+            m_entryType = "";
+            m_nodeId = 0;
+            m_label = "";
+            m_timestampUtc = default;
+            m_payload = "";
+            m_payloadSize = 0;
+            m_tick = 0;
+            m_error = null;
+        }
     }
 }

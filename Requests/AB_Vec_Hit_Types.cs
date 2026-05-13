@@ -7,6 +7,13 @@ namespace ArtificialBuilder.Requests
         public string Id = "";
         /// <summary>거리 (작을수록 가까움).</summary>
         public double Distance;
+
+        public override void Reset()
+        {
+            base.Reset();
+            Id = "";
+            Distance = 0.0;
+        }
     }
 
     /// <summary>채팅 임베딩 검색 결과. 키 튜플: (session_id, node_id, turn_index, refresh_index, emission_order). 2026-05-11 — node_id string → long.</summary>
@@ -24,6 +31,17 @@ namespace ArtificialBuilder.Requests
         public int EmissionOrder;
         /// <summary>거리.</summary>
         public double Distance;
+
+        public override void Reset()
+        {
+            base.Reset();
+            SessionId = 0L;
+            NodeId = 0L;
+            TurnIndex = 0;
+            RefreshIndex = 0;
+            EmissionOrder = 0;
+            Distance = 0.0;
+        }
     }
 
     /// <summary>세션 임베딩 메타 (컨텍스트 키 + 차원수). 2026-05-11 — node_id string → long.</summary>
@@ -39,5 +57,15 @@ namespace ArtificialBuilder.Requests
         public int EmissionOrder;
         /// <summary>차원 수.</summary>
         public int Dimensions;
+
+        public override void Reset()
+        {
+            base.Reset();
+            NodeId = 0L;
+            TurnIndex = 0;
+            RefreshIndex = 0;
+            EmissionOrder = 0;
+            Dimensions = 0;
+        }
     }
 }

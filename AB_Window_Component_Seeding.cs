@@ -24,6 +24,14 @@ namespace ArtificialBuilder
             public List<AB_Response_Ui_Window_Model> Windows { get; set; } = new();
             public string EnvelopeJson { get; set; } = "";
             public long? PrimaryChatWindowId { get; set; }
+
+            public override void Reset()
+            {
+                base.Reset();
+                Windows = new();
+                EnvelopeJson = "";
+                PrimaryChatWindowId = null;
+            }
         }
 
         /// <summary>
@@ -514,6 +522,18 @@ namespace ArtificialBuilder
             public double CornerRadius { get; set; } = 4.0;
             public double BorderThickness { get; set; } = 1.0;
             public bool ShowTitleBar { get; set; } = true;
+
+            public override void Reset()
+            {
+                base.Reset();
+                Title = "";
+                Background = null;
+                BorderColor = null;
+                TitleBarColor = null;
+                CornerRadius = 4.0;
+                BorderThickness = 1.0;
+                ShowTitleBar = true;
+            }
         }
 
         /// <summary>Layout 컴포넌트 ConfigJson.</summary>
@@ -526,6 +546,18 @@ namespace ArtificialBuilder
             public double RatioH { get; set; }
             public bool UseDockCircuit { get; set; } = true;
             public int SortOrder { get; set; }
+
+            public override void Reset()
+            {
+                base.Reset();
+                Position = "center";
+                RatioX = 0;
+                RatioY = 0;
+                RatioW = 0;
+                RatioH = 0;
+                UseDockCircuit = true;
+                SortOrder = 0;
+            }
         }
 
         /// <summary>Depth 컴포넌트 ConfigJson.</summary>
@@ -534,6 +566,14 @@ namespace ArtificialBuilder
             public int ZIndex { get; set; }
             public double Opacity { get; set; } = 1.0;
             public bool Visible { get; set; } = true;
+
+            public override void Reset()
+            {
+                base.Reset();
+                ZIndex = 0;
+                Opacity = 1.0;
+                Visible = true;
+            }
         }
 
         /// <summary>Message 컴포넌트 ConfigJson.</summary>
@@ -542,6 +582,14 @@ namespace ArtificialBuilder
             public bool IsInput { get; set; }
             public bool Markdown { get; set; } = true;
             public bool AutoScroll { get; set; } = true;
+
+            public override void Reset()
+            {
+                base.Reset();
+                IsInput = false;
+                Markdown = true;
+                AutoScroll = true;
+            }
         }
 
         /// <summary>Image2D 컴포넌트 ConfigJson — 단일 2D 이미지, 스택 없음.</summary>
@@ -551,6 +599,15 @@ namespace ArtificialBuilder
             public string Ref { get; set; } = "";
             public double Opacity { get; set; } = 1.0;
             public string Stretch { get; set; } = "uniform";
+
+            public override void Reset()
+            {
+                base.Reset();
+                Source = "asset";
+                Ref = "";
+                Opacity = 1.0;
+                Stretch = "uniform";
+            }
         }
 
         /// <summary>
@@ -566,6 +623,16 @@ namespace ArtificialBuilder
             public double Opacity { get; set; } = 1.0;
             public string Stretch { get; set; } = "uniform";
             public List<Layer_Override> LayerOverrides { get; set; } = new();
+
+            public override void Reset()
+            {
+                base.Reset();
+                Source = "asset";
+                Ref = "";
+                Opacity = 1.0;
+                Stretch = "uniform";
+                LayerOverrides = new();
+            }
         }
 
         /// <summary>
@@ -580,6 +647,15 @@ namespace ArtificialBuilder
             public double OffsetX { get; set; }
             public double OffsetY { get; set; }
             public int? ZOrder { get; set; }
+
+            public override void Reset()
+            {
+                base.Reset();
+                Index = 0;
+                OffsetX = 0;
+                OffsetY = 0;
+                ZOrder = null;
+            }
         }
 
         /// <summary>3D 컴포넌트 ConfigJson — mesh 전용 (Spine/Spriter 는 별도 레이어).</summary>
@@ -590,6 +666,16 @@ namespace ArtificialBuilder
             public string Animation { get; set; } = "";
             public bool Loop { get; set; } = true;
             public bool Transparent { get; set; } = true;
+
+            public override void Reset()
+            {
+                base.Reset();
+                ModelKind = "mesh";
+                ModelRef = "";
+                Animation = "";
+                Loop = true;
+                Transparent = true;
+            }
         }
 
         /// <summary>Back (네비 뒤로가기) 컴포넌트 ConfigJson.</summary>
@@ -597,6 +683,13 @@ namespace ArtificialBuilder
         {
             public string Target { get; set; } = "home";
             public string Glyph { get; set; } = "←";
+
+            public override void Reset()
+            {
+                base.Reset();
+                Target = "home";
+                Glyph = "←";
+            }
         }
     }
 }

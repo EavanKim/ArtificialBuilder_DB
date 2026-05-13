@@ -115,5 +115,23 @@ namespace ArtificialBuilder.Models
             get { return m_updatedAt_; }
             set { m_updatedAt_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_name_ = "";
+            m_providerType_ = "";
+            m_apiKeyEncrypted_ = "";
+            m_endpointUrl_ = "";
+            m_modelName_ = "";
+            m_modelType_ = "chat";
+            m_contextSize_ = 0;
+            m_gpuLayers_ = -1;
+            m_batchSize_ = 0;
+            m_seqMax_ = 0;
+            m_createdAt_ = default;
+            m_updatedAt_ = default;
+        }
     }
 }

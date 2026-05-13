@@ -99,5 +99,21 @@ namespace ArtificialBuilder.Models
             get { return m_updatedAt_; }
             set { m_updatedAt_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_characterId_ = "";
+            m_sessionId_ = null;
+            m_categoryId_ = "";
+            m_fieldName_ = "";
+            m_fieldValue_ = null;
+            m_narrative_ = null;
+            m_source_ = "user";
+            m_messageId_ = null;
+            m_createdAt_ = default;
+            m_updatedAt_ = default;
+        }
     }
 }

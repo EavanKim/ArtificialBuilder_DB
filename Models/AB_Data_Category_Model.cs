@@ -48,5 +48,15 @@ namespace ArtificialBuilder.Models
             get { return m_createdAt_; }
             set { m_createdAt_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_name_ = "";
+            m_icon_ = null;
+            m_sortOrder_ = 0;
+            m_createdAt_ = default;
+        }
     }
 }

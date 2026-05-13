@@ -32,5 +32,13 @@ namespace ArtificialBuilder.Models
                 return m_updatedAt_.ToLocalTime().ToString("yyyy-MM-dd HH:mm");
             }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_uuid_ = 0L;
+            m_name_ = "";
+            m_updatedAt_ = default;
+        }
     }
 }

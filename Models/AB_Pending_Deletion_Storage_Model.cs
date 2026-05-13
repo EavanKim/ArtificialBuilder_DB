@@ -57,5 +57,14 @@ namespace ArtificialBuilder.Models
             get { return m_enqueuedAt_; }
             set { m_enqueuedAt_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_targetTable_ = "";
+            m_targetId_ = 0L;
+            m_enqueuedAt_ = default;
+        }
     }
 }

@@ -75,5 +75,18 @@ namespace ArtificialBuilder.Models
             get { return m_sessionId_; }
             set { m_sessionId_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_name_ = "";
+            m_description_ = null;
+            m_source_ = "ai";
+            m_sortOrder_ = 0;
+            m_createdAt_ = default;
+            m_updatedAt_ = default;
+            m_sessionId_ = null;
+        }
     }
 }

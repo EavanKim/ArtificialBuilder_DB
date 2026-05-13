@@ -441,5 +441,59 @@ namespace ArtificialBuilder.Models
             get { return m_primaryChatWindowId_; }
             set { m_primaryChatWindowId_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 1;
+            m_systemPrompt_ = null;
+            m_requestBody_ = null;
+            m_maxInputTokens_ = 0;
+            m_maxOutputTokens_ = 0;
+            m_displayMode_ = "normal";
+            m_xmlTemplate_ = null;
+            m_modelId_ = null;
+            m_iconData_ = null;
+            m_autoScroll_ = true;
+            m_embeddingEnabled_ = false;
+            m_embeddingModel_ = null;
+            m_embeddingProvider_ = null;
+            m_loreTopK_ = 5;
+            m_memoryTopK_ = 10;
+            m_memoryEnabled_ = false;
+            m_updatedAt_ = default;
+            m_circuitType_ = "normal";
+            m_charName_ = null;
+            m_charPersonality_ = null;
+            m_charGreeting_ = null;
+            m_charBackstory_ = null;
+            m_charCreatorNotes_ = null;
+            m_charSource_ = "user";
+            m_narrationEnabled_ = true;
+            m_iconColor_ = null;
+            m_iconAsset_ = null;
+            m_nameColor_ = null;
+            m_nameFontAsset_ = null;
+            m_bgColor_ = null;
+            m_cDataPatternEnabled_ = false;
+            m_cDataCodeblockEnabled_ = false;
+            m_cDataManualEnabled_ = false;
+            m_budgetEnabled_ = false;
+            m_budgetPerSession_ = 0;
+            m_budgetAction_ = "warn";
+            m_pipelineId_ = null;
+            m_nodeLayout_ = null;
+            m_windowLayout_ = null;
+            m_homeMessage_ = null;
+            m_homeReadonly_ = false;
+            m_sessionGreeting_ = null;
+            m_sessionGreetingRole_ = "assistant";
+            m_introMessage_ = null;
+            m_introImageAsset_ = null;
+            m_theme_ = null;
+            m_llmInitPrompt_ = null;
+            m_defaultTurnShardSize_ = 50;
+            m_primaryChatWindowId_ = null;
+        }
     }
 }

@@ -59,5 +59,16 @@ namespace ArtificialBuilder.Models
             get { return m_updatedAt_; }
             set { m_updatedAt_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_patternType_ = "";
+            m_enabled_ = false;
+            m_mode_ = "regex";
+            m_patternText_ = "";
+            m_updatedAt_ = default;
+        }
     }
 }

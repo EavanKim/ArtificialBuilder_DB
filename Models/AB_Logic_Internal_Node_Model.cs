@@ -112,5 +112,21 @@ namespace ArtificialBuilder.Models
             get { return m_updatedAt_; }
             set { m_updatedAt_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_kind_ = "";
+            m_canvasX_ = 0;
+            m_canvasY_ = 0;
+            m_propertiesJson_ = null;
+            m_externalConnectorIndex_ = -1;
+            m_inputsJson_ = "[]";
+            m_outputsJson_ = "[]";
+            m_vectorStorageEnabled_ = false;
+            m_createdAt_ = default;
+            m_updatedAt_ = default;
+        }
     }
 }

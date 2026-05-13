@@ -60,6 +60,18 @@ namespace ArtificialBuilder
             get { return m_bgColor_; }
             set { m_bgColor_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_name_ = "";
+            m_circuitType_ = "normal";
+            m_iconColor_ = null;
+            m_iconAsset_ = null;
+            m_nameColor_ = null;
+            m_nameFontAsset_ = null;
+            m_bgColor_ = null;
+        }
     }
 
     /// <summary>Circuit DB (.circuit) 수명·파일시스템·Vec 인프라만 담당. CRUD 는 Gateway 직결.</summary>

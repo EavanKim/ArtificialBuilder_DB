@@ -19,5 +19,14 @@ namespace ArtificialBuilder.Models
 
         private string? m_note_;
         public string? Note_ { get { return m_note_; } set { m_note_ = value; } }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_name_ = "";
+            m_kind_ = "";
+            m_typeCode_ = 0;
+            m_note_ = null;
+        }
     }
 }

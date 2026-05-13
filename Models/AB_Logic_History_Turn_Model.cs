@@ -73,5 +73,18 @@ namespace ArtificialBuilder.Models
             get { return m_endedAt_; }
             set { m_endedAt_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_turnId_ = "";
+            m_turnIndex_ = 0;
+            m_inputSummary_ = null;
+            m_outputSummary_ = null;
+            m_resultStatus_ = null;
+            m_startedAt_ = default;
+            m_endedAt_ = default;
+        }
     }
 }

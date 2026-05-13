@@ -92,5 +92,20 @@ namespace ArtificialBuilder.Models
 
         [NotMapped]
         public string LeafName_ => string.IsNullOrEmpty(Name_) ? FileName_ : System.IO.Path.GetFileName(Name_);
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_name_ = "";
+            m_fileName_ = "";
+            m_assetType_ = "image";
+            m_mimeType_ = "";
+            m_loadMode_ = "ondemand";
+            m_folderPath_ = "";
+            m_data_ = Array.Empty<byte>();
+            m_fileSize_ = 0L;
+            m_createdAt_ = default;
+        }
     }
 }

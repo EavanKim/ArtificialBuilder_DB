@@ -113,5 +113,22 @@ namespace ArtificialBuilder.Models
             get { return m_updatedAt_; }
             set { m_updatedAt_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_name_ = "";
+            m_position_ = "center";
+            m_enabled_ = true;
+            m_width_ = 0;
+            m_height_ = 0;
+            m_xmlTemplate_ = null;
+            m_background_ = null;
+            m_sortOrder_ = 0;
+            m_styleJson_ = null;
+            m_createdAt_ = default;
+            m_updatedAt_ = default;
+        }
     }
 }

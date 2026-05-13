@@ -114,5 +114,21 @@ namespace ArtificialBuilder.Models
             get { return m_sourceMessageId_; }
             set { m_sourceMessageId_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_comment_ = "";
+            m_imageData_ = "";
+            m_embedding_ = null;
+            m_embeddingModel_ = "";
+            m_dimensions_ = 0;
+            m_createdAt_ = default;
+            m_lastUsedAt_ = default;
+            m_useCount_ = 0;
+            m_sourceSessionId_ = 0L;
+            m_sourceMessageId_ = 0L;
+        }
     }
 }

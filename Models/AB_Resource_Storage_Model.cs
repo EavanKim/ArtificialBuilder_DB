@@ -82,5 +82,17 @@ namespace ArtificialBuilder.Models
             get { return m_isDeleted_; }
             set { m_isDeleted_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_kind_ = "text";
+            m_size_ = 0L;
+            m_payloadInline_ = null;
+            m_payloadPath_ = null;
+            m_createdAt_ = default;
+            m_isDeleted_ = false;
+        }
     }
 }

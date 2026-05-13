@@ -62,5 +62,16 @@ namespace ArtificialBuilder.Models
             get { return m_updatedAt_; }
             set { m_updatedAt_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_callerNodeId_ = 0;
+            m_targetCircuitName_ = "";
+            m_useKey_ = "";
+            m_createdAt_ = default;
+            m_updatedAt_ = default;
+        }
     }
 }

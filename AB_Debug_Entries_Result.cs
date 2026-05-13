@@ -11,5 +11,15 @@ namespace ArtificialBuilder
         public int Offset_;
         public int Limit_;
         public List<AB_Pipeline_Debug_Entry_Model> List_ = new();
+
+        public override void Reset()
+        {
+            base.Reset();
+            SessionId_ = new(0L);
+            EntryType_ = null;
+            Offset_ = 0;
+            Limit_ = 0;
+            List_ = new();
+        }
     }
 }

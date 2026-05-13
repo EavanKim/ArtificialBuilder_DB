@@ -62,5 +62,19 @@ namespace ArtificialBuilder.Models
         private DateTime m_updatedAt_ = DateTime.UtcNow;
         [Column("updated_at")]
         public DateTime UpdatedAt_ { get { return m_updatedAt_; } set { m_updatedAt_ = value; } }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_hostedLogicId_ = 0L;
+            m_internalNodeId_ = 0L;
+            m_uiSlotName_ = "";
+            m_descKind_ = "";
+            m_descTypeCode_ = 0;
+            m_descNote_ = null;
+            m_createdAt_ = default;
+            m_updatedAt_ = default;
+        }
     }
 }

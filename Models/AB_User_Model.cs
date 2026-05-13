@@ -40,5 +40,14 @@ namespace EDPFW.Models
             get { return m_createdAt_; }
             set { m_createdAt_ = value; }
         }
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_id_ = 0L;
+            m_username_ = null;
+            m_email_ = null;
+            m_createdAt_ = default;
+        }
     }
 }
