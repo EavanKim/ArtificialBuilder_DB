@@ -31,7 +31,7 @@ namespace ArtificialBuilder
             }
             catch (Exception ex)
             {
-                AB_Log.Error("AppGw", $"OnAttach 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("AppGw", $"OnAttach 실패: {ex.Message}");
             }
         }
 
@@ -498,7 +498,7 @@ namespace ArtificialBuilder
             }
             catch (Exception ex)
             {
-                AB_Log.Error("AppGw", $"HandleMessage 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("AppGw", $"HandleMessage 실패: {ex.Message}");
             }
         }
     }

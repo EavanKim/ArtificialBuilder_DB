@@ -66,7 +66,7 @@ namespace ArtificialBuilder
             }
             catch (Exception ex)
             {
-                AB_Log.Critical("DbManager", $"DB flush 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Critical("DbManager", $"DB flush 실패: {ex.Message}");
             }
             yield break;
         }

@@ -48,11 +48,11 @@ namespace ArtificialBuilder_EDP.Components
                 if (drained)
                     m_idleSkip = g_IDLE_SKIP_TICKS;
                 else if (rowsDeleted > 0)
-                    AB_Log.Debug("DeletionSweeper", $"sweep — rowsDeleted={rowsDeleted} budget={g_BUDGET_MICROS}μs (큐 잔여)");
+                    ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Debug("DeletionSweeper", $"sweep — rowsDeleted={rowsDeleted} budget={g_BUDGET_MICROS}μs (큐 잔여)");
             }
             catch (System.Exception ex)
             {
-                AB_Log.Warn("DeletionSweeper", $"sweep step 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("DeletionSweeper", $"sweep step 실패: {ex.Message}");
                 m_idleSkip = g_IDLE_SKIP_TICKS;
             }
             finally

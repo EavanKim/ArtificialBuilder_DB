@@ -32,7 +32,7 @@ namespace ArtificialBuilder
             }
             catch (Exception ex)
             {
-                AB_Log.Error("StorageGw", $"OnAttach 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("StorageGw", $"OnAttach 실패: {ex.Message}");
             }
         }
 
@@ -525,7 +525,7 @@ namespace ArtificialBuilder
                                                 // 4-1: 살아있는 ref 있음 → revive. 사용자가 의도와 달리 active 옮겨놓지 않은 상태.
                                                 ctx.IsDeleted_ = false;
                                                 m_engine.Update(handle, ctx);
-                                                AB_Log.Warn("StorageGw", $"Sweep revive — ctx={ctx.Id_} 가 live slot 의 ActiveContext (mark cascade 시점에 active 미이동). IsDeleted=false 복구");
+                                                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("StorageGw", $"Sweep revive — ctx={ctx.Id_} 가 live slot 의 ActiveContext (mark cascade 시점에 active 미이동). IsDeleted=false 복구");
                                             }
                                             else
                                             {
@@ -604,7 +604,7 @@ namespace ArtificialBuilder
                                                 // 4-1: 살아있는 linked-list 이웃 ref 있음 → revive.
                                                 slot.IsDeleted_ = false;
                                                 m_engine.Update(handle, slot);
-                                                AB_Log.Warn("StorageGw", $"Sweep revive — slot={slot.Id_} 가 live 이웃 슬롯의 prev/next (포인터 정리 누락). IsDeleted=false 복구");
+                                                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("StorageGw", $"Sweep revive — slot={slot.Id_} 가 live 이웃 슬롯의 prev/next (포인터 정리 누락). IsDeleted=false 복구");
                                             }
                                             else
                                             {
@@ -651,7 +651,7 @@ namespace ArtificialBuilder
                                 }
                                 else
                                 {
-                                    AB_Log.Warn("StorageGw", $"Sweep: 알 수 없는 target_table={pending.TargetTable_} id={pending.TargetId_}");
+                                    ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("StorageGw", $"Sweep: 알 수 없는 target_table={pending.TargetTable_} id={pending.TargetId_}");
                                     m_engine.Remove(handle, pending);
                                     await m_engine.SaveChangesAsync(handle);
                                 }
@@ -724,7 +724,7 @@ namespace ArtificialBuilder
             }
             catch (Exception ex)
             {
-                AB_Log.Error("StorageGw", $"HandleMessage 예외: {ex.GetType().Name}: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("StorageGw", $"HandleMessage 예외: {ex.GetType().Name}: {ex.Message}");
             }
         }
     }

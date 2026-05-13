@@ -68,7 +68,7 @@ namespace ArtificialBuilder
             Handle = m_engine.OpenDatabase<AB_Response_Ui_Db_Context>(
                 dbPath, ResponseUiContextFactory);
             ActiveUuid = safeUuid;
-            AB_Log.Info("ResponseUiDb", $"Response UI DB 열기: {dbPath}");
+            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("ResponseUiDb", $"Response UI DB 열기: {dbPath}");
         }
 
         public async Task CloseAsync()

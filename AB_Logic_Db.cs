@@ -41,7 +41,7 @@ namespace ArtificialBuilder
                 string nameOnly = Path.GetFileNameWithoutExtension(f);
                 if (!long.TryParse(nameOnly, out long uuid))
                 {
-                    AB_Log.Warn("LogicDb", $"GetLogicUuids — 비-long 파일명 skip: {nameOnly}");
+                    ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("LogicDb", $"GetLogicUuids — 비-long 파일명 skip: {nameOnly}");
                     continue;
                 }
                 if (seen.Add(uuid))
@@ -57,12 +57,12 @@ namespace ArtificialBuilder
         public async Task<long> CreateLogicFileAsync(long _uuid = 0L, string? _name = null)
         {
             long uuid = _uuid;
-            if (uuid == 0L) uuid = AB_Id_Issuer.Issue();
+            if (uuid == 0L) uuid = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
             Directory.CreateDirectory(LOGIC_DIR);
             string dbPath = Path.Combine(LOGIC_DIR, $"{uuid}{LOGIC_EXTENSION}");
             if (File.Exists(dbPath))
             {
-                AB_Log.Warn("LogicDb", $"CreateLogicFile — already exists: {dbPath}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("LogicDb", $"CreateLogicFile — already exists: {dbPath}");
                 return 0L;
             }
             int handle = m_engine.OpenDatabase<AB_Logic_Db_Context>(
@@ -82,7 +82,7 @@ namespace ArtificialBuilder
             {
                 await m_engine.CloseAsync(handle);
             }
-            AB_Log.Info("LogicDb", $"CreateLogicFile — uuid={uuid} name={_name}");
+            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("LogicDb", $"CreateLogicFile — uuid={uuid} name={_name}");
             return uuid;
         }
 
@@ -91,18 +91,18 @@ namespace ArtificialBuilder
         {
             if (_uuid == 0L)
             {
-                AB_Log.Warn("LogicDb", $"DeleteLogicFile — invalid uuid: 0");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("LogicDb", $"DeleteLogicFile — invalid uuid: 0");
                 return false;
             }
             if (Handle != 0 && ActiveUuid == _uuid)
             {
-                AB_Log.Warn("LogicDb", $"DeleteLogicFile — uuid {_uuid} is active, refusing");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("LogicDb", $"DeleteLogicFile — uuid {_uuid} is active, refusing");
                 return false;
             }
             string dbPath = Path.Combine(LOGIC_DIR, $"{_uuid}{LOGIC_EXTENSION}");
             if (!File.Exists(dbPath))
             {
-                AB_Log.Warn("LogicDb", $"DeleteLogicFile — not found: {dbPath}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("LogicDb", $"DeleteLogicFile — not found: {dbPath}");
                 return false;
             }
             File.Delete(dbPath);
@@ -110,7 +110,7 @@ namespace ArtificialBuilder
             if (File.Exists(shm)) File.Delete(shm);
             string wal = dbPath + "-wal";
             if (File.Exists(wal)) File.Delete(wal);
-            AB_Log.Info("LogicDb", $"DeleteLogicFile — uuid={_uuid}");
+            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("LogicDb", $"DeleteLogicFile — uuid={_uuid}");
             return true;
         }
 
@@ -173,7 +173,7 @@ namespace ArtificialBuilder
             Handle = m_engine.OpenDatabase<AB_Logic_Db_Context>(
                 dbPath, LogicContextFactory);
             ActiveUuid = _logicUuid;
-            AB_Log.Info("LogicDb", $"Logic DB 열기: {dbPath}");
+            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("LogicDb", $"Logic DB 열기: {dbPath}");
         }
 
         /// <summary>현재 Logic DB 닫기.</summary>

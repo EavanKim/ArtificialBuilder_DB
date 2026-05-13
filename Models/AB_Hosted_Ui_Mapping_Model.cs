@@ -13,7 +13,7 @@ namespace ArtificialBuilder.Models
     [Table("circuit_hosted_logic_ui_mappings")]
     public class AB_Hosted_Ui_Mapping_Model
     {
-        private long m_id_ = ArtificialBuilder.AB_Id_Issuer.Issue();
+        private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]
         [Column("id")]
         public long Id_ { get { return m_id_; } set { m_id_ = value; } }
@@ -39,7 +39,7 @@ namespace ArtificialBuilder.Models
         /// <summary>
         /// description — 데이터 종류 식별자 (open key 모델, [[open-key-io]]).
         /// **자유 string** — enum 강제 X. UI 슬롯 (받는 쪽) 이 description 보고 처리 가능 여부 자체 판단:
-        /// 처리 가능 = 표시, 처리 불가능 = 예외 X / AB_Log.Warn 로깅.
+        /// 처리 가능 = 표시, 처리 불가능 = 예외 X / ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn 로깅.
         /// </summary>
         private string m_descKind_ = "";
         [Column("desc_kind")]

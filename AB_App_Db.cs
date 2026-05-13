@@ -19,7 +19,7 @@ namespace ArtificialBuilder
             Handle = _engine.OpenDatabase<AB_App_Db_Context>(
                 "ArtificialBuilder.db",
                 AppDbContextFactory);
-            AB_Log.Info("AppDb", "앱 DB 초기화 완료.");
+            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("AppDb", "앱 DB 초기화 완료.");
         }
 
         private static AB_App_Db_Context AppDbContextFactory(Microsoft.EntityFrameworkCore.DbContextOptions<AB_App_Db_Context> _options)

@@ -45,7 +45,7 @@ namespace ArtificialBuilder
                 => new AB_Pipeline_Debug_Db_Context(_options);
 
             Handle = m_engine.OpenDatabase<AB_Pipeline_Debug_Db_Context>(_filePath, CreateContext);
-            AB_Log.Debug("PipelineDebug", $"DB 열기: {_filePath}");
+            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Debug("PipelineDebug", $"DB 열기: {_filePath}");
         }
 
         /// <summary>DB 닫기.</summary>

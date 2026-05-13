@@ -43,7 +43,7 @@ namespace ArtificialBuilder
             }
             catch (Exception ex)
             {
-                AB_Log.Error("PipelineDebugGw", $"OnAttach 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("PipelineDebugGw", $"OnAttach 실패: {ex.Message}");
             }
         }
 
@@ -53,7 +53,7 @@ namespace ArtificialBuilder
             if (m_dbInitialized) return;
             if (AB_Board.Db == null)
             {
-                AB_Log.Warn("PipelineDebugGw", "AB_Board.Db 미 bind — DB 초기화 보류");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("PipelineDebugGw", "AB_Board.Db 미 bind — DB 초기화 보류");
                 return;
             }
             m_db.Initialize(m_engine);
@@ -153,7 +153,7 @@ namespace ArtificialBuilder
             }
             catch (Exception ex)
             {
-                AB_Log.Error("PipelineDebugGw", $"HandleMessage 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("PipelineDebugGw", $"HandleMessage 실패: {ex.Message}");
             }
         }
     }

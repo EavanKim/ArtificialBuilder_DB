@@ -8,7 +8,7 @@ namespace ArtificialBuilder.Models
     [Table("hf_downloads")]
     public class AB_HF_Download
     {
-        private long m_id_ = ArtificialBuilder.AB_Id_Issuer.Issue();
+        private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]
         [Column("id")]
         public long Id_

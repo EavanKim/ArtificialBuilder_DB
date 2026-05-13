@@ -46,7 +46,7 @@ namespace ArtificialBuilder
             }
 
             if (seeded > 0)
-                AB_Log.Info("WinSeed", $"Frame/Layout/Depth 공통 3 시드: {seeded} 개 윈도우 (빈 윈도우)");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("WinSeed", $"Frame/Layout/Depth 공통 3 시드: {seeded} 개 윈도우 (빈 윈도우)");
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace ArtificialBuilder
             AB_Circuit_Def? circuitDef = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Resource_Loader>().LoadCircuitDef(_circuitType);
             if (circuitDef == null)
             {
-                AB_Log.Warn("WinSeed", $"Circuit 정의 없음: {_circuitType} — 빈 결과 반환");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("WinSeed", $"Circuit 정의 없음: {_circuitType} — 빈 결과 반환");
                 return result;
             }
 
@@ -104,12 +104,12 @@ namespace ArtificialBuilder
                     if (_reuseIdByName != null && _reuseIdByName.TryGetValue(entry.Name, out long reuseId) && reuseId != 0)
                     {
                         window.Id_ = reuseId;
-                        AB_Log.Info("WinSeed", $"ApplyCircuitDef: {entry.Name} 과거 Id 재사용 {reuseId}");
+                        ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("WinSeed", $"ApplyCircuitDef: {entry.Name} 과거 Id 재사용 {reuseId}");
                     }
                     bool added = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowAsync(window);
                     if (!added)
                     {
-                        AB_Log.Warn("WinSeed", $"ApplyCircuitDef: {entry.Name} 윈도우 생성 실패 (DB 미준비).");
+                        ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("WinSeed", $"ApplyCircuitDef: {entry.Name} 윈도우 생성 실패 (DB 미준비).");
                         continue;
                     }
 
@@ -192,7 +192,7 @@ namespace ArtificialBuilder
                 try { envelope = JsonSerializer.Deserialize<Window_Layout_Envelope>(settingsR.Data.WindowLayout_); }
                 catch (Exception ex)
                 {
-                    AB_Log.Warn("WinSeed", $"Export: envelope 파싱 실패 — {ex.Message}");
+                    ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("WinSeed", $"Export: envelope 파싱 실패 — {ex.Message}");
                     envelope = null;
                 }
             }
@@ -259,7 +259,7 @@ namespace ArtificialBuilder
                             try { configEl = JsonSerializer.Deserialize<JsonElement>(c.ConfigJson_); }
                             catch (Exception ex)
                             {
-                                AB_Log.Warn("WinSeed", $"Export: component config 파싱 실패 — {ex.Message}");
+                                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("WinSeed", $"Export: component config 파싱 실패 — {ex.Message}");
                                 configEl = null;
                             }
                         }
@@ -286,7 +286,7 @@ namespace ArtificialBuilder
                 await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().DeleteWindowComponentsByWindowAsync(w.Id_);
                 await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().DeleteWindowAsync(w.Id_);
             }
-            AB_Log.Info("WinSeed", $"Replace: 기존 윈도우 {existing.Count} 개 삭제 완료");
+            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("WinSeed", $"Replace: 기존 윈도우 {existing.Count} 개 삭제 완료");
 
             List<Window_Layout_Data> envelopeWindows = new();
             Dictionary<string, long> nameToId = new();
@@ -303,7 +303,7 @@ namespace ArtificialBuilder
                 bool added = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowAsync(window);
                 if (!added)
                 {
-                    AB_Log.Warn("WinSeed", $"Replace: {entry.Name} 윈도우 생성 실패 (DB 미준비)");
+                    ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("WinSeed", $"Replace: {entry.Name} 윈도우 생성 실패 (DB 미준비)");
                     continue;
                 }
                 nameToId[entry.Name] = window.Id_;
@@ -337,7 +337,7 @@ namespace ArtificialBuilder
             var settingsR = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetSettingsAsync();
             if (!settingsR.IsOk)
             {
-                AB_Log.Warn("WinSeed", "Replace: settings 없음 — envelope/primary 저장 스킵");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("WinSeed", "Replace: settings 없음 — envelope/primary 저장 스킵");
                 return;
             }
             AB_Circuit_Settings_Model settings = settingsR.Data;
@@ -355,7 +355,7 @@ namespace ArtificialBuilder
             }
             settings.UpdatedAt_ = DateTime.UtcNow;
             await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().SaveSettingsAsync(settings);
-            AB_Log.Info("WinSeed", $"Replace 완료 — 새 윈도우 {envelopeWindows.Count} 개, primaryChat={_circuitDef.PrimaryChatWindowName ?? "(미지정)"}");
+            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("WinSeed", $"Replace 완료 — 새 윈도우 {envelopeWindows.Count} 개, primaryChat={_circuitDef.PrimaryChatWindowName ?? "(미지정)"}");
         }
 
         /// <summary>
@@ -464,12 +464,12 @@ namespace ArtificialBuilder
             {
                 T? parsed = JsonSerializer.Deserialize<T>(_el.GetRawText());
                 if (parsed != null) return parsed;
-                AB_Log.Warn("WinSeed", $"ParseOrDefault<{typeof(T).Name}>: null 반환 — 기본값 사용");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("WinSeed", $"ParseOrDefault<{typeof(T).Name}>: null 반환 — 기본값 사용");
                 return _fallback;
             }
             catch (System.Exception ex)
             {
-                AB_Log.Warn("WinSeed", $"ParseOrDefault<{typeof(T).Name}> 실패: {ex.Message} — 기본값 사용");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("WinSeed", $"ParseOrDefault<{typeof(T).Name}> 실패: {ex.Message} — 기본값 사용");
                 return _fallback;
             }
         }

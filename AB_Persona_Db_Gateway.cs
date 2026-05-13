@@ -33,7 +33,7 @@ namespace ArtificialBuilder
             }
             catch (Exception ex)
             {
-                AB_Log.Error("PersonaGw", $"OnAttach 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("PersonaGw", $"OnAttach 실패: {ex.Message}");
             }
         }
 
@@ -523,7 +523,7 @@ namespace ArtificialBuilder
                     cur = cur.InnerException;
                     depth++;
                 }
-                AB_Log.Error("PersonaGw", $"{_msg.GetType().Name} 처리 실패: {chain}\n{ex.StackTrace}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("PersonaGw", $"{_msg.GetType().Name} 처리 실패: {chain}\n{ex.StackTrace}");
                 switch (_msg)
                 {
                     case AB_Add_Persona_Settings_Request req:

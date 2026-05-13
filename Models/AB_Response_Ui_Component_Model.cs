@@ -15,7 +15,7 @@ namespace ArtificialBuilder.Models
     [Table("response_ui_components")]
     public class AB_Response_Ui_Component_Model
     {
-        private long m_id_ = AB_Id_Issuer.Issue();
+        private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]
         [Column("id")]
         public long Id_

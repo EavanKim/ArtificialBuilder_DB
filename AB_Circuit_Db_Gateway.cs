@@ -31,7 +31,7 @@ namespace ArtificialBuilder
             }
             catch (Exception ex)
             {
-                AB_Log.Error("CircuitGw", $"OnAttach 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("CircuitGw", $"OnAttach 실패: {ex.Message}");
             }
         }
 
@@ -309,7 +309,7 @@ namespace ArtificialBuilder
                     {
                         // .vec 파일은 InitializeVec 시점에 생성. Open 은 로그만 — Lifecycle 에 가까움.
                         if (circuit.Handle != 0 && !string.IsNullOrEmpty(circuit.ActiveName))
-                            AB_Log.Debug("Vec", $"Vec file: circuit/{circuit.ActiveName}.vec");
+                            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Debug("Vec", $"Vec file: circuit/{circuit.ActiveName}.vec");
                         m_broker?.Publish(new AB_Open_Vec_File_Response
                         { CorrelationId = req.CorrelationId, Success = true });
                         break;
@@ -345,7 +345,7 @@ namespace ArtificialBuilder
                         catch (Exception ex)
                         {
                             err = ex.Message;
-                            AB_Log.Warn("CircuitGw", $"DeleteCircuitFile 실패 name={req.Name}: {ex.Message}");
+                            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("CircuitGw", $"DeleteCircuitFile 실패 name={req.Name}: {ex.Message}");
                         }
                         m_broker?.Publish(new AB_Delete_Circuit_File_Response
                         { CorrelationId = req.CorrelationId, Success = ok, Error = err });
@@ -720,7 +720,7 @@ namespace ArtificialBuilder
                     detail += $" <- {inner.GetType().Name}: {inner.Message}";
                     inner = inner.InnerException;
                 }
-                AB_Log.Error("CircuitGw", $"{_msg.GetType().Name} 처리 실패: {detail}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("CircuitGw", $"{_msg.GetType().Name} 처리 실패: {detail}");
                 // 모든 미처리 요청에 대해 범용 에러 응답 발행 (timeout 방지)
                 PublishFallbackError(_msg, detail);
                 // write 계열은 추가 구체 응답 발행
@@ -1040,12 +1040,12 @@ namespace ArtificialBuilder
             try
             {
                 System.IO.File.Move(oldPath, newPath);
-                AB_Log.Debug("Vec", $"Vec file renamed: {oldPath} → {newPath}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Debug("Vec", $"Vec file renamed: {oldPath} → {newPath}");
                 return true;
             }
             catch (Exception ex)
             {
-                AB_Log.Error("Vec", $"Vec file rename failed: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("Vec", $"Vec file rename failed: {ex.Message}");
                 return false;
             }
         }
@@ -1173,7 +1173,7 @@ namespace ArtificialBuilder
             }
             catch (Exception ex)
             {
-                AB_Log.Error("CircuitGwV2", $"OnAttach 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("CircuitGwV2", $"OnAttach 실패: {ex.Message}");
             }
         }
 
@@ -1404,7 +1404,7 @@ namespace ArtificialBuilder
             }
             catch (Exception ex)
             {
-                AB_Log.Error("CircuitGwV2", $"HandleMessage 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("CircuitGwV2", $"HandleMessage 실패: {ex.Message}");
             }
         }
     }

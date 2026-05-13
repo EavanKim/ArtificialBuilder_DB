@@ -30,7 +30,7 @@ namespace ArtificialBuilder
             }
             catch (Exception ex)
             {
-                AB_Log.Error("LogicGw", $"OnAttach 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("LogicGw", $"OnAttach 실패: {ex.Message}");
             }
         }
 
@@ -91,7 +91,7 @@ namespace ArtificialBuilder
                         catch (Exception ex)
                         {
                             err = ex.Message;
-                            AB_Log.Warn("LogicGw", $"OpenLogic 실패 — uuid={req.Uuid} {ex.Message}");
+                            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("LogicGw", $"OpenLogic 실패 — uuid={req.Uuid} {ex.Message}");
                         }
                         m_broker?.Publish(new AB_Open_Logic_Response
                         { CorrelationId = req.CorrelationId, Success = ok, Error = err });
@@ -428,7 +428,7 @@ namespace ArtificialBuilder
             }
             catch (Exception ex)
             {
-                AB_Log.Error("LogicGw", $"HandleMessage 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("LogicGw", $"HandleMessage 실패: {ex.Message}");
             }
         }
 

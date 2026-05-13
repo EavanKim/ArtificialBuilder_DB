@@ -8,7 +8,7 @@ namespace ArtificialBuilder.Models
     [Table("circuit_relation_colors")]
     public class AB_Relation_Color_Model
     {
-        private long m_id_ = AB_Id_Issuer.Issue();
+        private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]
         [Column("id")]
         public long Id_

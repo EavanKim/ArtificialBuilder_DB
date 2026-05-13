@@ -9,7 +9,7 @@ namespace ArtificialBuilder.Models
     [Table("circuit_assets")]
     public class AB_Circuit_Asset_Model
     {
-        private long m_id_ = AB_Id_Issuer.Issue();
+        private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]
         [Column("id")]
         public long Id_

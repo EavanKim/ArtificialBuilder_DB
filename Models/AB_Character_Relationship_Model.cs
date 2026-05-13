@@ -9,7 +9,7 @@ namespace ArtificialBuilder.Models
     [Table("circuit_character_relationships")]
     public class AB_Character_Relationship_Model
     {
-        private long m_id_ = AB_Id_Issuer.Issue();
+        private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]
         [Column("id")]
         public long Id_

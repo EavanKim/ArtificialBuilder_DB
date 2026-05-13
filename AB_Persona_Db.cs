@@ -69,12 +69,12 @@ namespace ArtificialBuilder
                 }
 
                 await OpenAsync(activeName);
-                AB_Log.Info("Persona", $"활성 페르소나: {activeName}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("Persona", $"활성 페르소나: {activeName}");
             }
             else
             {
                 ActiveName = null;
-                AB_Log.Info("Persona", "페르소나 없음 → 초기 설정 필요");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("Persona", "페르소나 없음 → 초기 설정 필요");
             }
         }
 
@@ -84,7 +84,7 @@ namespace ArtificialBuilder
             Directory.CreateDirectory(PERSONA_DIR);
             File.WriteAllText(ACTIVE_FILE, _name);
             ActiveName = _name;
-            AB_Log.Info("Persona", $"활성 페르소나 전환: {_name}");
+            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("Persona", $"활성 페르소나 전환: {_name}");
         }
 
         // --- 열기/닫기 ---
@@ -129,7 +129,7 @@ namespace ArtificialBuilder
             m_shardManager.RegisterOpener(EDP_Shard_Kind.Standalone,
                 _path => m_engine.OpenDatabase<AB_Image_Shard_Context>(_path, _o => new AB_Image_Shard_Context(_o)));
 
-            AB_Log.Info("Persona", $"페르소나 DB 열기 (샤딩): {corePath}, 샤드 {m_shardRegistry.AllShards.Count}개");
+            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("Persona", $"페르소나 DB 열기 (샤딩): {corePath}, 샤드 {m_shardRegistry.AllShards.Count}개");
 
             ActiveName = _name;
             SaveActive(_name);

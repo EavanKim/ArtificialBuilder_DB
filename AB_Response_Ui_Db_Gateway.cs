@@ -28,7 +28,7 @@ namespace ArtificialBuilder
             }
             catch (Exception ex)
             {
-                AB_Log.Error("ResponseUiGw", $"OnAttach 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("ResponseUiGw", $"OnAttach 실패: {ex.Message}");
             }
         }
 
@@ -340,7 +340,7 @@ namespace ArtificialBuilder
                     detail += $" <- {inner.GetType().Name}: {inner.Message}";
                     inner = inner.InnerException;
                 }
-                AB_Log.Error("ResponseUiGw", $"{_msg.GetType().Name} 처리 실패: {detail}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("ResponseUiGw", $"{_msg.GetType().Name} 처리 실패: {detail}");
                 PublishFallbackError(_msg, ex.Message);
             }
         }

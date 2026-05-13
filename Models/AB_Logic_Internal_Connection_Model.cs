@@ -8,7 +8,7 @@ namespace ArtificialBuilder.Models
     [Table("logic_internal_connections")]
     public class AB_Logic_Internal_Connection_Model
     {
-        private long m_id_ = ArtificialBuilder.AB_Id_Issuer.Issue();
+        private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]
         [Column("id")]
         public long Id_

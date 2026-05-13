@@ -225,7 +225,7 @@ namespace ArtificialBuilder
                 ActiveType = settings?.CircuitType_ ?? "chat";
             }
             catch { ActiveType = "chat"; }
-            AB_Log.Info("Circuit", $"Circuit DB 열기: {dbPath}");
+            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("Circuit", $"Circuit DB 열기: {dbPath}");
             // CircuitRegistry 세대 교체 + 이벤트 발화는 AB_Actions.OpenCircuitAsync 파사드 책임.
             // 직접 AB_Board.Circuit.OpenAsync 호출 금지 — AB_Actions 경유 ([[feedback_no_side_patches]]).
         }
@@ -250,7 +250,7 @@ namespace ArtificialBuilder
                 dbPath, CircuitContextFactory);
             ActiveName = _circuitName;
             ActiveType = _circuitType;
-            AB_Log.Info("Circuit", $"Circuit DB 열기: {dbPath}");
+            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("Circuit", $"Circuit DB 열기: {dbPath}");
             // 위와 동일 — Swap 은 AB_Actions.OpenCircuitWithTypeAsync 담당.
         }
 

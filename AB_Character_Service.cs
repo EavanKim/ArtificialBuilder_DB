@@ -101,7 +101,7 @@ namespace ArtificialBuilder
             if (!System.IO.File.Exists(_filePath)) return;
             string json = await System.IO.File.ReadAllTextAsync(_filePath);
             // 파싱 로직은 원 스텁과 동일하게 로그만
-            ArtificialBuilder_EDP.AB_Log.Debug("Character", $"캐릭터 가져오기: {_filePath}");
+            ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Debug("Character", $"캐릭터 가져오기: {_filePath}");
             await RefreshAsync();
         }
     }

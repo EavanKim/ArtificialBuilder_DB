@@ -25,11 +25,11 @@ namespace ArtificialBuilder
             {
                 m_connection = await ConnectionMultiplexer.ConnectAsync(_connectionString);
                 m_db = m_connection.GetDatabase();
-                AB_Log.Info("Redis", $"연결 성공: {_connectionString}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Info("Redis", $"연결 성공: {_connectionString}");
             }
             catch (Exception ex)
             {
-                AB_Log.Error("Redis", $"연결 실패: {ex.Message}");
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Error("Redis", $"연결 실패: {ex.Message}");
                 m_connection = null;
                 m_db = null;
             }
