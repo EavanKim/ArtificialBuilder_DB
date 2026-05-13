@@ -5,6 +5,7 @@ using ArtificialBuilder_EDP.Components;
 using ArtificialBuilder_EDP.Core.Messaging;
 using System;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder_EDP.Core.Diagnostics
 {
@@ -26,26 +27,26 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
             try
             {
                 Step("Add Character");
-                var ch = new AB_Character_Model
-                {
-                    Name_ = "test_hero",
-                    Personality_ = "용감함",
-                    Backstory_ = "마을 출신"
-                };
+                var ch = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Character_Model>();
+                ch.Name_ = "test_hero";
+                ch.Personality_ = "용감함";
+                ch.Backstory_ = "마을 출신";
                 Log("character.Id_", ch.Id_);
-                var addResp = await broker.PublishAndWaitAsync<AB_Add_Character_Response>(
-                    new AB_Add_Character_Request { Character = ch }, TimeSpan.FromSeconds(5));
+                var req1 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Character_Request>();
+                req1.Character = ch;
+                var addResp = await broker.PublishAndWaitAsync<AB_Add_Character_Response>(req1, TimeSpan.FromSeconds(5));
                 Assert("Add 성공", addResp.Success, addResp.Error ?? "");
 
                 Step("Save 직후 갱신 (Add 시 tracked 동일 인스턴스 — Get 호출은 별도 진단으로 분리)");
                 ch.Backstory_ = "왕국의 수도";
-                var saveResp = await broker.PublishAndWaitAsync<AB_Save_Character_Response>(
-                    new AB_Save_Character_Request { Character = ch }, TimeSpan.FromSeconds(5));
+                var req2 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Save_Character_Request>();
+                req2.Character = ch;
+                var saveResp = await broker.PublishAndWaitAsync<AB_Save_Character_Response>(req2, TimeSpan.FromSeconds(5));
                 Assert("Save 성공", saveResp.Success, saveResp.Error ?? "");
 
                 Step("GetAllCharacters 로 갱신 확인");
-                var allResp = await broker.PublishAndWaitAsync<AB_Get_All_Characters_Response>(
-                    new AB_Get_All_Characters_Request(), TimeSpan.FromSeconds(5));
+                var req3 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Characters_Request>();
+                var allResp = await broker.PublishAndWaitAsync<AB_Get_All_Characters_Response>(req3, TimeSpan.FromSeconds(5));
                 Log("all.Count", allResp.Data.Count);
                 Log("all[0].Name_", allResp.Data.Count > 0 ? allResp.Data[0].Name_ : "<empty>");
                 Log("all[0].Backstory_", allResp.Data.Count > 0 ? (allResp.Data[0].Backstory_ ?? "<null>") : "<empty>");
@@ -81,14 +82,18 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
             try
             {
                 Step("Add Character");
-                var ch = new AB_Character_Model { Name_ = "named_one", Personality_ = "용감함" };
-                var add = await broker.PublishAndWaitAsync<AB_Add_Character_Response>(
-                    new AB_Add_Character_Request { Character = ch }, TimeSpan.FromSeconds(5));
+                var ch = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Character_Model>();
+                ch.Name_ = "named_one";
+                ch.Personality_ = "용감함";
+                var req4 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Character_Request>();
+                req4.Character = ch;
+                var add = await broker.PublishAndWaitAsync<AB_Add_Character_Response>(req4, TimeSpan.FromSeconds(5));
                 Assert("Add 성공", add.Success, add.Error ?? "");
 
                 Step("GetCharacter (Id)");
-                var get = await broker.PublishAndWaitAsync<AB_Get_Character_Response>(
-                    new AB_Get_Character_Request { Id = ch.Id_.ToString() }, TimeSpan.FromSeconds(5));
+                var req5 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Character_Request>();
+                req5.Id = ch.Id_.ToString();
+                var get = await broker.PublishAndWaitAsync<AB_Get_Character_Response>(req5, TimeSpan.FromSeconds(5));
                 Log("get.Name_", get.Data?.Name_ ?? "<null>");
                 Log("get.Personality_", get.Data?.Personality_ ?? "<null>");
                 Assert("결과 존재", get.Data != null);
@@ -121,19 +126,22 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
             try
             {
                 Step("Add Character");
-                var ch = new AB_Character_Model { Name_ = "to_delete" };
-                var addResp = await broker.PublishAndWaitAsync<AB_Add_Character_Response>(
-                    new AB_Add_Character_Request { Character = ch }, TimeSpan.FromSeconds(5));
+                var ch = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Character_Model>();
+                ch.Name_ = "to_delete";
+                var req6 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Character_Request>();
+                req6.Character = ch;
+                var addResp = await broker.PublishAndWaitAsync<AB_Add_Character_Response>(req6, TimeSpan.FromSeconds(5));
                 Assert("Add 성공", addResp.Success, addResp.Error ?? "");
 
                 Step("Delete 직후 (Add 시 tracked 동일 인스턴스)");
-                var delResp = await broker.PublishAndWaitAsync<AB_Delete_Character_Response>(
-                    new AB_Delete_Character_Request { Character = ch }, TimeSpan.FromSeconds(5));
+                var req7 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Character_Request>();
+                req7.Character = ch;
+                var delResp = await broker.PublishAndWaitAsync<AB_Delete_Character_Response>(req7, TimeSpan.FromSeconds(5));
                 Assert("Delete 성공", delResp.Success, delResp.Error ?? "");
 
                 Step("GetAll 로 0개 확인");
-                var all = await broker.PublishAndWaitAsync<AB_Get_All_Characters_Response>(
-                    new AB_Get_All_Characters_Request(), TimeSpan.FromSeconds(5));
+                var req8 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Characters_Request>();
+                var all = await broker.PublishAndWaitAsync<AB_Get_All_Characters_Response>(req8, TimeSpan.FromSeconds(5));
                 Log("all.Count", all.Data.Count);
                 Assert("Character 0개", all.Data.Count == 0);
             }

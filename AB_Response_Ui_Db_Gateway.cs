@@ -60,8 +60,12 @@ namespace ArtificialBuilder
                         AB_Response_Ui_Meta_Model? data = dbId == 0
                             ? null
                             : await AB_Board.Db.GetByIdAsync<AB_Response_Ui_Meta_Model>(dbId, 1L);
-                        m_broker?.Publish(new AB_Get_Response_Ui_Meta_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Response_Ui_Meta_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Save_Response_Ui_Meta_Request req:
@@ -73,8 +77,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Save_Response_Ui_Meta_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Save_Response_Ui_Meta_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     // ==================== Layers ====================
@@ -86,8 +94,12 @@ namespace ArtificialBuilder
                             var all = await AB_Board.Db.GetAllAsync<AB_Response_Ui_Layer_Model>(dbId);
                             data.AddRange(all);
                         }
-                        m_broker?.Publish(new AB_Get_All_Response_Ui_Layers_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Response_Ui_Layers_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Add_Response_Ui_Layer_Request req:
@@ -99,8 +111,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Add_Response_Ui_Layer_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Response_Ui_Layer_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Save_Response_Ui_Layer_Request req:
@@ -112,8 +128,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Save_Response_Ui_Layer_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Save_Response_Ui_Layer_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Response_Ui_Layer_Request req:
@@ -125,8 +145,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Delete_Response_Ui_Layer_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Response_Ui_Layer_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     // ==================== Windows (OLD types relocated) ====================
@@ -138,8 +162,12 @@ namespace ArtificialBuilder
                             var all = await AB_Board.Db.GetAllAsync<AB_Response_Ui_Window_Model>(dbId);
                             data.AddRange(all);
                         }
-                        m_broker?.Publish(new AB_Get_All_Windows_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Windows_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_Window_Request req:
@@ -147,12 +175,13 @@ namespace ArtificialBuilder
                         AB_Response_Ui_Window_Model? data = dbId == 0
                             ? null
                             : await AB_Board.Db.GetByIdAsync<AB_Response_Ui_Window_Model>(dbId, req.Id);
-                        m_broker?.Publish(new AB_Get_Window_Response
                         {
-                            CorrelationId = req.CorrelationId,
-                            Data = data,
-                            IsOk = data != null
-                        });
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Window_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            msg.IsOk = data != null;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Add_Window_Request req:
@@ -162,8 +191,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.AddAsync(dbId, req.Window);
                             await AB_Board.Db.SaveChangesAsync(dbId);
                         }
-                        m_broker?.Publish(new AB_Add_Window_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Window_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = dbId != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Save_Window_Request req:
@@ -174,8 +207,12 @@ namespace ArtificialBuilder
                             AB_Board.Db.Update(dbId, req.Window);
                             await AB_Board.Db.SaveChangesAsync(dbId);
                         }
-                        m_broker?.Publish(new AB_Save_Window_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Save_Window_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = dbId != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Window_Request req:
@@ -189,8 +226,12 @@ namespace ArtificialBuilder
                                 await AB_Board.Db.SaveChangesAsync(dbId);
                             }
                         }
-                        m_broker?.Publish(new AB_Delete_Window_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Window_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = dbId != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     // ==================== WindowComponents (OLD types relocated) ====================
@@ -203,8 +244,12 @@ namespace ArtificialBuilder
                             var found = await AB_Board.Db.FindAsync<AB_Response_Ui_Component_Model>(dbId, _c => _c.WindowId_ == wid);
                             data.AddRange(found);
                         }
-                        m_broker?.Publish(new AB_Get_Window_Components_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Window_Components_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_All_Window_Components_Request req:
@@ -215,8 +260,12 @@ namespace ArtificialBuilder
                             var all = await AB_Board.Db.GetAllAsync<AB_Response_Ui_Component_Model>(dbId);
                             data.AddRange(all);
                         }
-                        m_broker?.Publish(new AB_Get_All_Window_Components_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Window_Components_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Add_Window_Component_Request req:
@@ -226,8 +275,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.AddAsync(dbId, req.Component);
                             await AB_Board.Db.SaveChangesAsync(dbId);
                         }
-                        m_broker?.Publish(new AB_Add_Window_Component_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Window_Component_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = dbId != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Save_Window_Component_Request req:
@@ -238,8 +291,12 @@ namespace ArtificialBuilder
                             AB_Board.Db.Update(dbId, req.Component);
                             await AB_Board.Db.SaveChangesAsync(dbId);
                         }
-                        m_broker?.Publish(new AB_Save_Window_Component_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Save_Window_Component_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = dbId != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Window_Component_Request req:
@@ -253,8 +310,12 @@ namespace ArtificialBuilder
                                 await AB_Board.Db.SaveChangesAsync(dbId);
                             }
                         }
-                        m_broker?.Publish(new AB_Delete_Window_Component_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Window_Component_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = dbId != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Window_Components_By_Window_Request req:
@@ -274,16 +335,25 @@ namespace ArtificialBuilder
                                 await AB_Board.Db.SaveChangesAsync(dbId);
                             }
                         }
-                        m_broker?.Publish(new AB_Delete_Window_Components_By_Window_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0, DeletedCount = deleted });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Window_Components_By_Window_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = dbId != 0;
+                            msg.DeletedCount = deleted;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     // ==================== UiTemplates (OLD types relocated) ====================
                     case AB_Get_All_Ui_Templates_Request req:
                     {
                         var data = await UiTemplatesGetAllAsync();
-                        m_broker?.Publish(new AB_Get_All_Ui_Templates_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Ui_Templates_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Add_Ui_Template_Request req:
@@ -293,8 +363,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.AddAsync(dbId, req.Template);
                             await AB_Board.Db.SaveChangesAsync(dbId);
                         }
-                        m_broker?.Publish(new AB_Add_Ui_Template_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Ui_Template_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = dbId != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Save_Ui_Template_Request req:
@@ -304,29 +378,45 @@ namespace ArtificialBuilder
                             AB_Board.Db.Update(dbId, req.Template);
                             await AB_Board.Db.SaveChangesAsync(dbId);
                         }
-                        m_broker?.Publish(new AB_Save_Ui_Template_Response
-                        { CorrelationId = req.CorrelationId, Success = dbId != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Save_Ui_Template_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = dbId != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Ui_Template_Request req:
                     {
                         bool ok = await UiTemplateDeleteAsync(req.Template);
-                        m_broker?.Publish(new AB_Delete_Ui_Template_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Ui_Template_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Set_Active_Ui_Template_Request req:
                     {
                         bool ok = await UiTemplateSetActiveAsync(req.TemplateId);
-                        m_broker?.Publish(new AB_Set_Active_Ui_Template_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Set_Active_Ui_Template_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_Active_Ui_Template_Request req:
                     {
                         var data = await UiTemplateGetActiveAsync();
-                        m_broker?.Publish(new AB_Get_Active_Ui_Template_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Active_Ui_Template_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                 }
@@ -350,52 +440,190 @@ namespace ArtificialBuilder
         {
             try
             {
-                AB_Message? resp = _req switch
+                var pool = AB_Engine.GetService<AB_Pool>();
+                AB_Message? resp = null;
+                switch (_req)
                 {
-                    AB_Get_All_Windows_Request r => new AB_Get_All_Windows_Response
-                    { CorrelationId = r.CorrelationId },
-                    AB_Get_Window_Request r => new AB_Get_Window_Response
-                    { CorrelationId = r.CorrelationId },
-                    AB_Add_Window_Request r => new AB_Add_Window_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    AB_Save_Window_Request r => new AB_Save_Window_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    AB_Delete_Window_Request r => new AB_Delete_Window_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    AB_Get_Window_Components_Request r => new AB_Get_Window_Components_Response
-                    { CorrelationId = r.CorrelationId, Error = _error },
-                    AB_Get_All_Window_Components_Request r => new AB_Get_All_Window_Components_Response
-                    { CorrelationId = r.CorrelationId, Error = _error },
-                    AB_Add_Window_Component_Request r => new AB_Add_Window_Component_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    AB_Save_Window_Component_Request r => new AB_Save_Window_Component_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    AB_Delete_Window_Component_Request r => new AB_Delete_Window_Component_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    AB_Delete_Window_Components_By_Window_Request r => new AB_Delete_Window_Components_By_Window_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    AB_Get_All_Ui_Templates_Request r => new AB_Get_All_Ui_Templates_Response
-                    { CorrelationId = r.CorrelationId },
-                    AB_Get_Active_Ui_Template_Request r => new AB_Get_Active_Ui_Template_Response
-                    { CorrelationId = r.CorrelationId },
-                    AB_Add_Ui_Template_Request r => new AB_Add_Ui_Template_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    AB_Save_Ui_Template_Request r => new AB_Save_Ui_Template_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    AB_Delete_Ui_Template_Request r => new AB_Delete_Ui_Template_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    AB_Set_Active_Ui_Template_Request r => new AB_Set_Active_Ui_Template_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    AB_Save_Response_Ui_Meta_Request r => new AB_Save_Response_Ui_Meta_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    AB_Add_Response_Ui_Layer_Request r => new AB_Add_Response_Ui_Layer_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    AB_Save_Response_Ui_Layer_Request r => new AB_Save_Response_Ui_Layer_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    AB_Delete_Response_Ui_Layer_Request r => new AB_Delete_Response_Ui_Layer_Response
-                    { CorrelationId = r.CorrelationId, Success = false, Error = _error },
-                    _ => null
-                };
+                    case AB_Get_All_Windows_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Get_All_Windows_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Get_Window_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Get_Window_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Add_Window_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Add_Window_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Save_Window_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Save_Window_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Delete_Window_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Delete_Window_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Get_Window_Components_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Get_Window_Components_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Get_All_Window_Components_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Get_All_Window_Components_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Add_Window_Component_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Add_Window_Component_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Save_Window_Component_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Save_Window_Component_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Delete_Window_Component_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Delete_Window_Component_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Delete_Window_Components_By_Window_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Delete_Window_Components_By_Window_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Get_All_Ui_Templates_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Get_All_Ui_Templates_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Get_Active_Ui_Template_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Get_Active_Ui_Template_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Add_Ui_Template_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Add_Ui_Template_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Save_Ui_Template_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Save_Ui_Template_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Delete_Ui_Template_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Delete_Ui_Template_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Set_Active_Ui_Template_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Set_Active_Ui_Template_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Save_Response_Ui_Meta_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Save_Response_Ui_Meta_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Add_Response_Ui_Layer_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Add_Response_Ui_Layer_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Save_Response_Ui_Layer_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Save_Response_Ui_Layer_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                    case AB_Delete_Response_Ui_Layer_Request r:
+                    {
+                        var x = pool.AcquireObject<AB_Delete_Response_Ui_Layer_Response>();
+                        x.CorrelationId = r.CorrelationId;
+                        x.Success = false;
+                        x.Error = _error;
+                        resp = x;
+                        break;
+                    }
+                }
                 if (resp != null)
                 {
                     m_broker?.Publish(resp);

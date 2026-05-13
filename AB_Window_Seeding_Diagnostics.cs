@@ -2,6 +2,7 @@ using ArtificialBuilder;
 using ArtificialBuilder.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder_EDP.Core.Diagnostics
 {
@@ -22,7 +23,8 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
             try
             {
                 Step("빈 DB 윈도우 생성 (컴포넌트 0)");
-                var win = new AB_Response_Ui_Window_Model { Name_ = "test_empty" };
+                var win = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Response_Ui_Window_Model>();
+                win.Name_ = "test_empty";
                 await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowAsync(win);
 
                 Step("EnsureDefaultComponentsAsync 호출");

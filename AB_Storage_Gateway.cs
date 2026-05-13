@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder
 {
@@ -79,8 +80,13 @@ namespace ArtificialBuilder
                             newId = row.Id_;
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Add_Resource_Response
-                        { CorrelationId = req.CorrelationId, Id = newId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Resource_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Id = newId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_Resource_Request req:
@@ -93,8 +99,13 @@ namespace ArtificialBuilder
                             data = found.FirstOrDefault();
                             isOk = data != null;
                         }
-                        m_broker?.Publish(new AB_Get_Resource_Response
-                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Resource_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            msg.IsOk = isOk;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Resource_Request req:
@@ -111,8 +122,12 @@ namespace ArtificialBuilder
                             }
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Delete_Resource_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Resource_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
 
@@ -155,8 +170,13 @@ namespace ArtificialBuilder
                             }
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Append_Session_Slot_Response
-                        { CorrelationId = req.CorrelationId, Id = newId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Append_Session_Slot_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Id = newId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_Session_Slot_Request req:
@@ -169,8 +189,13 @@ namespace ArtificialBuilder
                             data = found.FirstOrDefault();
                             isOk = data != null;
                         }
-                        m_broker?.Publish(new AB_Get_Session_Slot_Response
-                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Session_Slot_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            msg.IsOk = isOk;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_Session_Slots_Request req:
@@ -201,8 +226,12 @@ namespace ArtificialBuilder
                                     head = null;
                             }
                         }
-                        m_broker?.Publish(new AB_Get_Session_Slots_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Session_Slots_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Set_Active_Context_Request req:
@@ -220,8 +249,12 @@ namespace ArtificialBuilder
                                 ok = true;
                             }
                         }
-                        m_broker?.Publish(new AB_Set_Active_Context_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Set_Active_Context_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Session_Slot_Request req:
@@ -257,8 +290,12 @@ namespace ArtificialBuilder
                                 ok = true;
                             }
                         }
-                        m_broker?.Publish(new AB_Delete_Session_Slot_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Session_Slot_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
 
@@ -282,8 +319,13 @@ namespace ArtificialBuilder
                             newId = row.Id_;
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Add_Context_Response
-                        { CorrelationId = req.CorrelationId, Id = newId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Context_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Id = newId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_Contexts_By_Turn_Request req:
@@ -296,8 +338,12 @@ namespace ArtificialBuilder
                             data = new List<AB_Context_Storage_Model>(all);
                             data.Sort(CompareCreated);
                         }
-                        m_broker?.Publish(new AB_Get_Contexts_By_Turn_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Contexts_By_Turn_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Context_Request req:
@@ -315,8 +361,12 @@ namespace ArtificialBuilder
                             await m_engine.SaveChangesAsync(handle);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Delete_Context_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Context_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
 
@@ -343,8 +393,13 @@ namespace ArtificialBuilder
                             newId = row.Id_;
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Add_Node_Response
-                        { CorrelationId = req.CorrelationId, Id = newId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Node_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Id = newId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_Nodes_By_Context_Request req:
@@ -357,8 +412,12 @@ namespace ArtificialBuilder
                             data = new List<AB_Logic_Storage_Model>(all);
                             data.Sort(CompareEmission);
                         }
-                        m_broker?.Publish(new AB_Get_Nodes_By_Context_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Nodes_By_Context_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Node_Request req:
@@ -377,8 +436,12 @@ namespace ArtificialBuilder
                                 ok = true;
                             }
                         }
-                        m_broker?.Publish(new AB_Delete_Node_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Node_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
 
@@ -397,12 +460,10 @@ namespace ArtificialBuilder
                                 _p => _p.TargetTable_ == req.TargetTable && _p.TargetId_ == req.TargetId);
                             if (!existing.Any())
                             {
-                                var row = new AB_Pending_Deletion_Storage_Model
-                                {
-                                    TargetTable_ = req.TargetTable,
-                                    TargetId_ = req.TargetId,
-                                    EnqueuedAt_ = DateTime.UtcNow,
-                                };
+                                var row = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Pending_Deletion_Storage_Model>();
+                                row.TargetTable_ = req.TargetTable;
+                                row.TargetId_ = req.TargetId;
+                                row.EnqueuedAt_ = DateTime.UtcNow;
                                 await m_engine.AddAsync(handle, row);
 
                                 if (req.TargetTable == "context_storage")
@@ -453,8 +514,12 @@ namespace ArtificialBuilder
                             }
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Enqueue_Deletion_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Enqueue_Deletion_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Sweep_Deletion_Step_Request req:
@@ -657,8 +722,13 @@ namespace ArtificialBuilder
                                 }
                             }
                         }
-                        m_broker?.Publish(new AB_Sweep_Deletion_Step_Response
-                        { CorrelationId = req.CorrelationId, RowsDeleted = rowsDeleted, QueueDrained = drained });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Sweep_Deletion_Step_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.RowsDeleted = rowsDeleted;
+                            msg.QueueDrained = drained;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
 
@@ -709,15 +779,16 @@ namespace ArtificialBuilder
                             if (resRemoved > 0) await m_engine.SaveChangesAsync(handle);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Delete_Session_Storage_Response
                         {
-                            CorrelationId = req.CorrelationId,
-                            Success = ok,
-                            SlotsRemoved = slotsRemoved,
-                            ContextsRemoved = ctxRemoved,
-                            NodesRemoved = nodesRemoved,
-                            ResourcesRemoved = resRemoved,
-                        });
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Session_Storage_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            msg.SlotsRemoved = slotsRemoved;
+                            msg.ContextsRemoved = ctxRemoved;
+                            msg.NodesRemoved = nodesRemoved;
+                            msg.ResourcesRemoved = resRemoved;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                 }

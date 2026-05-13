@@ -6,6 +6,7 @@ using ArtificialBuilder_EDP.Core.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder
 {
@@ -32,30 +33,30 @@ namespace ArtificialBuilder
         /// <summary>리소스 저장. id 발급 후 반환.</summary>
         public async Task<long> AddResourceAsync(string _kind, long _size, string? _payloadInline, string? _payloadPath)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Resource_Response>(
-                new AB_Add_Resource_Request
-                {
-                    Kind = _kind,
-                    Size = _size,
-                    PayloadInline = _payloadInline,
-                    PayloadPath = _payloadPath,
-                }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Resource_Request>();
+            req.Kind = _kind;
+            req.Size = _size;
+            req.PayloadInline = _payloadInline;
+            req.PayloadPath = _payloadPath;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Resource_Response>(req, DefaultTimeout);
             return resp.Success ? resp.Id : 0;
         }
 
         /// <summary>id 로 리소스 조회.</summary>
         public async Task<AB_Resource_Storage_Model?> GetResourceAsync(long _id)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Resource_Response>(
-                new AB_Get_Resource_Request { Id = _id }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Resource_Request>();
+            req.Id = _id;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Resource_Response>(req, DefaultTimeout);
             return resp.IsOk ? resp.Data : null;
         }
 
         /// <summary>리소스 삭제 (cascade 미적용 — 호출자가 참조 정리).</summary>
         public async Task<bool> DeleteResourceAsync(long _id)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Resource_Response>(
-                new AB_Delete_Resource_Request { Id = _id }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Resource_Request>();
+            req.Id = _id;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Resource_Response>(req, DefaultTimeout);
             return resp.Success;
         }
 
@@ -66,48 +67,47 @@ namespace ArtificialBuilder
         /// <summary>세션 list 의 tail 에 새 turn 슬롯 추가. prev/next 포인터 자동 연결.</summary>
         public async Task<long> AppendSessionSlotAsync(long _sessionId, long? _inputResourceId)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Append_Session_Slot_Response>(
-                new AB_Append_Session_Slot_Request
-                {
-                    SessionId = _sessionId,
-                    InputResourceId = _inputResourceId,
-                }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Append_Session_Slot_Request>();
+            req.SessionId = _sessionId;
+            req.InputResourceId = _inputResourceId;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Append_Session_Slot_Response>(req, DefaultTimeout);
             return resp.Success ? resp.Id : 0;
         }
 
         /// <summary>id 로 슬롯 단건 조회.</summary>
         public async Task<AB_Session_Storage_Model?> GetSessionSlotAsync(long _id)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Session_Slot_Response>(
-                new AB_Get_Session_Slot_Request { Id = _id }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Session_Slot_Request>();
+            req.Id = _id;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Session_Slot_Response>(req, DefaultTimeout);
             return resp.IsOk ? resp.Data : null;
         }
 
         /// <summary>세션의 모든 슬롯 head→tail 순회.</summary>
         public async Task<List<AB_Session_Storage_Model>> GetSessionSlotsAsync(long _sessionId)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Session_Slots_Response>(
-                new AB_Get_Session_Slots_Request { SessionId = _sessionId }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Session_Slots_Request>();
+            req.SessionId = _sessionId;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Session_Slots_Response>(req, DefaultTimeout);
             return resp.Data ?? new();
         }
 
         /// <summary>슬롯의 active_context_id 갱신 (◀▶ 네비 / 새로고침 활성 변종 지정).</summary>
         public async Task<bool> SetActiveContextAsync(long _slotId, long? _activeContextId)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Set_Active_Context_Response>(
-                new AB_Set_Active_Context_Request
-                {
-                    SlotId = _slotId,
-                    ActiveContextId = _activeContextId,
-                }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Set_Active_Context_Request>();
+            req.SlotId = _slotId;
+            req.ActiveContextId = _activeContextId;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Set_Active_Context_Response>(req, DefaultTimeout);
             return resp.Success;
         }
 
         /// <summary>슬롯 삭제 + prev/next 재연결.</summary>
         public async Task<bool> DeleteSessionSlotAsync(long _id)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Session_Slot_Response>(
-                new AB_Delete_Session_Slot_Request { Id = _id }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Session_Slot_Request>();
+            req.Id = _id;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Session_Slot_Response>(req, DefaultTimeout);
             return resp.Success;
         }
 
@@ -118,28 +118,28 @@ namespace ArtificialBuilder
         /// <summary>새 context (실행 변종) 추가. 같은 turn_id 의 변종으로 누적.</summary>
         public async Task<long> AddContextAsync(long _sessionId, long _turnId)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Context_Response>(
-                new AB_Add_Context_Request
-                {
-                    SessionId = _sessionId,
-                    TurnId = _turnId,
-                }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Context_Request>();
+            req.SessionId = _sessionId;
+            req.TurnId = _turnId;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Context_Response>(req, DefaultTimeout);
             return resp.Success ? resp.Id : 0;
         }
 
         /// <summary>turn 슬롯의 모든 변종 조회 (◀▶ 네비용, CreatedAt 정렬).</summary>
         public async Task<List<AB_Context_Storage_Model>> GetContextsByTurnAsync(long _turnId)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Contexts_By_Turn_Response>(
-                new AB_Get_Contexts_By_Turn_Request { TurnId = _turnId }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Contexts_By_Turn_Request>();
+            req.TurnId = _turnId;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Contexts_By_Turn_Response>(req, DefaultTimeout);
             return resp.Data ?? new();
         }
 
         /// <summary>context 삭제 + 그 안의 Node 들 cascade.</summary>
         public async Task<bool> DeleteContextAsync(long _id)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Context_Response>(
-                new AB_Delete_Context_Request { Id = _id }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Context_Request>();
+            req.Id = _id;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Context_Response>(req, DefaultTimeout);
             return resp.Success;
         }
 
@@ -150,31 +150,31 @@ namespace ArtificialBuilder
         /// <summary>로직 실행 결과 추가. resource_id 단일 키만 보관. 2026-05-11 — NodeId string → long.</summary>
         public async Task<long> AddNodeAsync(long _contextId, long _nodeId, int _emissionOrder, long? _resourceId, string? _metaJson)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Node_Response>(
-                new AB_Add_Node_Request
-                {
-                    ContextId = _contextId,
-                    NodeId = _nodeId,
-                    EmissionOrder = _emissionOrder,
-                    ResourceId = _resourceId,
-                    MetaJson = _metaJson,
-                }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Node_Request>();
+            req.ContextId = _contextId;
+            req.NodeId = _nodeId;
+            req.EmissionOrder = _emissionOrder;
+            req.ResourceId = _resourceId;
+            req.MetaJson = _metaJson;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Add_Node_Response>(req, DefaultTimeout);
             return resp.Success ? resp.Id : 0;
         }
 
         /// <summary>context 의 모든 로직 실행 row 조회 (emission_order 정렬).</summary>
         public async Task<List<AB_Logic_Storage_Model>> GetNodesByContextAsync(long _contextId)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Nodes_By_Context_Response>(
-                new AB_Get_Nodes_By_Context_Request { ContextId = _contextId }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Nodes_By_Context_Request>();
+            req.ContextId = _contextId;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Get_Nodes_By_Context_Response>(req, DefaultTimeout);
             return resp.Data ?? new();
         }
 
         /// <summary>노드 단건 row 삭제. resource 는 orphan 그대로 (단순 분리 정책 — read 경로는 즉시 안 보임).</summary>
         public async Task<bool> DeleteNodeAsync(long _id)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Node_Response>(
-                new AB_Delete_Node_Request { Id = _id }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Node_Request>();
+            req.Id = _id;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Node_Response>(req, DefaultTimeout);
             return resp.Success;
         }
 
@@ -185,16 +185,19 @@ namespace ArtificialBuilder
         /// <summary>cascade 삭제 root 를 큐에 enqueue (즉시 분리, sweeper 가 leaf-first 정리).</summary>
         public async Task<bool> EnqueueDeletionAsync(string _targetTable, long _targetId)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Enqueue_Deletion_Response>(
-                new AB_Enqueue_Deletion_Request { TargetTable = _targetTable, TargetId = _targetId }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Enqueue_Deletion_Request>();
+            req.TargetTable = _targetTable;
+            req.TargetId = _targetId;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Enqueue_Deletion_Response>(req, DefaultTimeout);
             return resp.Success;
         }
 
         /// <summary>1 회 sweep tick — 주어진 budget 안에서 leaf 하나씩 삭제. Sweeper 컴포넌트가 매 틱 호출.</summary>
         public async Task<(int RowsDeleted, bool Drained)> SweepDeletionStepAsync(long _budgetMicros)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Sweep_Deletion_Step_Response>(
-                new AB_Sweep_Deletion_Step_Request { BudgetMicros = _budgetMicros }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Sweep_Deletion_Step_Request>();
+            req.BudgetMicros = _budgetMicros;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Sweep_Deletion_Step_Response>(req, DefaultTimeout);
             return (resp.RowsDeleted, resp.QueueDrained);
         }
 
@@ -205,8 +208,9 @@ namespace ArtificialBuilder
         /// <summary>세션의 모든 신 storage row cascade 삭제 (slots + contexts + nodes + 그것들이 가리키던 resources).</summary>
         public async Task<AB_Delete_Session_Storage_Response> DeleteSessionStorageAsync(long _sessionId)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Session_Storage_Response>(
-                new AB_Delete_Session_Storage_Request { SessionId = _sessionId }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Session_Storage_Request>();
+            req.SessionId = _sessionId;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Delete_Session_Storage_Response>(req, DefaultTimeout);
             return resp;
         }
     }

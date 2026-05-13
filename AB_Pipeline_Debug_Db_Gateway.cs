@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder
 {
@@ -104,8 +105,13 @@ namespace ArtificialBuilder
                             await m_engine.SaveChangesAsync(handle);
                             written = req.Entries.Count;
                         }
-                        m_broker?.Publish(new AB_Write_Pipeline_Debug_Batch_Response
-                        { CorrelationId = req.CorrelationId, Success = handle != 0, Written = written });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Write_Pipeline_Debug_Batch_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = handle != 0;
+                            msg.Written = written;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
 
@@ -134,8 +140,12 @@ namespace ArtificialBuilder
                             int take = Math.Min(req.Limit, sorted.Count - skip);
                             if (take > 0) data = sorted.GetRange(skip, take);
                         }
-                        m_broker?.Publish(new AB_Query_Pipeline_Debug_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Query_Pipeline_Debug_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
 
@@ -145,8 +155,12 @@ namespace ArtificialBuilder
                     case AB_Retention_Sweep_Pipeline_Debug_Request req:
                     {
                         // 향후 raw SQL 또는 엔진 삭제 API 확장 시 여기에 구현.
-                        m_broker?.Publish(new AB_Retention_Sweep_Pipeline_Debug_Response
-                        { CorrelationId = req.CorrelationId, Success = true });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Retention_Sweep_Pipeline_Debug_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = true;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                 }

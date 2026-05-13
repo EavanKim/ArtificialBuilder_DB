@@ -1,4 +1,5 @@
 using ArtificialBuilder_EDP;
+using ArtificialBuilder_EDP.Core;
 using EDPFW;
 using ArtificialBuilder.Models;
 using System;
@@ -152,7 +153,9 @@ namespace ArtificialBuilder
 
             foreach (var (name, extType) in namesWithType)
             {
-                Circuit_List_Info info = new Circuit_List_Info { Name_ = name, CircuitType_ = extType };
+                Circuit_List_Info info = AB_Engine.GetService<AB_Pool>().AcquireObject<Circuit_List_Info>();
+                info.Name_ = name;
+                info.CircuitType_ = extType;
 
                 try
                 {

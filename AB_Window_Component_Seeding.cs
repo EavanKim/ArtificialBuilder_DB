@@ -104,13 +104,11 @@ namespace ArtificialBuilder
                 AB_Response_Ui_Window_Model? window = await FindWindowByNameAsync(entry.Name);
                 if (window == null)
                 {
-                    window = new AB_Response_Ui_Window_Model
-                    {
-                        Name_ = entry.Name,
-                        Position_ = entry.Position,
-                        Enabled_ = true,
-                        SortOrder_ = entry.SortOrder
-                    };
+                    window = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Response_Ui_Window_Model>();
+                    window.Name_ = entry.Name;
+                    window.Position_ = entry.Position;
+                    window.Enabled_ = true;
+                    window.SortOrder_ = entry.SortOrder;
                     // envelope 에 과거 Id 가 있으면 재사용 — response_windows 재시드여도 records 참조 유효.
                     if (_reuseIdByName != null && _reuseIdByName.TryGetValue(entry.Name, out long reuseId) && reuseId != 0)
                     {
@@ -129,13 +127,12 @@ namespace ArtificialBuilder
                     foreach (var compEntry in entry.Components)
                     {
                         string configJson = SerializeComponentConfig(compEntry);
-                        await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(new AB_Response_Ui_Component_Model
-                        {
-                            WindowId_ = window.Id_,
-                            ComponentType_ = compEntry.Type,
-                            SortOrder_ = sortIdx++,
-                            ConfigJson_ = configJson
-                        });
+                        var comp = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Response_Ui_Component_Model>();
+                        comp.WindowId_ = window.Id_;
+                        comp.ComponentType_ = compEntry.Type;
+                        comp.SortOrder_ = sortIdx++;
+                        comp.ConfigJson_ = configJson;
+                        await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(comp);
                     }
                 }
 
@@ -190,7 +187,8 @@ namespace ArtificialBuilder
         /// </summary>
         public async Task<string> ExportCurrentToJsonAsync(string _circuitType)
         {
-            var circuitDef = new AB_Circuit_Def { CircuitType = _circuitType };
+            var circuitDef = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Circuit_Def>();
+            circuitDef.CircuitType = _circuitType;
 
             List<AB_Response_Ui_Window_Model> windows = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllWindowsAsync();
             List<AB_Response_Ui_Component_Model> comps = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().GetAllWindowComponentsAsync();
@@ -232,12 +230,10 @@ namespace ArtificialBuilder
 
             foreach (AB_Response_Ui_Window_Model w in windows)
             {
-                AB_Circuit_Def_Window entry = new()
-                {
-                    Name = w.Name_,
-                    Position = w.Position_ ?? "center",
-                    SortOrder = w.SortOrder_,
-                };
+                AB_Circuit_Def_Window entry = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Circuit_Def_Window>();
+                entry.Name = w.Name_;
+                entry.Position = w.Position_ ?? "center";
+                entry.SortOrder = w.SortOrder_;
 
                 if (envelope?.Windows != null)
                 {
@@ -245,13 +241,12 @@ namespace ArtificialBuilder
                     {
                         if (wd.TemplateId == w.Id_)
                         {
-                            entry.Layout = new AB_Circuit_Def_Layout
-                            {
-                                RatioX = wd.RatioX,
-                                RatioY = wd.RatioY,
-                                RatioW = wd.RatioW,
-                                RatioH = wd.RatioH,
-                            };
+                            var layout = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Circuit_Def_Layout>();
+                            layout.RatioX = wd.RatioX;
+                            layout.RatioY = wd.RatioY;
+                            layout.RatioW = wd.RatioW;
+                            layout.RatioH = wd.RatioH;
+                            entry.Layout = layout;
                             break;
                         }
                     }
@@ -274,7 +269,10 @@ namespace ArtificialBuilder
                                 configEl = null;
                             }
                         }
-                        entry.Components.Add(new AB_Circuit_Def_Component { Type = type, Config = configEl });
+                        var defComp = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Circuit_Def_Component>();
+                        defComp.Type = type;
+                        defComp.Config = configEl;
+                        entry.Components.Add(defComp);
                     }
                 }
 
@@ -304,13 +302,11 @@ namespace ArtificialBuilder
 
             foreach (AB_Circuit_Def_Window entry in _circuitDef.Windows)
             {
-                AB_Response_Ui_Window_Model window = new()
-                {
-                    Name_ = entry.Name,
-                    Position_ = entry.Position,
-                    Enabled_ = true,
-                    SortOrder_ = entry.SortOrder,
-                };
+                AB_Response_Ui_Window_Model window = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Response_Ui_Window_Model>();
+                window.Name_ = entry.Name;
+                window.Position_ = entry.Position;
+                window.Enabled_ = true;
+                window.SortOrder_ = entry.SortOrder;
                 bool added = await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowAsync(window);
                 if (!added)
                 {
@@ -324,13 +320,12 @@ namespace ArtificialBuilder
                 foreach (AB_Circuit_Def_Component compEntry in entry.Components)
                 {
                     string configJson = SerializeComponentConfig(compEntry);
-                    await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(new AB_Response_Ui_Component_Model
-                    {
-                        WindowId_ = window.Id_,
-                        ComponentType_ = compEntry.Type,
-                        SortOrder_ = sortIdx++,
-                        ConfigJson_ = configJson,
-                    });
+                    var comp = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Response_Ui_Component_Model>();
+                    comp.WindowId_ = window.Id_;
+                    comp.ComponentType_ = compEntry.Type;
+                    comp.SortOrder_ = sortIdx++;
+                    comp.ConfigJson_ = configJson;
+                    await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(comp);
                 }
 
                 envelopeWindows.Add(new Window_Layout_Data
@@ -375,11 +370,12 @@ namespace ArtificialBuilder
         /// </summary>
         private async Task AddFrameLayoutDepthAsync(long _windowId, string _title, string _position, int _sortOrder, AB_Circuit_Def_Layout? _layout = null)
         {
-            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(new AB_Response_Ui_Component_Model
-            {
-                WindowId_ = _windowId, ComponentType_ = "frame", SortOrder_ = 0,
-                ConfigJson_ = JsonSerializer.Serialize(new Frame_Config { Title = _title })
-            });
+            var frameComp = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Response_Ui_Component_Model>();
+            frameComp.WindowId_ = _windowId;
+            frameComp.ComponentType_ = "frame";
+            frameComp.SortOrder_ = 0;
+            frameComp.ConfigJson_ = JsonSerializer.Serialize(new Frame_Config { Title = _title });
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(frameComp);
             Layout_Config layoutCfg = new Layout_Config { Position = _position, SortOrder = _sortOrder };
             if (_layout != null && _layout.RatioW > 0.001)
             {
@@ -392,16 +388,18 @@ namespace ArtificialBuilder
             {
                 FillDefaultRatios(layoutCfg, _position);
             }
-            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(new AB_Response_Ui_Component_Model
-            {
-                WindowId_ = _windowId, ComponentType_ = "layout", SortOrder_ = 0,
-                ConfigJson_ = JsonSerializer.Serialize(layoutCfg)
-            });
-            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(new AB_Response_Ui_Component_Model
-            {
-                WindowId_ = _windowId, ComponentType_ = "depth", SortOrder_ = 0,
-                ConfigJson_ = JsonSerializer.Serialize(new Depth_Config())
-            });
+            var layoutComp = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Response_Ui_Component_Model>();
+            layoutComp.WindowId_ = _windowId;
+            layoutComp.ComponentType_ = "layout";
+            layoutComp.SortOrder_ = 0;
+            layoutComp.ConfigJson_ = JsonSerializer.Serialize(layoutCfg);
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(layoutComp);
+            var depthComp = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Response_Ui_Component_Model>();
+            depthComp.WindowId_ = _windowId;
+            depthComp.ComponentType_ = "depth";
+            depthComp.SortOrder_ = 0;
+            depthComp.ConfigJson_ = JsonSerializer.Serialize(new Depth_Config());
+            await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddWindowComponentAsync(depthComp);
         }
 
         /// <summary>Position 기반 도킹 Circuit 기본 ratio — circuit def 에 layout 미지정 시 fallback.</summary>

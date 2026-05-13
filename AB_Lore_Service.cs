@@ -1,6 +1,7 @@
 using ArtificialBuilder.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder
 {
@@ -22,10 +23,8 @@ namespace ArtificialBuilder
         /// <summary>이름으로 신규 로어 항목 추가 (게이트웨이 경유).</summary>
         public async Task<AB_Lore_Entry_Model> AddAsync(string _name)
         {
-            AB_Lore_Entry_Model entry = new AB_Lore_Entry_Model
-            {
-                Name_ = _name
-            };
+            AB_Lore_Entry_Model entry = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Lore_Entry_Model>();
+            entry.Name_ = _name;
             await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddLoreEntryAsync(entry);
             return entry;
         }

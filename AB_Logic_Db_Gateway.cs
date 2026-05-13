@@ -61,22 +61,34 @@ namespace ArtificialBuilder
                     case AB_Create_Logic_Request req:
                     {
                         long newUuid = await AB_Board.Logic.CreateLogicFileAsync(req.Uuid, req.Name);
-                        m_broker?.Publish(new AB_Create_Logic_Response
-                        { CorrelationId = req.CorrelationId, Uuid = newUuid });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Create_Logic_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Uuid = newUuid;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Logic_Request req:
                     {
                         bool ok = AB_Board.Logic.DeleteLogicFile(req.Uuid);
-                        m_broker?.Publish(new AB_Delete_Logic_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Logic_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_Logic_Library_Info_Request req:
                     {
                         List<AB_Logic_Library_Item> data = await AB_Board.Logic.GetLogicLibraryInfoAsync();
-                        m_broker?.Publish(new AB_Get_Logic_Library_Info_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Logic_Library_Info_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Open_Logic_Request req:
@@ -93,8 +105,13 @@ namespace ArtificialBuilder
                             err = ex.Message;
                             ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("LogicGw", $"OpenLogic 실패 — uuid={req.Uuid} {ex.Message}");
                         }
-                        m_broker?.Publish(new AB_Open_Logic_Response
-                        { CorrelationId = req.CorrelationId, Success = ok, Error = err });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Open_Logic_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            msg.Error = err;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_Logic_Meta_Request req:
@@ -102,8 +119,12 @@ namespace ArtificialBuilder
                         AB_Logic_Meta_Model? data = dbId == 0
                             ? null
                             : await AB_Board.Db.GetByIdAsync<AB_Logic_Meta_Model>(dbId, 1L);
-                        m_broker?.Publish(new AB_Get_Logic_Meta_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Logic_Meta_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Save_Logic_Meta_Request req:
@@ -115,8 +136,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Save_Logic_Meta_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Save_Logic_Meta_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_All_Logic_Used_Circuits_Request req:
@@ -127,8 +152,12 @@ namespace ArtificialBuilder
                             var all = await AB_Board.Db.GetAllAsync<AB_Logic_Used_Circuit_Model>(dbId);
                             data.AddRange(all);
                         }
-                        m_broker?.Publish(new AB_Get_All_Logic_Used_Circuits_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Logic_Used_Circuits_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Add_Logic_Used_Circuit_Request req:
@@ -140,8 +169,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Add_Logic_Used_Circuit_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Logic_Used_Circuit_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Save_Logic_Used_Circuit_Request req:
@@ -153,8 +186,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Save_Logic_Used_Circuit_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Save_Logic_Used_Circuit_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Logic_Used_Circuit_Request req:
@@ -166,8 +203,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Delete_Logic_Used_Circuit_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Logic_Used_Circuit_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_All_Logic_Used_Response_Ui_Request req:
@@ -178,8 +219,12 @@ namespace ArtificialBuilder
                             var all = await AB_Board.Db.GetAllAsync<AB_Logic_Used_Response_Ui_Model>(dbId);
                             data.AddRange(all);
                         }
-                        m_broker?.Publish(new AB_Get_All_Logic_Used_Response_Ui_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Logic_Used_Response_Ui_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Add_Logic_Used_Response_Ui_Request req:
@@ -191,8 +236,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Add_Logic_Used_Response_Ui_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Logic_Used_Response_Ui_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Logic_Used_Response_Ui_Request req:
@@ -204,8 +253,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Delete_Logic_Used_Response_Ui_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Logic_Used_Response_Ui_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_All_Logic_Sub_Logics_Request req:
@@ -216,8 +269,12 @@ namespace ArtificialBuilder
                             var all = await AB_Board.Db.GetAllAsync<AB_Logic_Sub_Logic_Model>(dbId);
                             data.AddRange(all);
                         }
-                        m_broker?.Publish(new AB_Get_All_Logic_Sub_Logics_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Logic_Sub_Logics_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Add_Logic_Sub_Logic_Request req:
@@ -229,8 +286,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Add_Logic_Sub_Logic_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Logic_Sub_Logic_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Logic_Sub_Logic_Request req:
@@ -242,8 +303,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Delete_Logic_Sub_Logic_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Logic_Sub_Logic_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_All_Logic_History_Turns_Request req:
@@ -254,8 +319,12 @@ namespace ArtificialBuilder
                             var all = await AB_Board.Db.GetAllAsync<AB_Logic_History_Turn_Model>(dbId);
                             data.AddRange(all);
                         }
-                        m_broker?.Publish(new AB_Get_All_Logic_History_Turns_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Logic_History_Turns_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Append_Logic_History_Turn_Request req:
@@ -267,8 +336,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Append_Logic_History_Turn_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Append_Logic_History_Turn_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     // --- circuit-home-logic-graph-runtime-db-proxy sub 3 — v2 변수 슬롯 ---
@@ -280,8 +353,12 @@ namespace ArtificialBuilder
                             var all = await AB_Board.Db.GetAllAsync<AB_Logic_Variable_Slot_Model>(dbId);
                             data.AddRange(all);
                         }
-                        m_broker?.Publish(new AB_Get_All_Logic_Variable_Slots_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Logic_Variable_Slots_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Add_Logic_Variable_Slot_Request req:
@@ -293,8 +370,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Add_Logic_Variable_Slot_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Logic_Variable_Slot_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Save_Logic_Variable_Slot_Request req:
@@ -306,8 +387,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Save_Logic_Variable_Slot_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Save_Logic_Variable_Slot_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Remove_Logic_Variable_Slot_Request req:
@@ -323,8 +408,12 @@ namespace ArtificialBuilder
                                 ok = true;
                             }
                         }
-                        m_broker?.Publish(new AB_Remove_Logic_Variable_Slot_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Remove_Logic_Variable_Slot_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_All_Logic_Internal_Nodes_Request req:
@@ -335,8 +424,12 @@ namespace ArtificialBuilder
                             var all = await AB_Board.Db.GetAllAsync<AB_Logic_Internal_Node_Model>(dbId);
                             data.AddRange(all);
                         }
-                        m_broker?.Publish(new AB_Get_All_Logic_Internal_Nodes_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Logic_Internal_Nodes_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Add_Logic_Internal_Node_Request req:
@@ -348,8 +441,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Add_Logic_Internal_Node_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Logic_Internal_Node_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Remove_Logic_Internal_Node_Request req:
@@ -365,8 +462,12 @@ namespace ArtificialBuilder
                                 ok = true;
                             }
                         }
-                        m_broker?.Publish(new AB_Remove_Logic_Internal_Node_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Remove_Logic_Internal_Node_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Save_Logic_Internal_Node_Request req:
@@ -378,8 +479,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Save_Logic_Internal_Node_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Save_Logic_Internal_Node_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_All_Logic_Internal_Connections_Request req:
@@ -390,8 +495,12 @@ namespace ArtificialBuilder
                             var all = await AB_Board.Db.GetAllAsync<AB_Logic_Internal_Connection_Model>(dbId);
                             data.AddRange(all);
                         }
-                        m_broker?.Publish(new AB_Get_All_Logic_Internal_Connections_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Logic_Internal_Connections_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Add_Logic_Internal_Connection_Request req:
@@ -403,8 +512,12 @@ namespace ArtificialBuilder
                             await AB_Board.Db.SaveChangesAsync(dbId);
                             ok = true;
                         }
-                        m_broker?.Publish(new AB_Add_Logic_Internal_Connection_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Logic_Internal_Connection_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Remove_Logic_Internal_Connection_Request req:
@@ -420,8 +533,12 @@ namespace ArtificialBuilder
                                 ok = true;
                             }
                         }
-                        m_broker?.Publish(new AB_Remove_Logic_Internal_Connection_Response
-                        { CorrelationId = req.CorrelationId, Success = ok });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Remove_Logic_Internal_Connection_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = ok;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                 }

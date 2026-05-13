@@ -2,6 +2,7 @@ using ArtificialBuilder_EDP;
 using ArtificialBuilder.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder
 {
@@ -93,14 +94,12 @@ namespace ArtificialBuilder
             if (sourceResult.IsOk)
             {
                 var source = sourceResult.Data;
-                AB_Response_Ui_Template_Model imported = new AB_Response_Ui_Template_Model
-                {
-                    Name_ = source.Name_,
-                    DisplayMode_ = source.DisplayMode_,
-                    XmlContent_ = source.XmlContent_,
-                    IsActive_ = false,
-                    SortOrder_ = _sortOrder
-                };
+                AB_Response_Ui_Template_Model imported = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Response_Ui_Template_Model>();
+                imported.Name_ = source.Name_;
+                imported.DisplayMode_ = source.DisplayMode_;
+                imported.XmlContent_ = source.XmlContent_;
+                imported.IsActive_ = false;
+                imported.SortOrder_ = _sortOrder;
                 await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddUiTemplateAsync(imported);
                 Emit(new Template_List_Changed());
             }

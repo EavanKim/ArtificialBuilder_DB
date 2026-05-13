@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder
 {
@@ -46,7 +47,7 @@ namespace ArtificialBuilder
         public async Task CreateAsync(string _name)
         {
             await AB_Board.Persona.OpenAsync(_name);
-            AB_Persona_Settings_Model settings = new AB_Persona_Settings_Model();
+            AB_Persona_Settings_Model settings = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Persona_Settings_Model>();
             await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>().AddSettingsAsync(settings);
 
             Emit(new Persona_Switched { Name_ = _name });
@@ -69,7 +70,7 @@ namespace ArtificialBuilder
             AB_Persona_Settings_Model s;
             if (!sR.IsOk)
             {
-                s = new AB_Persona_Settings_Model();
+                s = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Persona_Settings_Model>();
                 s.Prompt_ = _prompt;
                 s.UpdatedAt_ = DateTime.UtcNow;
                 await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>().AddSettingsAsync(s);

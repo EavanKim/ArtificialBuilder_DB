@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder
 {
@@ -143,7 +144,11 @@ namespace ArtificialBuilder
                         await m_engine.CloseAsync(h);
                     }
                 }
-                items.Add(new AB_Logic_Library_Item { Uuid_ = uuid, Name_ = name, UpdatedAt_ = updatedAt });
+                var item = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Logic_Library_Item>();
+                item.Uuid_ = uuid;
+                item.Name_ = name;
+                item.UpdatedAt_ = updatedAt;
+                items.Add(item);
             }
             return items;
         }

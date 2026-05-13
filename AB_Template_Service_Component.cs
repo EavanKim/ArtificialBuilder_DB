@@ -52,8 +52,9 @@ namespace ArtificialBuilder_EDP.Components
             async void RunAsync()
             {
                 List<AB_Response_Ui_Template_Model> ts = await m_instance.GetAllCircuitAsync();
-                PublishResult(AB_Object_Command_Type.TEMPLATE_GET_ALL_CIRCUIT, queryId,
-                    new AB_Template_Get_All_Circuit_Result { Templates_ = ts });
+                var result = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Template_Get_All_Circuit_Result>();
+                result.Templates_ = ts;
+                PublishResult(AB_Object_Command_Type.TEMPLATE_GET_ALL_CIRCUIT, queryId, result);
             }
             RunAsync();
         }
@@ -68,8 +69,9 @@ namespace ArtificialBuilder_EDP.Components
             async void RunAsync()
             {
                 await m_instance.AddCircuitAsync(t);
-                PublishResult(AB_Object_Command_Type.TEMPLATE_ADD_CIRCUIT, queryId,
-                    new AB_Template_Add_Circuit_Result { Ok_ = true });
+                var result = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Template_Add_Circuit_Result>();
+                result.Ok_ = true;
+                PublishResult(AB_Object_Command_Type.TEMPLATE_ADD_CIRCUIT, queryId, result);
             }
             RunAsync();
         }
@@ -84,8 +86,9 @@ namespace ArtificialBuilder_EDP.Components
             async void RunAsync()
             {
                 bool ok = await m_instance.DeleteCircuitAsync(t);
-                PublishResult(AB_Object_Command_Type.TEMPLATE_DELETE_CIRCUIT, queryId,
-                    new AB_Template_Delete_Circuit_Result { Ok_ = ok });
+                var result = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Template_Delete_Circuit_Result>();
+                result.Ok_ = ok;
+                PublishResult(AB_Object_Command_Type.TEMPLATE_DELETE_CIRCUIT, queryId, result);
             }
             RunAsync();
         }
@@ -97,8 +100,9 @@ namespace ArtificialBuilder_EDP.Components
             async void RunAsync()
             {
                 List<AB_Ui_Template_Model> ts = await m_instance.GetAllGlobalAsync();
-                PublishResult(AB_Object_Command_Type.TEMPLATE_GET_ALL_GLOBAL, queryId,
-                    new AB_Template_Get_All_Global_Result { Templates_ = ts });
+                var result = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Template_Get_All_Global_Result>();
+                result.Templates_ = ts;
+                PublishResult(AB_Object_Command_Type.TEMPLATE_GET_ALL_GLOBAL, queryId, result);
             }
             RunAsync();
         }
@@ -114,8 +118,9 @@ namespace ArtificialBuilder_EDP.Components
             async void RunAsync()
             {
                 await m_instance.ImportFromGlobalAsync(gid, sortOrder);
-                PublishResult(AB_Object_Command_Type.TEMPLATE_IMPORT_FROM_GLOBAL, queryId,
-                    new AB_Template_Import_From_Global_Result { Ok_ = true });
+                var result = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Template_Import_From_Global_Result>();
+                result.Ok_ = true;
+                PublishResult(AB_Object_Command_Type.TEMPLATE_IMPORT_FROM_GLOBAL, queryId, result);
             }
             RunAsync();
         }
@@ -130,8 +135,9 @@ namespace ArtificialBuilder_EDP.Components
             async void RunAsync()
             {
                 await m_instance.SaveCircuitAsync(t);
-                PublishResult(AB_Object_Command_Type.TEMPLATE_SAVE_CIRCUIT, queryId,
-                    new AB_Template_Save_Circuit_Result { Ok_ = true });
+                var result = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Template_Save_Circuit_Result>();
+                result.Ok_ = true;
+                PublishResult(AB_Object_Command_Type.TEMPLATE_SAVE_CIRCUIT, queryId, result);
             }
             RunAsync();
         }
@@ -146,8 +152,9 @@ namespace ArtificialBuilder_EDP.Components
             async void RunAsync()
             {
                 await m_instance.SetActiveCircuitAsync(templateId);
-                PublishResult(AB_Object_Command_Type.TEMPLATE_SET_ACTIVE_CIRCUIT, queryId,
-                    new AB_Template_Set_Active_Circuit_Result { Ok_ = true });
+                var result = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Template_Set_Active_Circuit_Result>();
+                result.Ok_ = true;
+                PublishResult(AB_Object_Command_Type.TEMPLATE_SET_ACTIVE_CIRCUIT, queryId, result);
             }
             RunAsync();
         }

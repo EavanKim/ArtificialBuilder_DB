@@ -5,6 +5,7 @@ using ArtificialBuilder_EDP.Components;
 using ArtificialBuilder_EDP.Core.Messaging;
 using System;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder_EDP.Core.Diagnostics
 {
@@ -54,26 +55,24 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
             try
             {
                 Step("기본 settings 먼저 Add (빈 Circuit이라 row가 없을 수 있음)");
-                var initial = new AB_Circuit_Settings_Model
-                {
-                    HomeMessage_ = "initial home",
-                    LlmInitPrompt_ = "initial prompt"
-                };
-                var addResp = await broker.PublishAndWaitAsync<AB_Add_Settings_Response>(
-                    new AB_Add_Settings_Request { Settings = initial }, TimeSpan.FromSeconds(5));
+                var initial = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Circuit_Settings_Model>();
+                initial.HomeMessage_ = "initial home";
+                initial.LlmInitPrompt_ = "initial prompt";
+                var req1 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Settings_Request>();
+                req1.Settings = initial;
+                var addResp = await broker.PublishAndWaitAsync<AB_Add_Settings_Response>(req1, TimeSpan.FromSeconds(5));
                 Log("add.Success", addResp.Success);
                 Log("add.Error", addResp.Error ?? "<null>");
                 Assert("Add 성공", addResp.Success, addResp.Error ?? "");
 
                 Step("Save로 값 갱신");
-                var updated = new AB_Circuit_Settings_Model
-                {
-                    HomeMessage_ = "updated home",
-                    LlmInitPrompt_ = "updated prompt"
-                };
+                var updated = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Circuit_Settings_Model>();
+                updated.HomeMessage_ = "updated home";
+                updated.LlmInitPrompt_ = "updated prompt";
                 var sw = System.Diagnostics.Stopwatch.StartNew();
-                var saveResp = await broker.PublishAndWaitAsync<AB_Save_Settings_Response>(
-                    new AB_Save_Settings_Request { Settings = updated }, TimeSpan.FromSeconds(5));
+                var req2 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Save_Settings_Request>();
+                req2.Settings = updated;
+                var saveResp = await broker.PublishAndWaitAsync<AB_Save_Settings_Response>(req2, TimeSpan.FromSeconds(5));
                 sw.Stop();
                 Log("save.Success", saveResp.Success);
                 Log("save.Error", saveResp.Error ?? "<null>");
@@ -82,8 +81,8 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 Assert("응답 IsResponse=true", saveResp.IsResponse);
 
                 Step("GetSettings로 재조회해 갱신 확인");
-                var getResp = await broker.PublishAndWaitAsync<AB_Get_Circuit_Settings_Response>(
-                    new AB_Get_Circuit_Settings_Request(), TimeSpan.FromSeconds(5));
+                var req3 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Circuit_Settings_Request>();
+                var getResp = await broker.PublishAndWaitAsync<AB_Get_Circuit_Settings_Response>(req3, TimeSpan.FromSeconds(5));
                 Log("get.IsOk", getResp.IsOk);
                 Log("get.HomeMessage_", getResp.Data?.HomeMessage_ ?? "<null>");
                 Log("get.LlmInitPrompt_", getResp.Data?.LlmInitPrompt_ ?? "<null>");
@@ -123,14 +122,13 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
             try
             {
                 Step("AddSettings 발행");
-                var settings = new AB_Circuit_Settings_Model
-                {
-                    HomeMessage_ = "added via gateway",
-                    LlmInitPrompt_ = "first prompt"
-                };
+                var settings = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Circuit_Settings_Model>();
+                settings.HomeMessage_ = "added via gateway";
+                settings.LlmInitPrompt_ = "first prompt";
                 var sw = System.Diagnostics.Stopwatch.StartNew();
-                var addResp = await broker.PublishAndWaitAsync<AB_Add_Settings_Response>(
-                    new AB_Add_Settings_Request { Settings = settings }, TimeSpan.FromSeconds(5));
+                var req4 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Settings_Request>();
+                req4.Settings = settings;
+                var addResp = await broker.PublishAndWaitAsync<AB_Add_Settings_Response>(req4, TimeSpan.FromSeconds(5));
                 sw.Stop();
                 Log("add.Success", addResp.Success);
                 Log("add.Error", addResp.Error ?? "<null>");
@@ -139,8 +137,8 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 Assert("응답 IsResponse=true", addResp.IsResponse);
 
                 Step("GetSettings 로 삽입 확인");
-                var getResp = await broker.PublishAndWaitAsync<AB_Get_Circuit_Settings_Response>(
-                    new AB_Get_Circuit_Settings_Request(), TimeSpan.FromSeconds(5));
+                var req5 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Circuit_Settings_Request>();
+                var getResp = await broker.PublishAndWaitAsync<AB_Get_Circuit_Settings_Response>(req5, TimeSpan.FromSeconds(5));
                 Log("get.IsOk", getResp.IsOk);
                 Log("get.HomeMessage_", getResp.Data?.HomeMessage_ ?? "<null>");
                 Assert("Get 성공", getResp.IsOk);

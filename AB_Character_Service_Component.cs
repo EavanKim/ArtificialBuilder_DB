@@ -50,15 +50,18 @@ namespace ArtificialBuilder_EDP.Components
             async void RunAsync()
             {
                 await m_instance.RefreshAsync();
-                PublishResult(AB_Object_Command_Type.CHARACTER_REFRESH, queryId, new AB_Character_Refresh_Result { Ok_ = true });
+                var result = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Character_Refresh_Result>();
+                result.Ok_ = true;
+                PublishResult(AB_Object_Command_Type.CHARACTER_REFRESH, queryId, result);
             }
             RunAsync();
         }
 
         private void HandleGetAll(AB_DDO_Command _cmd)
         {
-            PublishResult(AB_Object_Command_Type.CHARACTER_GET_ALL, _cmd.FromId,
-                new AB_Character_Get_All_Result { Characters_ = new List<AB_Character_Model>(m_instance.Items) });
+            var result = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Character_Get_All_Result>();
+            result.Characters_ = new List<AB_Character_Model>(m_instance.Items);
+            PublishResult(AB_Object_Command_Type.CHARACTER_GET_ALL, _cmd.FromId, result);
         }
 
         private void HandleGetRelationships(AB_DDO_Command _cmd)
@@ -68,8 +71,9 @@ namespace ArtificialBuilder_EDP.Components
             async void RunAsync()
             {
                 List<AB_Character_Relationship_Model> rels = await m_instance.GetAllRelationshipsAsync();
-                PublishResult(AB_Object_Command_Type.CHARACTER_GET_RELATIONSHIPS, queryId,
-                    new AB_Character_Get_Relationships_Result { Relationships_ = rels });
+                var result = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Character_Get_Relationships_Result>();
+                result.Relationships_ = rels;
+                PublishResult(AB_Object_Command_Type.CHARACTER_GET_RELATIONSHIPS, queryId, result);
             }
             RunAsync();
         }
@@ -81,8 +85,9 @@ namespace ArtificialBuilder_EDP.Components
             async void RunAsync()
             {
                 List<AB_Location_Model> locs = await m_instance.GetAllLocationsAsync();
-                PublishResult(AB_Object_Command_Type.CHARACTER_GET_LOCATIONS, queryId,
-                    new AB_Character_Get_Locations_Result { Locations_ = locs });
+                var result = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Character_Get_Locations_Result>();
+                result.Locations_ = locs;
+                PublishResult(AB_Object_Command_Type.CHARACTER_GET_LOCATIONS, queryId, result);
             }
             RunAsync();
         }
@@ -94,8 +99,9 @@ namespace ArtificialBuilder_EDP.Components
             async void RunAsync()
             {
                 List<AB_Location_Connection_Model> conns = await m_instance.GetAllLocationConnectionsAsync();
-                PublishResult(AB_Object_Command_Type.CHARACTER_GET_CONNECTIONS, queryId,
-                    new AB_Character_Get_Connections_Result { Connections_ = conns });
+                var result = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Character_Get_Connections_Result>();
+                result.Connections_ = conns;
+                PublishResult(AB_Object_Command_Type.CHARACTER_GET_CONNECTIONS, queryId, result);
             }
             RunAsync();
         }

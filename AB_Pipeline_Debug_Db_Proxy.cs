@@ -6,6 +6,7 @@ using ArtificialBuilder_EDP.Core.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder
 {
@@ -34,8 +35,9 @@ namespace ArtificialBuilder
         {
             if (_entries == null || _entries.Count == 0) return;
             var list = new List<AB_Pipeline_Debug_Entry_Model>(_entries);
-            await GetBroker().PublishAndWaitAsync<AB_Write_Pipeline_Debug_Batch_Response>(
-                new AB_Write_Pipeline_Debug_Batch_Request { Entries = list }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Write_Pipeline_Debug_Batch_Request>();
+            req.Entries = list;
+            await GetBroker().PublishAndWaitAsync<AB_Write_Pipeline_Debug_Batch_Response>(req, DefaultTimeout);
         }
 
         // ============================================================
@@ -46,14 +48,12 @@ namespace ArtificialBuilder
         public async Task<List<AB_Pipeline_Debug_Entry_Model>> QueryAsync(
             long _sessionId, string? _entryType = null, int _offset = 0, int _limit = 50)
         {
-            var resp = await GetBroker().PublishAndWaitAsync<AB_Query_Pipeline_Debug_Response>(
-                new AB_Query_Pipeline_Debug_Request
-                {
-                    SessionId = _sessionId,
-                    EntryType = _entryType,
-                    Offset = _offset,
-                    Limit = _limit
-                }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Query_Pipeline_Debug_Request>();
+            req.SessionId = _sessionId;
+            req.EntryType = _entryType;
+            req.Offset = _offset;
+            req.Limit = _limit;
+            var resp = await GetBroker().PublishAndWaitAsync<AB_Query_Pipeline_Debug_Response>(req, DefaultTimeout);
             return resp.Data ?? new();
         }
 
@@ -64,8 +64,9 @@ namespace ArtificialBuilder
         /// <summary>보존 기한 초과 엔트리 정리.</summary>
         public async Task RetentionSweepAsync(int _retentionDays)
         {
-            await GetBroker().PublishAndWaitAsync<AB_Retention_Sweep_Pipeline_Debug_Response>(
-                new AB_Retention_Sweep_Pipeline_Debug_Request { RetentionDays = _retentionDays }, DefaultTimeout);
+            var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Retention_Sweep_Pipeline_Debug_Request>();
+            req.RetentionDays = _retentionDays;
+            await GetBroker().PublishAndWaitAsync<AB_Retention_Sweep_Pipeline_Debug_Response>(req, DefaultTimeout);
         }
     }
 }

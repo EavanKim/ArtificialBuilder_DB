@@ -2,6 +2,7 @@ using ArtificialBuilder_EDP;
 using ArtificialBuilder.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder
 {
@@ -31,11 +32,9 @@ namespace ArtificialBuilder
         /// <summary>신규 캐릭터 추가 후 목록 갱신 (게이트웨이 경유).</summary>
         public async Task<AB_Character_Model> AddAsync(string _name, int _sortOrder)
         {
-            AB_Character_Model newChar = new AB_Character_Model
-            {
-                Name_ = _name,
-                SortOrder_ = _sortOrder
-            };
+            AB_Character_Model newChar = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Character_Model>();
+            newChar.Name_ = _name;
+            newChar.SortOrder_ = _sortOrder;
             await global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>().AddCharacterAsync(newChar, string.IsNullOrEmpty(ActiveSessionId) ? 0L : long.Parse(ActiveSessionId));
             await RefreshAsync();
             return newChar;

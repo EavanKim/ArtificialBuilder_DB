@@ -6,6 +6,7 @@ using ArtificialBuilder_EDP.Core.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder_EDP.Core.Diagnostics
 {
@@ -28,60 +29,63 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
             {
                 Step("Add Asset (이미지 테스트 데이터)");
                 var bytes = new byte[] { 0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0x01, 0x02, 0x03 };
-                var asset = new AB_Circuit_Asset_Model
-                {
-                    Name_ = "test_asset.png",
-                    FileName_ = "test_asset.png",
-                    AssetType_ = "image",
-                    MimeType_ = "image/png",
-                    Data_ = bytes,
-                    FileSize_ = bytes.Length,
-                    FolderPath_ = "ui/icons"
-                };
+                var asset = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Circuit_Asset_Model>();
+                asset.Name_ = "test_asset.png";
+                asset.FileName_ = "test_asset.png";
+                asset.AssetType_ = "image";
+                asset.MimeType_ = "image/png";
+                asset.Data_ = bytes;
+                asset.FileSize_ = bytes.Length;
+                asset.FolderPath_ = "ui/icons";
                 Log("asset.Id_", asset.Id_);
                 Log("asset.Data_.Length", asset.Data_.Length);
 
-                var addResp = await broker.PublishAndWaitAsync<AB_Add_Asset_Response>(
-                    new AB_Add_Asset_Request { Asset = asset }, TimeSpan.FromSeconds(5));
+                var req1 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Asset_Request>();
+                req1.Asset = asset;
+                var addResp = await broker.PublishAndWaitAsync<AB_Add_Asset_Response>(req1, TimeSpan.FromSeconds(5));
                 Assert("Add 성공", addResp.Success, addResp.Error ?? "");
 
                 Step("GetAsset (Id)");
-                var getResp = await broker.PublishAndWaitAsync<AB_Get_Asset_Response>(
-                    new AB_Get_Asset_Request { Id = asset.Id_.ToString() }, TimeSpan.FromSeconds(5));
+                var req2 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Asset_Request>();
+                req2.Id = asset.Id_.ToString();
+                var getResp = await broker.PublishAndWaitAsync<AB_Get_Asset_Response>(req2, TimeSpan.FromSeconds(5));
                 Log("get.Data?.Name_", getResp.Data?.Name_ ?? "<null>");
                 Assert("결과 존재", getResp.Data != null);
                 Assert("이름 일치", getResp.Data?.Name_ == "test_asset.png");
 
                 Step("GetAssetByName");
-                var getNameResp = await broker.PublishAndWaitAsync<AB_Get_Asset_By_Name_Response>(
-                    new AB_Get_Asset_By_Name_Request { Name = "test_asset.png" }, TimeSpan.FromSeconds(5));
+                var req3 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Asset_By_Name_Request>();
+                req3.Name = "test_asset.png";
+                var getNameResp = await broker.PublishAndWaitAsync<AB_Get_Asset_By_Name_Response>(req3, TimeSpan.FromSeconds(5));
                 Log("getByName.Id", getNameResp.Data?.Id_.ToString() ?? "<null>");
                 Assert("ID 일치", getNameResp.Data?.Id_ == asset.Id_);
 
                 Step("GetAssetData (바이너리)");
-                var dataResp = await broker.PublishAndWaitAsync<AB_Get_Asset_Data_Response>(
-                    new AB_Get_Asset_Data_Request { AssetId = asset.Id_.ToString() }, TimeSpan.FromSeconds(5));
+                var req4 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Asset_Data_Request>();
+                req4.AssetId = asset.Id_.ToString();
+                var dataResp = await broker.PublishAndWaitAsync<AB_Get_Asset_Data_Response>(req4, TimeSpan.FromSeconds(5));
                 Log("data.Length", dataResp.Data?.Length ?? -1);
                 Assert("바이너리 길이 일치", dataResp.Data?.Length == bytes.Length);
                 bool match = dataResp.Data != null && dataResp.Data[0] == 0xDE && dataResp.Data[3] == 0xEF;
                 Assert("바이너리 첫/마지막 바이트 일치", match);
 
                 Step("GetAllAssetMetadata + GetAllAssets");
-                var metaResp = await broker.PublishAndWaitAsync<AB_Get_All_Asset_Metadata_Response>(
-                    new AB_Get_All_Asset_Metadata_Request(), TimeSpan.FromSeconds(5));
+                var req5 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Asset_Metadata_Request>();
+                var metaResp = await broker.PublishAndWaitAsync<AB_Get_All_Asset_Metadata_Response>(req5, TimeSpan.FromSeconds(5));
                 Log("metadata.Count", metaResp.Data.Count);
                 Assert("메타 1개", metaResp.Data.Count == 1);
 
-                var allResp = await broker.PublishAndWaitAsync<AB_Get_All_Assets_Response>(
-                    new AB_Get_All_Assets_Request(), TimeSpan.FromSeconds(5));
+                var req6 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Assets_Request>();
+                var allResp = await broker.PublishAndWaitAsync<AB_Get_All_Assets_Response>(req6, TimeSpan.FromSeconds(5));
                 Log("all.Count", allResp.Data.Count);
                 Log("all[0].Data_.Length", allResp.Data.Count > 0 ? allResp.Data[0].Data_.Length : -1);
                 Assert("전체 1개 + Data_ 포함",
                     allResp.Data.Count == 1 && allResp.Data[0].Data_.Length == bytes.Length);
 
                 Step("FindAssetsByPathPrefix (실제는 Name_ prefix 매칭)");
-                var pathResp = await broker.PublishAndWaitAsync<AB_Find_Assets_By_Path_Prefix_Response>(
-                    new AB_Find_Assets_By_Path_Prefix_Request { Prefix = "test_" }, TimeSpan.FromSeconds(5));
+                var req7 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Find_Assets_By_Path_Prefix_Request>();
+                req7.Prefix = "test_";
+                var pathResp = await broker.PublishAndWaitAsync<AB_Find_Assets_By_Path_Prefix_Response>(req7, TimeSpan.FromSeconds(5));
                 Log("path_search.Count", pathResp.Data.Count);
                 Assert("이름 prefix 매칭 1개", pathResp.Data.Count == 1);
 
@@ -119,37 +123,38 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
                 var assets = new List<AB_Circuit_Asset_Model>();
                 for (int i = 0; i < 3; i++)
                 {
-                    assets.Add(new AB_Circuit_Asset_Model
-                    {
-                        Name_ = $"bulk_{i}.bin",
-                        FileName_ = $"bulk_{i}.bin",
-                        AssetType_ = "binary",
-                        Data_ = new byte[] { (byte)i },
-                        FileSize_ = 1
-                    });
+                    var asset = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Circuit_Asset_Model>();
+                    asset.Name_ = $"bulk_{i}.bin";
+                    asset.FileName_ = $"bulk_{i}.bin";
+                    asset.AssetType_ = "binary";
+                    asset.Data_ = new byte[] { (byte)i };
+                    asset.FileSize_ = 1;
+                    assets.Add(asset);
                 }
-                var addResp = await broker.PublishAndWaitAsync<AB_Add_Assets_Response>(
-                    new AB_Add_Assets_Request { Assets = assets }, TimeSpan.FromSeconds(5));
+                var req8 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Assets_Request>();
+                req8.Assets = assets;
+                var addResp = await broker.PublishAndWaitAsync<AB_Add_Assets_Response>(req8, TimeSpan.FromSeconds(5));
                 Log("add.Success", addResp.Success);
                 Log("add.AddedCount", addResp.AddedCount);
                 Assert("Bulk Add 성공", addResp.Success, addResp.Error ?? "");
                 Assert("AddedCount 3", addResp.AddedCount == 3);
 
                 Step("GetAllAssetMetadata 확인");
-                var meta = await broker.PublishAndWaitAsync<AB_Get_All_Asset_Metadata_Response>(
-                    new AB_Get_All_Asset_Metadata_Request(), TimeSpan.FromSeconds(5));
+                var req9 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Asset_Metadata_Request>();
+                var meta = await broker.PublishAndWaitAsync<AB_Get_All_Asset_Metadata_Response>(req9, TimeSpan.FromSeconds(5));
                 Log("metadata.Count", meta.Data.Count);
                 Assert("3개 모두 존재", meta.Data.Count == 3);
 
                 Step("DeleteAsset (Add 직후 동일 인스턴스 사용 — Add 시 tracking된 그대로)");
                 // 첫 항목만 삭제
-                var delResp = await broker.PublishAndWaitAsync<AB_Delete_Asset_Response>(
-                    new AB_Delete_Asset_Request { Asset = assets[0] }, TimeSpan.FromSeconds(5));
+                var req10 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Asset_Request>();
+                req10.Asset = assets[0];
+                var delResp = await broker.PublishAndWaitAsync<AB_Delete_Asset_Response>(req10, TimeSpan.FromSeconds(5));
                 Assert("Delete 성공", delResp.Success, delResp.Error ?? "");
 
                 Step("삭제 확인");
-                var meta2 = await broker.PublishAndWaitAsync<AB_Get_All_Asset_Metadata_Response>(
-                    new AB_Get_All_Asset_Metadata_Request(), TimeSpan.FromSeconds(5));
+                var req11 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Asset_Metadata_Request>();
+                var meta2 = await broker.PublishAndWaitAsync<AB_Get_All_Asset_Metadata_Response>(req11, TimeSpan.FromSeconds(5));
                 Log("metadata.Count (after delete)", meta2.Data.Count);
                 Assert("메타 2개", meta2.Data.Count == 2);
             }

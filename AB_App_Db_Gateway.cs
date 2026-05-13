@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder
 {
@@ -69,8 +70,12 @@ namespace ArtificialBuilder
                             var all = await m_engine.GetAllAsync<AB_Model_Config_Model>(handle);
                             data = all.ToList();
                         }
-                        m_broker?.Publish(new AB_Get_All_Models_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Models_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_Model_By_Id_Request req:
@@ -83,8 +88,13 @@ namespace ArtificialBuilder
                             data = found.FirstOrDefault();
                             isOk = data != null;
                         }
-                        m_broker?.Publish(new AB_Get_Model_By_Id_Response
-                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Model_By_Id_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            msg.IsOk = isOk;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Add_Model_Request req:
@@ -94,8 +104,12 @@ namespace ArtificialBuilder
                             await m_engine.AddAsync(handle, req.Model);
                             await m_engine.SaveChangesAsync(handle);
                         }
-                        m_broker?.Publish(new AB_Add_Model_Response
-                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Model_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = handle != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Update_Model_Request req:
@@ -105,8 +119,12 @@ namespace ArtificialBuilder
                             m_engine.Update(handle, req.Model);
                             await m_engine.SaveChangesAsync(handle);
                         }
-                        m_broker?.Publish(new AB_Update_Model_Response
-                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Update_Model_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = handle != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Model_Request req:
@@ -116,8 +134,12 @@ namespace ArtificialBuilder
                             m_engine.Remove(handle, req.Model);
                             await m_engine.SaveChangesAsync(handle);
                         }
-                        m_broker?.Publish(new AB_Delete_Model_Response
-                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Model_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = handle != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
 
@@ -132,8 +154,12 @@ namespace ArtificialBuilder
                             var all = await m_engine.GetAllAsync<AB_Ui_Template_Model>(handle);
                             data = all.ToList();
                         }
-                        m_broker?.Publish(new AB_Get_All_App_Ui_Templates_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_App_Ui_Templates_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_App_Ui_Template_By_Id_Request req:
@@ -145,8 +171,13 @@ namespace ArtificialBuilder
                             data = await m_engine.GetByIdAsync<AB_Ui_Template_Model>(handle, req.Id);
                             isOk = data != null;
                         }
-                        m_broker?.Publish(new AB_Get_App_Ui_Template_By_Id_Response
-                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_App_Ui_Template_By_Id_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            msg.IsOk = isOk;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Add_App_Ui_Template_Request req:
@@ -156,8 +187,12 @@ namespace ArtificialBuilder
                             await m_engine.AddAsync(handle, req.Template);
                             await m_engine.SaveChangesAsync(handle);
                         }
-                        m_broker?.Publish(new AB_Add_App_Ui_Template_Response
-                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_App_Ui_Template_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = handle != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Update_App_Ui_Template_Request req:
@@ -167,8 +202,12 @@ namespace ArtificialBuilder
                             m_engine.Update(handle, req.Template);
                             await m_engine.SaveChangesAsync(handle);
                         }
-                        m_broker?.Publish(new AB_Update_App_Ui_Template_Response
-                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Update_App_Ui_Template_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = handle != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_App_Ui_Template_Request req:
@@ -178,8 +217,12 @@ namespace ArtificialBuilder
                             m_engine.Remove(handle, req.Template);
                             await m_engine.SaveChangesAsync(handle);
                         }
-                        m_broker?.Publish(new AB_Delete_App_Ui_Template_Response
-                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_App_Ui_Template_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = handle != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
 
@@ -194,8 +237,12 @@ namespace ArtificialBuilder
                             var all = await m_engine.GetAllAsync<AB_Pipeline_Model>(handle);
                             data = all.ToList();
                         }
-                        m_broker?.Publish(new AB_Get_All_Pipelines_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Pipelines_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_Pipeline_By_Id_Request req:
@@ -207,8 +254,13 @@ namespace ArtificialBuilder
                             data = await m_engine.GetByIdAsync<AB_Pipeline_Model>(handle, req.Id);
                             isOk = data != null;
                         }
-                        m_broker?.Publish(new AB_Get_Pipeline_By_Id_Response
-                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Pipeline_By_Id_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            msg.IsOk = isOk;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Add_Pipeline_Request req:
@@ -218,8 +270,12 @@ namespace ArtificialBuilder
                             await m_engine.AddAsync(handle, req.Pipeline);
                             await m_engine.SaveChangesAsync(handle);
                         }
-                        m_broker?.Publish(new AB_Add_Pipeline_Response
-                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_Pipeline_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = handle != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Update_Pipeline_Request req:
@@ -229,8 +285,12 @@ namespace ArtificialBuilder
                             m_engine.Update(handle, req.Pipeline);
                             await m_engine.SaveChangesAsync(handle);
                         }
-                        m_broker?.Publish(new AB_Update_Pipeline_Response
-                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Update_Pipeline_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = handle != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Pipeline_Request req:
@@ -240,8 +300,12 @@ namespace ArtificialBuilder
                             m_engine.Remove(handle, req.Pipeline);
                             await m_engine.SaveChangesAsync(handle);
                         }
-                        m_broker?.Publish(new AB_Delete_Pipeline_Response
-                        { CorrelationId = req.CorrelationId, Success = handle != 0 });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Pipeline_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = handle != 0;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
 
@@ -256,8 +320,12 @@ namespace ArtificialBuilder
                             var all = await m_engine.GetAllAsync<AB_Llama_Model>(handle);
                             data = all.ToList();
                         }
-                        m_broker?.Publish(new AB_Get_All_Llama_Models_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Llama_Models_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_Llama_Model_By_Id_Request req:
@@ -270,8 +338,13 @@ namespace ArtificialBuilder
                             data = found.FirstOrDefault();
                             isOk = data != null;
                         }
-                        m_broker?.Publish(new AB_Get_Llama_Model_By_Id_Response
-                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Llama_Model_By_Id_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            msg.IsOk = isOk;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_Llama_Model_By_File_Name_Request req:
@@ -284,8 +357,13 @@ namespace ArtificialBuilder
                             data = found.FirstOrDefault();
                             isOk = data != null;
                         }
-                        m_broker?.Publish(new AB_Get_Llama_Model_By_File_Name_Response
-                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_Llama_Model_By_File_Name_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            msg.IsOk = isOk;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Upsert_Llama_Model_Request req:
@@ -315,8 +393,13 @@ namespace ArtificialBuilder
                             await m_engine.SaveChangesAsync(handle);
                             success = true;
                         }
-                        m_broker?.Publish(new AB_Upsert_Llama_Model_Response
-                        { CorrelationId = req.CorrelationId, Data = saved, Success = success });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Upsert_Llama_Model_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = saved;
+                            msg.Success = success;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_Llama_Model_Request req:
@@ -333,8 +416,12 @@ namespace ArtificialBuilder
                                 success = true;
                             }
                         }
-                        m_broker?.Publish(new AB_Delete_Llama_Model_Response
-                        { CorrelationId = req.CorrelationId, Success = success });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_Llama_Model_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = success;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
 
@@ -349,8 +436,12 @@ namespace ArtificialBuilder
                             var all = await m_engine.GetAllAsync<AB_HF_Download>(handle);
                             data = all.ToList();
                         }
-                        m_broker?.Publish(new AB_Get_All_HF_Downloads_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_HF_Downloads_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_HF_Download_By_Id_Request req:
@@ -363,8 +454,13 @@ namespace ArtificialBuilder
                             data = found.FirstOrDefault();
                             isOk = data != null;
                         }
-                        m_broker?.Publish(new AB_Get_HF_Download_By_Id_Response
-                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_HF_Download_By_Id_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            msg.IsOk = isOk;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Add_HF_Download_Request req:
@@ -380,8 +476,13 @@ namespace ArtificialBuilder
                             saved = req.Model;
                             success = true;
                         }
-                        m_broker?.Publish(new AB_Add_HF_Download_Response
-                        { CorrelationId = req.CorrelationId, Data = saved, Success = success });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Add_HF_Download_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = saved;
+                            msg.Success = success;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_HF_Download_Request req:
@@ -398,8 +499,12 @@ namespace ArtificialBuilder
                                 success = true;
                             }
                         }
-                        m_broker?.Publish(new AB_Delete_HF_Download_Response
-                        { CorrelationId = req.CorrelationId, Success = success });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_HF_Download_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = success;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
 
@@ -414,8 +519,12 @@ namespace ArtificialBuilder
                             var all = await m_engine.GetAllAsync<AB_HF_Repo>(handle);
                             data = all.ToList();
                         }
-                        m_broker?.Publish(new AB_Get_All_HF_Repos_Response
-                        { CorrelationId = req.CorrelationId, Data = data });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_HF_Repos_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_HF_Repo_By_Id_Request req:
@@ -428,8 +537,13 @@ namespace ArtificialBuilder
                             data = found.FirstOrDefault();
                             isOk = data != null;
                         }
-                        m_broker?.Publish(new AB_Get_HF_Repo_By_Id_Response
-                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_HF_Repo_By_Id_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            msg.IsOk = isOk;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Get_HF_Repo_By_Repo_Id_Request req:
@@ -442,8 +556,13 @@ namespace ArtificialBuilder
                             data = found.FirstOrDefault();
                             isOk = data != null;
                         }
-                        m_broker?.Publish(new AB_Get_HF_Repo_By_Repo_Id_Response
-                        { CorrelationId = req.CorrelationId, Data = data, IsOk = isOk });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_HF_Repo_By_Repo_Id_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = data;
+                            msg.IsOk = isOk;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Upsert_HF_Repo_Request req:
@@ -472,8 +591,13 @@ namespace ArtificialBuilder
                             await m_engine.SaveChangesAsync(handle);
                             success = true;
                         }
-                        m_broker?.Publish(new AB_Upsert_HF_Repo_Response
-                        { CorrelationId = req.CorrelationId, Data = saved, Success = success });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Upsert_HF_Repo_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Data = saved;
+                            msg.Success = success;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                     case AB_Delete_HF_Repo_Request req:
@@ -490,8 +614,12 @@ namespace ArtificialBuilder
                                 success = true;
                             }
                         }
-                        m_broker?.Publish(new AB_Delete_HF_Repo_Response
-                        { CorrelationId = req.CorrelationId, Success = success });
+                        {
+                            var msg = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Delete_HF_Repo_Response>();
+                            msg.CorrelationId = req.CorrelationId;
+                            msg.Success = success;
+                            m_broker?.Publish(msg);
+                        }
                         break;
                     }
                 }

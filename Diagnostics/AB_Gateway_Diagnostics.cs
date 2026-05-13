@@ -4,6 +4,7 @@ using ArtificialBuilder_EDP.Components;
 using ArtificialBuilder_EDP.Core.Messaging;
 using System;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder_EDP.Core.Diagnostics
 {
@@ -59,7 +60,7 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
             try
             {
                 Step("AB_Get_All_Characters_Request 발행 + 응답 대기");
-                var req = new AB_Get_All_Characters_Request();
+                var req = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Characters_Request>();
                 Log("request.Topic", req.Topic);
                 Log("request.IsResponse", req.IsResponse);
                 var sw = System.Diagnostics.Stopwatch.StartNew();

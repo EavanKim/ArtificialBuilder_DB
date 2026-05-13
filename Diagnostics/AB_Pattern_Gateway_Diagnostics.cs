@@ -4,6 +4,7 @@ using ArtificialBuilder_EDP.Components;
 using ArtificialBuilder_EDP.Core.Messaging;
 using System;
 using System.Threading.Tasks;
+using ArtificialBuilder_EDP.Core;
 
 namespace ArtificialBuilder_EDP.Core.Diagnostics
 {
@@ -25,8 +26,8 @@ namespace ArtificialBuilder_EDP.Core.Diagnostics
             try
             {
                 Step("GetAllPatterns (빈 Circuit)");
-                var resp = await broker.PublishAndWaitAsync<AB_Get_All_Patterns_Response>(
-                    new AB_Get_All_Patterns_Request(), TimeSpan.FromSeconds(5));
+                var req1 = AB_Engine.GetService<AB_Pool>().AcquireObject<AB_Get_All_Patterns_Request>();
+                var resp = await broker.PublishAndWaitAsync<AB_Get_All_Patterns_Response>(req1, TimeSpan.FromSeconds(5));
                 Log("patterns.Count", resp.Data.Count);
                 Assert("패턴 0개", resp.Data.Count == 0);
             }
