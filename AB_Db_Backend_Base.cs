@@ -12,7 +12,7 @@ namespace ArtificialBuilder
     /// 핸들/엔진을 바인딩하면 CRUD는 동일 경로를 따르므로 공통화한다.
     /// 서브클래스는 BackendName과 초기화 의미(파일명 vs 연결문자열)만 제공.
     /// </summary>
-    public abstract class AB_Db_Backend_Base : IAB_Db_Backend
+    public abstract class AB_Db_Backend_Base : ArtificialBuilder_EDP.Core.AB_Object, IAB_Db_Backend
     {
         /// <inheritdoc/>
         public abstract string BackendName { get; }
@@ -86,6 +86,6 @@ namespace ArtificialBuilder
         }
 
         /// <inheritdoc/>
-        public virtual void Dispose() { }
+        public new virtual void Dispose() { }
     }
 }

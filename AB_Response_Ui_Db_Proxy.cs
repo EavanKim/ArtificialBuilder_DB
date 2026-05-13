@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace ArtificialBuilder
 {
     /// <summary>Response UI DB 외부 진입 프록시 (Meta + Layer 신설 영역).</summary>
-    public class AB_Response_Ui_Db_Proxy
+    public class AB_Response_Ui_Db_Proxy : ArtificialBuilder_EDP.Core.AB_Object
     {
         private TimeSpan m_defaultTimeout = TimeSpan.FromSeconds(10);
         public TimeSpan DefaultTimeout

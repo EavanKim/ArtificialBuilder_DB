@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 namespace ArtificialBuilder
 {
     /// <summary>sqlite-vec 기반 임베딩 저장소 (로어/채팅/캐릭터 데이터).</summary>
-    public class AB_Vec_Store
+    public class AB_Vec_Store : ArtificialBuilder_EDP.Core.AB_Object
     {
         private readonly AB_DB m_engine;
         private int m_dimensions = 0;

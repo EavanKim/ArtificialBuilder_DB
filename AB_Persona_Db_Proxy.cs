@@ -13,7 +13,7 @@ namespace ArtificialBuilder
     /// Persona DB 프록시. 브로커 + AB_Persona_Db_Gateway 경유 호출.
     /// UI/서비스 계층에서 직접 DB 호출 대신 이 프록시를 사용.
     /// </summary>
-    public class AB_Persona_Db_Proxy
+    public class AB_Persona_Db_Proxy : ArtificialBuilder_EDP.Core.AB_Object
     {
         private TimeSpan m_defaultTimeout = TimeSpan.FromSeconds(10);
         public TimeSpan DefaultTimeout

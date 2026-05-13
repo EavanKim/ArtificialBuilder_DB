@@ -13,7 +13,7 @@ namespace ArtificialBuilder
     /// 4 계층 저장소 ([[storage-layers]]) 프록시. UI / Service / Node 가 사용하는 단일 진입점.
     /// 브로커 + AB_Storage_Gateway 경유. 직접 EDP_Db_Engine 호출 금지 ([[db-access]]).
     /// </summary>
-    public class AB_Storage_Proxy
+    public class AB_Storage_Proxy : ArtificialBuilder_EDP.Core.AB_Object
     {
         private TimeSpan m_defaultTimeout = TimeSpan.FromSeconds(10);
         public TimeSpan DefaultTimeout

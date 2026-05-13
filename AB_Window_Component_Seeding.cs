@@ -19,7 +19,7 @@ namespace ArtificialBuilder
         public AB_Window_Component_Seeding() : base("AB_Window_Component_Seeding") { }
 
         /// <summary>ApplyCircuitDefAsync 반환 — 생성된 윈도우 + canvas envelope + primary chat id.</summary>
-        public class Apply_Result
+        public class Apply_Result : ArtificialBuilder_EDP.Core.AB_Object
         {
             public List<AB_Response_Ui_Window_Model> Windows { get; set; } = new();
             public string EnvelopeJson { get; set; } = "";
@@ -505,7 +505,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>Frame 컴포넌트 ConfigJson.</summary>
-        public class Frame_Config
+        public class Frame_Config : ArtificialBuilder_EDP.Core.AB_Object
         {
             public string Title { get; set; } = "";
             public string? Background { get; set; }
@@ -517,7 +517,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>Layout 컴포넌트 ConfigJson.</summary>
-        public class Layout_Config
+        public class Layout_Config : ArtificialBuilder_EDP.Core.AB_Object
         {
             public string Position { get; set; } = "center";
             public double RatioX { get; set; }
@@ -529,7 +529,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>Depth 컴포넌트 ConfigJson.</summary>
-        public class Depth_Config
+        public class Depth_Config : ArtificialBuilder_EDP.Core.AB_Object
         {
             public int ZIndex { get; set; }
             public double Opacity { get; set; } = 1.0;
@@ -537,7 +537,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>Message 컴포넌트 ConfigJson.</summary>
-        public class Message_Config
+        public class Message_Config : ArtificialBuilder_EDP.Core.AB_Object
         {
             public bool IsInput { get; set; }
             public bool Markdown { get; set; } = true;
@@ -545,7 +545,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>Image2D 컴포넌트 ConfigJson — 단일 2D 이미지, 스택 없음.</summary>
-        public class Image2DConfig
+        public class Image2DConfig : ArtificialBuilder_EDP.Core.AB_Object
         {
             public string Source { get; set; } = "asset";
             public string Ref { get; set; } = "";
@@ -559,7 +559,7 @@ namespace ArtificialBuilder
         /// Opacity / Stretch 는 각 레이어가 지정하지 않았을 때의 컨테이너 기본값.
         /// LayerOverrides — 편집 UI 에서 저장한 레이어별 오프셋 / z-순서 오버라이드 (인덱스 기반, 없는 인덱스는 기본값).
         /// </summary>
-        public class Layered2DConfig
+        public class Layered2DConfig : ArtificialBuilder_EDP.Core.AB_Object
         {
             public string Source { get; set; } = "asset";
             public string Ref { get; set; } = "";
@@ -574,7 +574,7 @@ namespace ArtificialBuilder
         /// OffsetX/Y — RenderTransform.TranslateTransform 으로 이미지 평행이동 (픽셀).
         /// ZOrder — Avalonia Canvas ZIndex 값. null 이면 원본 인덱스 사용.
         /// </summary>
-        public class Layer_Override
+        public class Layer_Override : ArtificialBuilder_EDP.Core.AB_Object
         {
             public int Index { get; set; }
             public double OffsetX { get; set; }
@@ -583,7 +583,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>3D 컴포넌트 ConfigJson — mesh 전용 (Spine/Spriter 는 별도 레이어).</summary>
-        public class Three_DConfig
+        public class Three_DConfig : ArtificialBuilder_EDP.Core.AB_Object
         {
             public string ModelKind { get; set; } = "mesh";
             public string ModelRef { get; set; } = "";
@@ -593,7 +593,7 @@ namespace ArtificialBuilder
         }
 
         /// <summary>Back (네비 뒤로가기) 컴포넌트 ConfigJson.</summary>
-        public class Back_Config
+        public class Back_Config : ArtificialBuilder_EDP.Core.AB_Object
         {
             public string Target { get; set; } = "home";
             public string Glyph { get; set; } = "←";

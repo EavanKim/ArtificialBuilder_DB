@@ -8,7 +8,7 @@ namespace ArtificialBuilder
     /// <summary>
     /// Redis 기반 캐시 구현. 현재 프로젝트 내 활성 사용처 미확인 (의존성만 등록).
     /// </summary>
-    public class AB_Redis_Cache : IDb_Cache
+    public class AB_Redis_Cache : ArtificialBuilder_EDP.Core.AB_Object, IDb_Cache
     {
         /// <inheritdoc/>
         public string CacheName => "Redis";
@@ -73,7 +73,7 @@ namespace ArtificialBuilder
         }
 
         /// <inheritdoc/>
-        public void Dispose()
+        public new void Dispose()
         {
             m_connection?.Dispose();
             m_connection = null;

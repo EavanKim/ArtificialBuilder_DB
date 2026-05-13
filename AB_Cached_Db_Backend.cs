@@ -10,7 +10,7 @@ namespace ArtificialBuilder
     /// IAB_Db_Backend + IDb_Cache 합성.
     /// 읽기 시 캐시 우선, 쓰기 시 DB + 캐시 동시 갱신.
     /// </summary>
-    public class AB_Cached_Db_Backend : IAB_Db_Backend
+    public class AB_Cached_Db_Backend : ArtificialBuilder_EDP.Core.AB_Object, IAB_Db_Backend
     {
         /// <inheritdoc/>
         public string BackendName => $"{m_backend.BackendName} + {m_cache.CacheName}";
@@ -120,7 +120,7 @@ namespace ArtificialBuilder
         }
 
         /// <inheritdoc/>
-        public void Dispose()
+        public new void Dispose()
         {
             m_backend.Dispose();
             m_cache.Dispose();

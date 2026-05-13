@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace ArtificialBuilder
 {
     /// <summary>Circuit 목록 항목 (이름 + 외형 메타데이터).</summary>
-    public class Circuit_List_Info
+    public class Circuit_List_Info : ArtificialBuilder_EDP.Core.AB_Object
     {
         /// <summary>Circuit 이름.</summary>
         private string m_name_ = "";
@@ -63,7 +63,7 @@ namespace ArtificialBuilder
     }
 
     /// <summary>Circuit DB (.circuit) 수명·파일시스템·Vec 인프라만 담당. CRUD 는 Gateway 직결.</summary>
-    public class AB_Circuit_Db
+    public class AB_Circuit_Db : ArtificialBuilder_EDP.Core.AB_Object
     {
         // --- 확장명 ---
 

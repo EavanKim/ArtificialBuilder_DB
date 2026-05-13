@@ -12,7 +12,7 @@ namespace ArtificialBuilder
     /// <summary>
     /// 전역 App DB 프록시. 브로커 + AB_App_Db_Gateway 경유. UI/서비스 계층의 단일 진입점.
     /// </summary>
-    public class AB_App_Db_Proxy
+    public class AB_App_Db_Proxy : ArtificialBuilder_EDP.Core.AB_Object
     {
         private TimeSpan m_defaultTimeout = TimeSpan.FromSeconds(10);
         public TimeSpan DefaultTimeout

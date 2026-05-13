@@ -18,7 +18,7 @@ namespace ArtificialBuilder
     ///   var proxy = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>();
     ///   var chars = await proxy.GetAllCharactersAsync();
     /// </summary>
-    public class AB_Circuit_Db_Proxy
+    public class AB_Circuit_Db_Proxy : ArtificialBuilder_EDP.Core.AB_Object
     {
         /// <summary>요청-응답 기본 타임아웃.</summary>
         private TimeSpan m_defaultTimeout = TimeSpan.FromSeconds(10);

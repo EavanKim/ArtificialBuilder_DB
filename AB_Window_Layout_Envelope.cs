@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace ArtificialBuilder
 {
     /// <summary>JSON 직렬화용 윈도우 레이아웃 데이터 (비율 + 구 포맷 호환 절대좌표)</summary>
-    public class Window_Layout_Data
+    public class Window_Layout_Data : ArtificialBuilder_EDP.Core.AB_Object
     {
         /// <summary>템플릿 ID — response_windows.Id (long PK). 재시드 시 envelope 내 TemplateId 를 그대로 재사용해 DB Id 안정성 보장.</summary>
         private long m_templateId;
@@ -15,7 +15,7 @@ namespace ArtificialBuilder
         /// <summary>윈도우 이름 — response_windows.Name. envelope ↔ circuit_def 매칭용 (DB 비어있을 때 TemplateId 재사용 키).
         /// 구 envelope 에는 없음 (null 허용). 구 envelope 복원 시 circuit_def 순서 fallback.</summary>
         private string? m_name;
-        public string? Name
+        public new string? Name
         {
             get { return m_name; }
             set { m_name = value; }
@@ -100,7 +100,7 @@ namespace ArtificialBuilder
     }
 
     /// <summary>윈도우 레이아웃 직렬화 컨테이너 (캔버스 크기 + 윈도우 목록)</summary>
-    public class Window_Layout_Envelope
+    public class Window_Layout_Envelope : ArtificialBuilder_EDP.Core.AB_Object
     {
         /// <summary>저장 시점 캔버스 너비</summary>
         private double m_canvasWidth;

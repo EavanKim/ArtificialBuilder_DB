@@ -990,7 +990,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Get_Asset_By_Name_Request : AB_Message
     {
         /// <summary>에셋 이름.</summary>
-        public string Name = "";
+        public new string Name = "";
         /// <summary>토픽 자동 설정.</summary>
         public AB_Get_Asset_By_Name_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
@@ -1592,7 +1592,7 @@ namespace ArtificialBuilder.Requests
     /// <summary>Circuit 파일 삭제 요청 — Gateway 가 핸들 close 후 .circuit + .vec 정리. [[db-access]] 준수.</summary>
     public class AB_Delete_Circuit_File_Request : AB_Message
     {
-        public string Name = "";
+        public new string Name = "";
         public AB_Delete_Circuit_File_Request() { Topic = AB_Circuit_Db_Topics.ActiveCircuit; }
     }
     public class AB_Delete_Circuit_File_Response : AB_Message

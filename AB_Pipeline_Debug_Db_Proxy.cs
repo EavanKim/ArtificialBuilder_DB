@@ -13,7 +13,7 @@ namespace ArtificialBuilder
     /// 파이프라인 디버그 DB 프록시. 브로커 + AB_Pipeline_Debug_Db_Gateway 경유.
     /// UI/컴포넌트 계층의 단일 진입점.
     /// </summary>
-    public class AB_Pipeline_Debug_Db_Proxy
+    public class AB_Pipeline_Debug_Db_Proxy : ArtificialBuilder_EDP.Core.AB_Object
     {
         private TimeSpan m_defaultTimeout = TimeSpan.FromSeconds(10);
         public TimeSpan DefaultTimeout

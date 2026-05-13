@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace ArtificialBuilder
 {
     /// <summary>Response UI DB (.aresui) 수명·파일시스템 보관소. per-response-ui SQLite. UUID = 1 파일.</summary>
-    public class AB_Response_Ui_Db
+    public class AB_Response_Ui_Db : ArtificialBuilder_EDP.Core.AB_Object
     {
         // --- 확장명 ---
 

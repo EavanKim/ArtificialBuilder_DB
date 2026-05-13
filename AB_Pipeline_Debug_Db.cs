@@ -10,7 +10,7 @@ namespace ArtificialBuilder
     /// 파이프라인 디버그 DB 라이프사이클 보관소. 전용 pipeline_debug.pdb 파일.
     /// CRUD 는 AB_Pipeline_Debug_Db_Proxy/AB_Pipeline_Debug_Db_Gateway 경유. 여기서는 핸들과 열기/닫기만.
     /// </summary>
-    public class AB_Pipeline_Debug_Db
+    public class AB_Pipeline_Debug_Db : ArtificialBuilder_EDP.Core.AB_Object
     {
         public const string DEBUG_DIR = "telemetry";
         public const string DEFAULT_FILE = "pipeline_debug.pdb";

@@ -82,7 +82,7 @@ namespace ArtificialBuilder.Requests
     /// <summary>활성 페르소나 이름 응답.</summary>
     public class AB_Get_Active_Persona_Name_Response : AB_Message
     {
-        public string? Name;
+        public new string? Name;
         public AB_Get_Active_Persona_Name_Response() { Topic = AB_Persona_Db_Topics.Persona; IsResponse = true; }
     }
 

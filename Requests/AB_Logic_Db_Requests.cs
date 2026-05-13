@@ -336,7 +336,7 @@ namespace ArtificialBuilder.Requests
     public class AB_Create_Logic_Request : AB_Message
     {
         public long Uuid;
-        public string? Name;
+        public new string? Name;
         public AB_Create_Logic_Request() { Topic = AB_Logic_Db_Topics.ActiveLogic; }
     }
 

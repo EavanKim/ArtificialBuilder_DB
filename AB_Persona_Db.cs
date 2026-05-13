@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace ArtificialBuilder
 {
     /// <summary>페르소나 DB (.psna) 수명·파일시스템·Vec 인프라만 담당. CRUD 는 Gateway 직결.</summary>
-    public class AB_Persona_Db
+    public class AB_Persona_Db : ArtificialBuilder_EDP.Core.AB_Object
     {
         // --- 초기화 ---
 

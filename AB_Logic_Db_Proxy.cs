@@ -15,7 +15,7 @@ namespace ArtificialBuilder
     ///   var proxy = global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>();
     ///   var meta = await proxy.GetMetaAsync();
     /// </summary>
-    public class AB_Logic_Db_Proxy
+    public class AB_Logic_Db_Proxy : ArtificialBuilder_EDP.Core.AB_Object
     {
         private TimeSpan m_defaultTimeout = TimeSpan.FromSeconds(10);
         public TimeSpan DefaultTimeout

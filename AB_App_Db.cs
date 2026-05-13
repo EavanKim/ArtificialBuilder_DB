@@ -8,7 +8,7 @@ namespace ArtificialBuilder
     /// 전역 앱 DB (ArtificialBuilder.db) 라이프사이클 보관소.
     /// CRUD 는 AB_App_Db_Proxy/AB_App_Db_Gateway 경유. 여기서는 핸들과 임베딩 직렬화 헬퍼만 유지.
     /// </summary>
-    public class AB_App_Db
+    public class AB_App_Db : ArtificialBuilder_EDP.Core.AB_Object
     {
         // --- 초기화 ---
 

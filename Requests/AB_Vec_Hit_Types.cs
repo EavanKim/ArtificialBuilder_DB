@@ -1,7 +1,7 @@
 namespace ArtificialBuilder.Requests
 {
     /// <summary>Vec 검색 결과 — 로어/CData 공통 (id + 거리).</summary>
-    public class AB_Vec_Hit
+    public class AB_Vec_Hit : ArtificialBuilder_EDP.Core.AB_Object
     {
         /// <summary>대상 ID.</summary>
         public string Id = "";
@@ -10,7 +10,7 @@ namespace ArtificialBuilder.Requests
     }
 
     /// <summary>채팅 임베딩 검색 결과. 키 튜플: (session_id, node_id, turn_index, refresh_index, emission_order). 2026-05-11 — node_id string → long.</summary>
-    public class AB_Vec_Chat_Hit
+    public class AB_Vec_Chat_Hit : ArtificialBuilder_EDP.Core.AB_Object
     {
         /// <summary>세션 ID.</summary>
         public long SessionId;
@@ -27,7 +27,7 @@ namespace ArtificialBuilder.Requests
     }
 
     /// <summary>세션 임베딩 메타 (컨텍스트 키 + 차원수). 2026-05-11 — node_id string → long.</summary>
-    public class AB_Chat_Embedding_Info
+    public class AB_Chat_Embedding_Info : ArtificialBuilder_EDP.Core.AB_Object
     {
         /// <summary>소스 노드 ID.</summary>
         public long NodeId;

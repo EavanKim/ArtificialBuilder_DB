@@ -10,7 +10,7 @@ namespace ArtificialBuilder
 {
     /// <summary>Logic DB (.alogic) 수명·파일시스템 보관소. per-logic SQLite. 한 Logic Id (long) = 1 파일.
     /// 2026-05-11 — string Guid 폐기. 파일명 = "{long}.alogic" (예: 1.alogic). 사용자 정본 "string 키 보면 역겨움".</summary>
-    public class AB_Logic_Db
+    public class AB_Logic_Db : ArtificialBuilder_EDP.Core.AB_Object
     {
         // --- 확장명 ---
 
