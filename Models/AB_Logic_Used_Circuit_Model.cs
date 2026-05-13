@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>Logic 이 사용하는 Circuit 항목 (이름 + 사용 키 + 서킷 내 system prompt + 끌어쓴 model key). plan: docs/plans/doing/db-three-way-split/1-logic-db-schema.md</summary>
     [Table("logic_used_circuits")]
-    public class AB_Logic_Used_Circuit_Model
+    public class AB_Logic_Used_Circuit_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

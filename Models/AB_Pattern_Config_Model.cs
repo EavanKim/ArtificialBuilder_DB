@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>응답 본문에서 캐릭터/관계/장소를 추출하는 패턴 설정.</summary>
     [Table("circuit_pattern_configs")]
-    public class AB_Pattern_Config_Model
+    public class AB_Pattern_Config_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

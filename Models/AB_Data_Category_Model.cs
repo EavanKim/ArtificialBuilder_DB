@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>캐릭터 동적 데이터 카테고리 (분류 + 아이콘).</summary>
     [Table("circuit_data_categories")]
-    public class AB_Data_Category_Model
+    public class AB_Data_Category_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

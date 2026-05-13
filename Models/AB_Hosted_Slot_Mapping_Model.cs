@@ -10,7 +10,7 @@ namespace ArtificialBuilder.Models
     /// 데이터 자체 X — 키 + description (Kind / TypeCode / Note) 만 보유 ([[data-by-blackboard-key-only]]).
     /// </summary>
     [Table("circuit_hosted_logic_slot_mappings")]
-    public class AB_Hosted_Slot_Mapping_Model
+    public class AB_Hosted_Slot_Mapping_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

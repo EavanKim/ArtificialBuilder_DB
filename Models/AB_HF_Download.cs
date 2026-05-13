@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>HF 다운로드 큐 항목 entity — typed-id-edp-rebase sub 4 chunk 4p entity 화. 기존 itemId (GUID string) 폐기 + long PK 부여. repo_id / file_name 등 = entity attribute.</summary>
     [Table("hf_downloads")]
-    public class AB_HF_Download
+    public class AB_HF_Download : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

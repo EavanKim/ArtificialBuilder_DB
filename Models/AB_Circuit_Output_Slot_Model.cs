@@ -7,7 +7,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>서킷 output 슬롯 (화면 출력 emit). 정본 [[circuit-input-slots]] (v2 2026-05-06 후속).</summary>
     [Table("circuit_output_slots")]
-    public class AB_Circuit_Output_Slot_Model
+    public class AB_Circuit_Output_Slot_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

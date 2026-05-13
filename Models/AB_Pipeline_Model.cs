@@ -9,7 +9,7 @@ namespace ArtificialBuilder.Models
     /// 라이브러리 UI 제거됨. EF 마이그레이션 회피용으로 클래스/DbSet만 유지.
     /// </summary>
     [Table("pipelines")]
-    public class AB_Pipeline_Model
+    public class AB_Pipeline_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

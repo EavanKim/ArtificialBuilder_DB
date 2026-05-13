@@ -11,7 +11,7 @@ namespace ArtificialBuilder.Models
     /// (example-mental-restructure-phase-b-residue sub 1) — string PK → long PK.
     /// </summary>
     [Table("response_ui_windows")]
-    public class AB_Response_Ui_Window_Model
+    public class AB_Response_Ui_Window_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

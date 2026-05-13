@@ -17,7 +17,7 @@ namespace ArtificialBuilder.Models
     /// - 페이로드 inline 금지 — resource_id 로만 가리킴
     /// </summary>
     [Table("logic_storage")]
-    public class AB_Logic_Storage_Model
+    public class AB_Logic_Storage_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         /// <summary>로직 실행 row 단일 PK.</summary>
         private long m_id_;

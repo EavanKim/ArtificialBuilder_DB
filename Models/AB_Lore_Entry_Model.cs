@@ -7,7 +7,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>로어북 엔트리 (키워드 매칭으로 컨텍스트에 주입). (example-mental-restructure Phase B Sub 4 Circuit 5/8) — string PK → long PK.</summary>
     [Table("lore_entries")]
-    public class AB_Lore_Entry_Model
+    public class AB_Lore_Entry_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

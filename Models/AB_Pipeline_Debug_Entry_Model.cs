@@ -9,7 +9,7 @@ namespace ArtificialBuilder.Models
     /// 메모리에 축적하지 않고 DB에 배치 기록 후 페이징 조회.
     /// </summary>
     [Table("pipeline_debug_entries")]
-    public class AB_Pipeline_Debug_Entry_Model
+    public class AB_Pipeline_Debug_Entry_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id;
         [Key]

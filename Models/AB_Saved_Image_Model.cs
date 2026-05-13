@@ -12,7 +12,7 @@ namespace ArtificialBuilder.Models
     /// 기존 vec 시스템(AB_Vec_Store/AB_Vec_Config) 과 완전히 분리된 별도 테이블.
     /// </summary>
     [Table("saved_images")]
-    public class AB_Saved_Image_Model
+    public class AB_Saved_Image_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         /// <summary>레코드 PK.</summary>
         private long m_id_;

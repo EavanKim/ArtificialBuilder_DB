@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>Logic 이 사용하는 Response UI 키 (Response UI DB 의 UUID 참조). plan: docs/plans/doing/db-three-way-split/1-logic-db-schema.md</summary>
     [Table("logic_used_response_ui")]
-    public class AB_Logic_Used_Response_Ui_Model
+    public class AB_Logic_Used_Response_Ui_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

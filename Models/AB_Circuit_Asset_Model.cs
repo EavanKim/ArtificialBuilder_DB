@@ -7,7 +7,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>Circuit 내장 에셋 (이미지/사운드/폰트 등 바이너리). (example-mental-restructure Phase B Sub 4 Circuit 7/8) — string PK → long PK.</summary>
     [Table("circuit_assets")]
-    public class AB_Circuit_Asset_Model
+    public class AB_Circuit_Asset_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

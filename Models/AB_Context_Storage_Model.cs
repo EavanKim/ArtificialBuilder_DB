@@ -17,7 +17,7 @@ namespace ArtificialBuilder.Models
     /// - 페이로드 / 노드 정보 보관 X. 실행 단위 메타만
     /// </summary>
     [Table("context_storage")]
-    public class AB_Context_Storage_Model
+    public class AB_Context_Storage_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         /// <summary>context 단일 PK. 외부 참조 (Session.active_context_id, Node.context_id) 는 이 값.</summary>
         private long m_id_;

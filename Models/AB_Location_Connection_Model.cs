@@ -7,7 +7,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>장소 간 이동 경로 (양방향). A↔B 연결을 나타냄. (example-mental-restructure Phase B Sub 4 Persona 4/7) — string PK → long PK.</summary>
     [Table("circuit_location_connections")]
-    public class AB_Location_Connection_Model
+    public class AB_Location_Connection_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

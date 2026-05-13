@@ -7,7 +7,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>캐릭터 정의 (이름/성격/인사말/배경). Circuit 템플릿 또는 세션 전용. (example-mental-restructure Phase B Sub 4 Persona 6/7) — string PK → long PK.</summary>
     [Table("circuit_characters")]
-    public class AB_Character_Model
+    public class AB_Character_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

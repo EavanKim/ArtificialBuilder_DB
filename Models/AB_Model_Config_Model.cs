@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>LLM 모델 연결 설정 (프로바이더/엔드포인트/키).</summary>
     [Table("model_configs")]
-    public class AB_Model_Config_Model
+    public class AB_Model_Config_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

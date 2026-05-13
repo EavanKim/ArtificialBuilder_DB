@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>로직 내부 그래프 안의 노드 (= AB_Logic_Node_* 인스턴스). 정본 [[logic-internal-graph]] (v2 2026-05-06 후속).</summary>
     [Table("logic_internal_nodes")]
-    public class AB_Logic_Internal_Node_Model
+    public class AB_Logic_Internal_Node_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

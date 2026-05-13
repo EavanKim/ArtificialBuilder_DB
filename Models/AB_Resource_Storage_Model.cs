@@ -15,7 +15,7 @@ namespace ArtificialBuilder.Models
     /// - 페이로드는 작은 건 inline, 큰 건 외부 파일 path 만
     /// </summary>
     [Table("resource_storage")]
-    public class AB_Resource_Storage_Model
+    public class AB_Resource_Storage_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         /// <summary>리소스 단일 PK. 외부 참조 (Node.resource_id, Session.input_resource_id) 는 이 값.</summary>
         private long m_id_;

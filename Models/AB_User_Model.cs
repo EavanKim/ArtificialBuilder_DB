@@ -6,7 +6,7 @@ namespace EDPFW.Models
 {
     /// <summary>EDPFW 표준 사용자 모델.</summary>
     [Table("users")]
-    public class AB_User_Model
+    public class AB_User_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_;
         [Key]

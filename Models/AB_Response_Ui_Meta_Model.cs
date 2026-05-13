@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>Response UI 메타 (단일 row). UUID + 표시 이름 분리. plan: docs/plans/doing/db-three-way-split/2-response-ui-db-schema.md</summary>
     [Table("response_ui_meta")]
-    public class AB_Response_Ui_Meta_Model
+    public class AB_Response_Ui_Meta_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = 1;
         [Key]

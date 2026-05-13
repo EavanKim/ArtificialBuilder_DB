@@ -9,7 +9,7 @@ namespace ArtificialBuilder.Models
     /// 전역 시작 라이브러리는 <see cref="AB_Ui_Template_Model"/> 참조.
     /// </summary>
     [Table("response_ui_templates")]
-    public class AB_Response_Ui_Template_Model
+    public class AB_Response_Ui_Template_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>로컬 GGUF 모델 entity — typed-id-edp-rebase sub 4 chunk 4o entity 화. filesystem 파일 (.gguf) 에 1:1 매핑되는 DB row. PK = long (AB_Model_Id), file_name = entity attribute. AB_Local_Model_Manager 가 scan-on-load 동기화 (filesystem → DB upsert).</summary>
     [Table("llama_models")]
-    public class AB_Llama_Model
+    public class AB_Llama_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

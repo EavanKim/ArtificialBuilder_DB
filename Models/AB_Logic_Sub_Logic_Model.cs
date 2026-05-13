@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>Logic 안 sub-logic 참조 (다른 Logic 의 UUID — "로직 내 로직" 재귀 정합). plan: docs/plans/doing/db-three-way-split/1-logic-db-schema.md</summary>
     [Table("logic_sub_logics")]
-    public class AB_Logic_Sub_Logic_Model
+    public class AB_Logic_Sub_Logic_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

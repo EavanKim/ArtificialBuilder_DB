@@ -7,7 +7,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>서킷의 hosted logic 별 슬롯 값. 정본 [[circuit-input-slots]] 변수 슬롯 절 (v2 2026-05-06 후속). (example-mental-restructure Phase B Sub 4 Circuit 2/8) — string PK → long PK.</summary>
     [Table("circuit_hosted_logic_slot_values")]
-    public class AB_Circuit_Hosted_Logic_Slot_Value_Model
+    public class AB_Circuit_Hosted_Logic_Slot_Value_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

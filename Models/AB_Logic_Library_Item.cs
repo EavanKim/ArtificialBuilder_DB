@@ -3,7 +3,7 @@ using System;
 namespace ArtificialBuilder.Models
 {
     /// <summary>로직 라이브러리 list 1 행. UUID + 표시 이름 + 갱신 시각. AB_Logic_Db.GetLogicLibraryInfoAsync 응답 element.</summary>
-    public class AB_Logic_Library_Item
+    public class AB_Logic_Library_Item : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_uuid_;
         public long Uuid_ { get { return m_uuid_; } set { m_uuid_ = value; } }

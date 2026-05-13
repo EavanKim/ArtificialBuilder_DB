@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>페르소나 단일 설정 (사용자 프롬프트/아이콘). singleton (PK fixed = 1). (example-mental-restructure Phase B Sub 4 Persona 3/7) — string PK → long PK.</summary>
     [Table("persona_settings")]
-    public class AB_Persona_Settings_Model
+    public class AB_Persona_Settings_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = 1;
         [Key]

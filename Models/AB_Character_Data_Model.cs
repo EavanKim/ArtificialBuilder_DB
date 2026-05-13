@@ -7,7 +7,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>캐릭터별 동적 데이터 항목 (필드명/값 + 카테고리). 세션 또는 Circuit 범위. (example-mental-restructure Phase B Sub 4 Persona 2/7) — string PK → long PK.</summary>
     [Table("circuit_character_data")]
-    public class AB_Character_Data_Model
+    public class AB_Character_Data_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

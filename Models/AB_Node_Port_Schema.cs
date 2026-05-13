@@ -5,7 +5,7 @@ namespace ArtificialBuilder.Models
     /// 모델 ≠ 노드 — 노드는 *추상 인터페이스*만 가짐. 모델 설정은 서킷 단계 ([[node-categories]] / [[open-key-io]]).
     /// AB_Logic_Internal_Node_Model.InputsJson_ / OutputsJson_ 의 element.
     /// </summary>
-    public class AB_Node_Port_Schema
+    public class AB_Node_Port_Schema : ArtificialBuilder_EDP.Core.AB_Object
     {
         private string m_name_ = "";
         public string Name_ { get { return m_name_; } set { m_name_ = value; } }

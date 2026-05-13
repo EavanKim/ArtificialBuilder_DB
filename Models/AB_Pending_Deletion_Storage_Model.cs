@@ -18,7 +18,7 @@ namespace ArtificialBuilder.Models
     ///  6. 매 틱 budget 다 쓰면 다음 틱 양보
     /// </summary>
     [Table("pending_deletions")]
-    public class AB_Pending_Deletion_Storage_Model
+    public class AB_Pending_Deletion_Storage_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_;
         [Key]

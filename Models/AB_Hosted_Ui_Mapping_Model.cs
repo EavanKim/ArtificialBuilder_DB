@@ -11,7 +11,7 @@ namespace ArtificialBuilder.Models
     /// 데이터 자체 X — 노드 id + UI 슬롯명 + description ([[data-by-blackboard-key-only]]).
     /// </summary>
     [Table("circuit_hosted_logic_ui_mappings")]
-    public class AB_Hosted_Ui_Mapping_Model
+    public class AB_Hosted_Ui_Mapping_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

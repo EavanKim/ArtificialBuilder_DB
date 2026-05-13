@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>HuggingFace repo entity — typed-id-edp-rebase sub 4 chunk 4q entity 화. repo_id ("owner/repo" string) = entity attribute (HF 외부 식별자), PK = long. 캐시 metadata (description / license / readme_snippet).</summary>
     [Table("hf_repos")]
-    public class AB_HF_Repo
+    public class AB_HF_Repo : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

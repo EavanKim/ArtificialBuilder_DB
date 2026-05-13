@@ -7,7 +7,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>서킷이 호스팅하는 Logic 인스턴스 (Logic UUID 참조 + 그래프 좌표). (example-mental-restructure Phase B Sub 4 Circuit 6/8) — string PK → long PK.</summary>
     [Table("circuit_hosted_logics")]
-    public class AB_Circuit_Hosted_Logic_Model
+    public class AB_Circuit_Hosted_Logic_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

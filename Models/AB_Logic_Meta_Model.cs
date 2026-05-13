@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>Logic 메타 (단일 row). UUID + 표시 이름 분리. plan: docs/plans/doing/db-three-way-split/1-logic-db-schema.md</summary>
     [Table("logic_meta")]
-    public class AB_Logic_Meta_Model
+    public class AB_Logic_Meta_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = 1;
         [Key]

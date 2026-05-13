@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>Logic 호출 history (turn = 로직 히스토리 동의어). turn id / 입력 / 출력 / timestamp 메타. plan: docs/plans/doing/db-three-way-split/1-logic-db-schema.md</summary>
     [Table("logic_history_turns")]
-    public class AB_Logic_History_Turn_Model
+    public class AB_Logic_History_Turn_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>관계 유형 → 적대도(색상) 매핑. (example-mental-restructure Phase B Sub 4) — string PK → long PK.</summary>
     [Table("circuit_relation_colors")]
-    public class AB_Relation_Color_Model
+    public class AB_Relation_Color_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

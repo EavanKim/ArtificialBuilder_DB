@@ -10,7 +10,7 @@ namespace ArtificialBuilder.Models
     /// (example-mental-restructure Phase B Sub 4 Response_Ui Ui_Template) — string PK → long PK.
     /// </summary>
     [Table("ui_templates")]
-    public class AB_Ui_Template_Model
+    public class AB_Ui_Template_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

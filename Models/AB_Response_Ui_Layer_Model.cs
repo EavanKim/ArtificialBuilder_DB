@@ -6,7 +6,7 @@ namespace ArtificialBuilder.Models
 {
     /// <summary>Response UI 의 Layer 정의 ([[layer-targeting]] — UUID + 사용자 표시 이름 분리). plan: docs/plans/doing/db-three-way-split/2-response-ui-db-schema.md</summary>
     [Table("response_ui_layers")]
-    public class AB_Response_Ui_Layer_Model
+    public class AB_Response_Ui_Layer_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         private long m_id_ = ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder.AB_Id_Issuer>().Issue();
         [Key]

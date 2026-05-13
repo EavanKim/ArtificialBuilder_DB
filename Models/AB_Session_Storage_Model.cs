@@ -17,7 +17,7 @@ namespace ArtificialBuilder.Models
     /// - 0 번 row (head) 는 시작 노드 정보 (Circuit greeting) — input/active 모두 null 가능
     /// </summary>
     [Table("session_storage")]
-    public class AB_Session_Storage_Model
+    public class AB_Session_Storage_Model : ArtificialBuilder_EDP.Core.AB_Object
     {
         /// <summary>turn 슬롯 단일 PK. 외부 참조 (Context.turn_id) 는 이 값.</summary>
         private long m_id_;
