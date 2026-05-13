@@ -23,7 +23,11 @@ namespace ArtificialBuilder_EDP.Components
         public override void OnAttach()
         {
             Instance.Initialize();
-            if (!AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out AB_DDO_Subscription_Manager? mgr) || mgr == null) return;
+            if (!AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out AB_DDO_Subscription_Manager? mgr) || mgr == null)
+            {
+                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("OnAttach", $"{GetType().Name} - AB_DDO_Subscription_Manager 미등록, 옵저버 등록 실패 (canon-conformance-residue Sub 2: BuildProvider 전 ordering 위험)");
+                return;
+            }
             mgr.AddObserverFor(this, AB_Object_Command_Type.TEMPLATE_GET_ALL_CIRCUIT, HandleGetAllCircuit);
             mgr.AddObserverFor(this, AB_Object_Command_Type.TEMPLATE_ADD_CIRCUIT, HandleAddCircuit);
             mgr.AddObserverFor(this, AB_Object_Command_Type.TEMPLATE_DELETE_CIRCUIT, HandleDeleteCircuit);
