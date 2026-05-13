@@ -23,11 +23,7 @@ namespace ArtificialBuilder_EDP.Components
         public override void OnAttach()
         {
             Instance.Initialize();
-            if (!AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out AB_DDO_Subscription_Manager? mgr) || mgr == null)
-            {
-                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("OnAttach", $"{GetType().Name} - AB_DDO_Subscription_Manager 미등록, 옵저버 등록 실패 (canon-conformance-residue Sub 2: BuildProvider 전 ordering 위험)");
-                return;
-            }
+            AB_DDO_Subscription_Manager mgr = AB_Engine.GetService<AB_DDO_Subscription_Manager>();
             mgr.AddObserverFor(this, AB_Object_Command_Type.CHARACTER_REFRESH, HandleRefresh);
             mgr.AddObserverFor(this, AB_Object_Command_Type.CHARACTER_GET_ALL, HandleGetAll);
             mgr.AddObserverFor(this, AB_Object_Command_Type.CHARACTER_GET_RELATIONSHIPS, HandleGetRelationships);
@@ -37,8 +33,7 @@ namespace ArtificialBuilder_EDP.Components
 
         public override void OnDetach()
         {
-            if (AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out AB_DDO_Subscription_Manager? mgr) && mgr != null)
-                mgr.UnregisterOwner(this);
+            AB_Engine.GetService<AB_DDO_Subscription_Manager>().UnregisterOwner(this);
         }
 
         private static void PublishResult(AB_Object_Command_Type _header, AB_Id? _queryId, object _result)

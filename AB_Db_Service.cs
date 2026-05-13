@@ -16,11 +16,7 @@ namespace ArtificialBuilder
     {
         public override void OnAttach()
         {
-            if (!AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out AB_DDO_Subscription_Manager? mgr) || mgr == null)
-            {
-                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Warn("OnAttach", $"{GetType().Name} - AB_DDO_Subscription_Manager 미등록, 옵저버 등록 실패 (canon-conformance-residue Sub 2: BuildProvider 전 ordering 위험)");
-                return;
-            }
+            AB_DDO_Subscription_Manager mgr = AB_Engine.GetService<AB_DDO_Subscription_Manager>();
 
             // --- App DB ---
             mgr.AddObserverFor(this, AB_DB_Command_Type.APP_DB_MODEL_GET_ALL, HandleAppModelGetAll);
@@ -73,8 +69,7 @@ namespace ArtificialBuilder
 
         public override void OnDetach()
         {
-            if (AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out AB_DDO_Subscription_Manager? mgr) && mgr != null)
-                mgr.UnregisterOwner(this);
+            AB_Engine.GetService<AB_DDO_Subscription_Manager>().UnregisterOwner(this);
         }
 
         // ================ App DB ================
