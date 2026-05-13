@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 namespace ArtificialBuilder
 {
     /// <summary>App/Persona/Circuit/Logic/ResponseUi 5개 서브 DB를 묶는 루트 DB ([[app-logic-separation]] 5 도메인).</summary>
+    // TODO[canon-conformance phase-6]: (E) EDP_Db_Engine 직접 후손 = AB_Object 우회.
+    // TODO[canon-conformance phase-4]: (D) AB_App_Db / Persona / Circuit / Logic / ResponseUi 5 holder = Component ref 직접 보유. DI lookup property 마이그 필수.
+    // 정본: docs/plans/todo/canon-conformance/phase-6-edp-direct-inherit-bridge.md / phase-4-component-ref-cleanup.md
     public class AB_DB : EDP_Db_Engine
     {
         // --- 초기화 ---
