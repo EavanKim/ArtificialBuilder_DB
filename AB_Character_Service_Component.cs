@@ -20,33 +20,21 @@ namespace ArtificialBuilder_EDP.Components
             private set { m_instance = value; }
         }
 
-        private readonly List<AB_DDO_Observer_Component> m_observers = new();
-
         public override void OnAttach()
         {
             Instance.Initialize();
-            AddObs(AB_Object_Command_Type.CHARACTER_REFRESH, HandleRefresh);
-            AddObs(AB_Object_Command_Type.CHARACTER_GET_ALL, HandleGetAll);
-            AddObs(AB_Object_Command_Type.CHARACTER_GET_RELATIONSHIPS, HandleGetRelationships);
-            AddObs(AB_Object_Command_Type.CHARACTER_GET_LOCATIONS, HandleGetLocations);
-            AddObs(AB_Object_Command_Type.CHARACTER_GET_CONNECTIONS, HandleGetConnections);
+            if (!AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out AB_DDO_Subscription_Manager? mgr) || mgr == null) return;
+            mgr.AddObserverFor(this, AB_Object_Command_Type.CHARACTER_REFRESH, HandleRefresh);
+            mgr.AddObserverFor(this, AB_Object_Command_Type.CHARACTER_GET_ALL, HandleGetAll);
+            mgr.AddObserverFor(this, AB_Object_Command_Type.CHARACTER_GET_RELATIONSHIPS, HandleGetRelationships);
+            mgr.AddObserverFor(this, AB_Object_Command_Type.CHARACTER_GET_LOCATIONS, HandleGetLocations);
+            mgr.AddObserverFor(this, AB_Object_Command_Type.CHARACTER_GET_CONNECTIONS, HandleGetConnections);
         }
 
         public override void OnDetach()
         {
-            if (AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out var mgr))
-            {
-                foreach (AB_DDO_Observer_Component obs in m_observers) mgr.UnregisterObserver(obs);
-            }
-            m_observers.Clear();
-        }
-
-        private void AddObs(AB_Object_Command_Type _type, Action<AB_DDO_Command> _handler)
-        {
-            AB_DDO_Observer_Component obs = new();
-            obs.Configure(_type, _handler);
-            if (AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out var mgr)) mgr.RegisterObserver(obs);
-            m_observers.Add(obs);
+            if (AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out AB_DDO_Subscription_Manager? mgr) && mgr != null)
+                mgr.UnregisterOwner(this);
         }
 
         private static void PublishResult(AB_Object_Command_Type _header, AB_Id? _queryId, object _result)

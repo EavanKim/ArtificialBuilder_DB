@@ -14,86 +14,64 @@ namespace ArtificialBuilder
     /// </summary>
     public class AB_Db_Service : AB_Component
     {
-        private readonly List<AB_DDO_Observer_Component> m_observers = new();
-
         public override void OnAttach()
         {
+            if (!AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out AB_DDO_Subscription_Manager? mgr) || mgr == null) return;
+
             // --- App DB ---
-            AddObs(AB_DB_Command_Type.APP_DB_MODEL_GET_ALL, HandleAppModelGetAll);
-            AddObs(AB_DB_Command_Type.APP_DB_MODEL_GET, HandleAppModelGet);
-            AddObs(AB_DB_Command_Type.APP_DB_MODEL_ADD, HandleAppModelAdd);
-            AddObs(AB_DB_Command_Type.APP_DB_MODEL_SAVE, HandleAppModelSave);
-            AddObs(AB_DB_Command_Type.APP_DB_MODEL_DELETE, HandleAppModelDelete);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.APP_DB_MODEL_GET_ALL, HandleAppModelGetAll);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.APP_DB_MODEL_GET, HandleAppModelGet);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.APP_DB_MODEL_ADD, HandleAppModelAdd);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.APP_DB_MODEL_SAVE, HandleAppModelSave);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.APP_DB_MODEL_DELETE, HandleAppModelDelete);
 
             // --- Persona DB ---
-            AddObs(AB_DB_Command_Type.PERSONA_DB_LOAD_ACTIVE, HandlePersonaLoadActive);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.PERSONA_DB_LOAD_ACTIVE, HandlePersonaLoadActive);
 
             // --- Circuit DB ---
-            AddObs(AB_DB_Command_Type.CIRCUIT_DB_OPEN, HandleCircuitOpen);
-            AddObs(AB_DB_Command_Type.CIRCUIT_DB_CLOSE, HandleCircuitClose);
-            AddObs(AB_DB_Command_Type.CIRCUIT_DB_USED_SUB_CIRCUIT_GET_ALL, HandleCircuitUsedSubGetAll);
-            AddObs(AB_DB_Command_Type.CIRCUIT_DB_USED_SUB_CIRCUIT_ADD, HandleCircuitUsedSubAdd);
-            AddObs(AB_DB_Command_Type.CIRCUIT_DB_USED_SUB_CIRCUIT_DELETE, HandleCircuitUsedSubDelete);
-            AddObs(AB_DB_Command_Type.CIRCUIT_DB_HOSTED_LOGIC_GET_ALL, HandleCircuitHostedLogicGetAll);
-            AddObs(AB_DB_Command_Type.CIRCUIT_DB_HOSTED_LOGIC_ADD, HandleCircuitHostedLogicAdd);
-            AddObs(AB_DB_Command_Type.CIRCUIT_DB_HOSTED_LOGIC_DELETE, HandleCircuitHostedLogicDelete);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.CIRCUIT_DB_OPEN, HandleCircuitOpen);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.CIRCUIT_DB_CLOSE, HandleCircuitClose);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.CIRCUIT_DB_USED_SUB_CIRCUIT_GET_ALL, HandleCircuitUsedSubGetAll);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.CIRCUIT_DB_USED_SUB_CIRCUIT_ADD, HandleCircuitUsedSubAdd);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.CIRCUIT_DB_USED_SUB_CIRCUIT_DELETE, HandleCircuitUsedSubDelete);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.CIRCUIT_DB_HOSTED_LOGIC_GET_ALL, HandleCircuitHostedLogicGetAll);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.CIRCUIT_DB_HOSTED_LOGIC_ADD, HandleCircuitHostedLogicAdd);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.CIRCUIT_DB_HOSTED_LOGIC_DELETE, HandleCircuitHostedLogicDelete);
 
             // --- Logic DB ---
-            AddObs(AB_DB_Command_Type.LOGIC_DB_OPEN, HandleLogicOpen);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_CLOSE, HandleLogicClose);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_META_GET, HandleLogicMetaGet);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_META_SAVE, HandleLogicMetaSave);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_USED_CIRCUIT_GET_ALL, HandleLogicUsedCircuitGetAll);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_USED_CIRCUIT_ADD, HandleLogicUsedCircuitAdd);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_USED_CIRCUIT_SAVE, HandleLogicUsedCircuitSave);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_USED_CIRCUIT_DELETE, HandleLogicUsedCircuitDelete);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_USED_RESPONSE_UI_GET_ALL, HandleLogicUsedResponseUiGetAll);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_USED_RESPONSE_UI_ADD, HandleLogicUsedResponseUiAdd);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_USED_RESPONSE_UI_DELETE, HandleLogicUsedResponseUiDelete);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_SUB_LOGIC_GET_ALL, HandleLogicSubLogicGetAll);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_SUB_LOGIC_ADD, HandleLogicSubLogicAdd);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_SUB_LOGIC_DELETE, HandleLogicSubLogicDelete);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_HISTORY_GET_ALL, HandleLogicHistoryGetAll);
-            AddObs(AB_DB_Command_Type.LOGIC_DB_HISTORY_APPEND, HandleLogicHistoryAppend);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_OPEN, HandleLogicOpen);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_CLOSE, HandleLogicClose);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_META_GET, HandleLogicMetaGet);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_META_SAVE, HandleLogicMetaSave);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_USED_CIRCUIT_GET_ALL, HandleLogicUsedCircuitGetAll);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_USED_CIRCUIT_ADD, HandleLogicUsedCircuitAdd);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_USED_CIRCUIT_SAVE, HandleLogicUsedCircuitSave);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_USED_CIRCUIT_DELETE, HandleLogicUsedCircuitDelete);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_USED_RESPONSE_UI_GET_ALL, HandleLogicUsedResponseUiGetAll);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_USED_RESPONSE_UI_ADD, HandleLogicUsedResponseUiAdd);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_USED_RESPONSE_UI_DELETE, HandleLogicUsedResponseUiDelete);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_SUB_LOGIC_GET_ALL, HandleLogicSubLogicGetAll);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_SUB_LOGIC_ADD, HandleLogicSubLogicAdd);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_SUB_LOGIC_DELETE, HandleLogicSubLogicDelete);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_HISTORY_GET_ALL, HandleLogicHistoryGetAll);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.LOGIC_DB_HISTORY_APPEND, HandleLogicHistoryAppend);
 
             // --- Response UI DB ---
-            AddObs(AB_DB_Command_Type.RESPONSE_UI_DB_OPEN, HandleResponseUiOpen);
-            AddObs(AB_DB_Command_Type.RESPONSE_UI_DB_CLOSE, HandleResponseUiClose);
-            AddObs(AB_DB_Command_Type.RESPONSE_UI_DB_META_GET, HandleResponseUiMetaGet);
-            AddObs(AB_DB_Command_Type.RESPONSE_UI_DB_META_SAVE, HandleResponseUiMetaSave);
-            AddObs(AB_DB_Command_Type.RESPONSE_UI_DB_LAYER_GET_ALL, HandleResponseUiLayerGetAll);
-            AddObs(AB_DB_Command_Type.RESPONSE_UI_DB_LAYER_ADD, HandleResponseUiLayerAdd);
-            AddObs(AB_DB_Command_Type.RESPONSE_UI_DB_LAYER_SAVE, HandleResponseUiLayerSave);
-            AddObs(AB_DB_Command_Type.RESPONSE_UI_DB_LAYER_DELETE, HandleResponseUiLayerDelete);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.RESPONSE_UI_DB_OPEN, HandleResponseUiOpen);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.RESPONSE_UI_DB_CLOSE, HandleResponseUiClose);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.RESPONSE_UI_DB_META_GET, HandleResponseUiMetaGet);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.RESPONSE_UI_DB_META_SAVE, HandleResponseUiMetaSave);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.RESPONSE_UI_DB_LAYER_GET_ALL, HandleResponseUiLayerGetAll);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.RESPONSE_UI_DB_LAYER_ADD, HandleResponseUiLayerAdd);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.RESPONSE_UI_DB_LAYER_SAVE, HandleResponseUiLayerSave);
+            mgr.AddObserverFor(this, AB_DB_Command_Type.RESPONSE_UI_DB_LAYER_DELETE, HandleResponseUiLayerDelete);
         }
 
         public override void OnDetach()
         {
-            if (AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out var mgr))
-            {
-                foreach (AB_DDO_Observer_Component obs in m_observers)
-                {
-                    mgr.UnregisterObserver(obs);
-                }
-            }
-            m_observers.Clear();
+            if (AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out AB_DDO_Subscription_Manager? mgr) && mgr != null)
+                mgr.UnregisterOwner(this);
         }
-
-        private void AddObs(string _header, Action<AB_DDO_Command> _handler)
-        {
-            AB_DDO_Observer_Component obs = new();
-            obs.Configure(_header, _handler);
-            if (AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out var mgr))
-            {
-                mgr.RegisterObserver(obs);
-            }
-            m_observers.Add(obs);
-        }
-
-        /// <summary>(example-mental-restructure Phase C Sub 3) — typed enum overload.</summary>
-        private void AddObs(AB_Object_Command_Type _type, Action<AB_DDO_Command> _handler) => AddObs(AB_DDO_Headers.Get(_type), _handler);
-        private void AddObs(AB_Component_Command_Type _type, Action<AB_DDO_Command> _handler) => AddObs(AB_DDO_Headers.Get(_type), _handler);
-        private void AddObs(AB_DB_Command_Type _type, Action<AB_DDO_Command> _handler) => AddObs(AB_DDO_Headers.Get(_type), _handler);
 
         // ================ App DB ================
 

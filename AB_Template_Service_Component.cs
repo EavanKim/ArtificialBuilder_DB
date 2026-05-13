@@ -20,35 +20,23 @@ namespace ArtificialBuilder_EDP.Components
             private set { m_instance = value; }
         }
 
-        private readonly List<AB_DDO_Observer_Component> m_observers = new();
-
         public override void OnAttach()
         {
             Instance.Initialize();
-            AddObs(AB_Object_Command_Type.TEMPLATE_GET_ALL_CIRCUIT, HandleGetAllCircuit);
-            AddObs(AB_Object_Command_Type.TEMPLATE_ADD_CIRCUIT, HandleAddCircuit);
-            AddObs(AB_Object_Command_Type.TEMPLATE_DELETE_CIRCUIT, HandleDeleteCircuit);
-            AddObs(AB_Object_Command_Type.TEMPLATE_GET_ALL_GLOBAL, HandleGetAllGlobal);
-            AddObs(AB_Object_Command_Type.TEMPLATE_IMPORT_FROM_GLOBAL, HandleImportFromGlobal);
-            AddObs(AB_Object_Command_Type.TEMPLATE_SAVE_CIRCUIT, HandleSaveCircuit);
-            AddObs(AB_Object_Command_Type.TEMPLATE_SET_ACTIVE_CIRCUIT, HandleSetActiveCircuit);
+            if (!AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out AB_DDO_Subscription_Manager? mgr) || mgr == null) return;
+            mgr.AddObserverFor(this, AB_Object_Command_Type.TEMPLATE_GET_ALL_CIRCUIT, HandleGetAllCircuit);
+            mgr.AddObserverFor(this, AB_Object_Command_Type.TEMPLATE_ADD_CIRCUIT, HandleAddCircuit);
+            mgr.AddObserverFor(this, AB_Object_Command_Type.TEMPLATE_DELETE_CIRCUIT, HandleDeleteCircuit);
+            mgr.AddObserverFor(this, AB_Object_Command_Type.TEMPLATE_GET_ALL_GLOBAL, HandleGetAllGlobal);
+            mgr.AddObserverFor(this, AB_Object_Command_Type.TEMPLATE_IMPORT_FROM_GLOBAL, HandleImportFromGlobal);
+            mgr.AddObserverFor(this, AB_Object_Command_Type.TEMPLATE_SAVE_CIRCUIT, HandleSaveCircuit);
+            mgr.AddObserverFor(this, AB_Object_Command_Type.TEMPLATE_SET_ACTIVE_CIRCUIT, HandleSetActiveCircuit);
         }
 
         public override void OnDetach()
         {
-            if (AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out var mgr))
-            {
-                foreach (AB_DDO_Observer_Component obs in m_observers) mgr.UnregisterObserver(obs);
-            }
-            m_observers.Clear();
-        }
-
-        private void AddObs(AB_Object_Command_Type _type, Action<AB_DDO_Command> _handler)
-        {
-            AB_DDO_Observer_Component obs = new();
-            obs.Configure(_type, _handler);
-            if (AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out var mgr)) mgr.RegisterObserver(obs);
-            m_observers.Add(obs);
+            if (AB_Engine.TryGet<AB_DDO_Subscription_Manager>(out AB_DDO_Subscription_Manager? mgr) && mgr != null)
+                mgr.UnregisterOwner(this);
         }
 
         private static void PublishResult(AB_Object_Command_Type _header, AB_Id? _queryId, object _result)
