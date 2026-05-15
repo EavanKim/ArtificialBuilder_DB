@@ -10,8 +10,8 @@ namespace ArtificialBuilder
 {
     /// <summary>
     /// 단일 DB 매니저 ([[app-logic-separation]] 5 도메인 + [[unify-entry-points]] + [[blackboard-db]]).
-    /// 5 도메인 DB (App / Persona / Circuit / Logic / ResponseUi) lifecycle + dirty flush + 도메인 Proxy 진입.
-    /// 외부 호출 = DDO publish (AB_DDO_Headers.{APP,PERSONA,CIRCUIT,LOGIC,RESPONSE_UI}_DB_*) 또는 본 Manager 의 도메인별 Proxy 헬퍼.
+    /// 5 도메인 DB (App / Persona / Circuit / Logic / ResponseUi) lifecycle + 도메인 lookup.
+    /// 외부 호출 = DDO publish (AB_DDO_Headers.{APP,PERSONA,CIRCUIT,LOGIC,RESPONSE_UI}_DB_*) 매개 중앙 처리기 dispatch.
     /// 모듈 최상위 매니저 — AB_Manager (root 4) 후손. 별도 생존주기 / 풀 X / Loop 등록 X.
     /// </summary>
     public class AB_Db_Manager : AB_Manager
@@ -36,19 +36,6 @@ namespace ArtificialBuilder
         public AB_Logic_Db Logic => Instance.Logic;
         /// <summary>Response UI DB (per-response-ui, 화면 구성).</summary>
         public AB_Response_Ui_Db ResponseUi => Instance.ResponseUi;
-
-        // --- 도메인 Proxy 단축 (read/write 진입 — sub 5 에서 DDO 옵저버로 보강) ---
-
-        /// <summary>App DB Proxy ([[ddo-command-only]] sub 5 에서 DDO 옵저버 추가).</summary>
-        public AB_App_Db_Proxy AppProxy => global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_App_Db_Proxy>();
-        /// <summary>Persona DB Proxy.</summary>
-        public AB_Persona_Db_Proxy PersonaProxy => global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Persona_Db_Proxy>();
-        /// <summary>Circuit DB Proxy.</summary>
-        public AB_Circuit_Db_Proxy CircuitProxy => global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Circuit_Db_Proxy>();
-        /// <summary>Logic DB Proxy.</summary>
-        public AB_Logic_Db_Proxy LogicProxy => global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Logic_Db_Proxy>();
-        /// <summary>Response UI DB Proxy.</summary>
-        public AB_Response_Ui_Db_Proxy ResponseUiProxy => global::ArtificialBuilder_EDP.Core.AB_Engine.GetService<AB_Response_Ui_Db_Proxy>();
 
         /// <summary>5 도메인 DB lifecycle 초기화 + 활성 페르소나 로드.</summary>
         public async Task InitializeAsync()
