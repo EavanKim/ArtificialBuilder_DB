@@ -140,7 +140,7 @@ namespace ArtificialBuilder.DB
         //   entity 정의 후 case 본체 = txn.AddAsync / GetByIdAsync / Update / Remove 매개 채움.
         //   None / End / 미등록 case = Crash-First throw.
         //   storage-policy 2026-05-16 정본 매개 Circuit / Logic / Response_UI = JSON 이전. 본 분기 제외.
-        //   Package prefix = entity 스키마 결재 후 enum 항목 + 본 분기 동시 신설 ([[feedback_no_cut_only_stub]]).
+        //   APP_DB_CREDENTIAL_* = 암호화 키 운영 (KDF / DPAPI / Keychain) 결재 후 별도 그룹 매개 신설 ([[feedback_no_cut_only_stub]]).
         private void HandleRequest(EDP_Db_Transaction _txn, AB_Object_DB_Request_Envelope _env)
         {
             AB_DB_Command_Type cmd = _env.CommandType;
@@ -163,20 +163,33 @@ namespace ArtificialBuilder.DB
                 HandlePersonaDb(_txn, _env);
                 return;
             }
+            if (name.StartsWith("PACKAGE_DB_"))
+            {
+                HandlePackageDb(_txn, _env);
+                return;
+            }
             throw new InvalidOperationException("AB_Manager_DB.HandleRequest: 미등록 도메인 prefix command=" + name);
         }
 
         // 도메인 App DB 처리. APP_DB_MODEL_* 5 case (GET_ALL / GET / ADD / SAVE / DELETE).
-        // 본 skeleton = 모든 case stub. entity (예: AB_App_Model) DbSet 정의 후 본체.
+        // 본 skeleton = 모든 case stub. handler 본체 = 칠판 ↔ EF entity 데이터 흐름 결재 후 별도 그룹 (db-handler-blackboard-binding).
         private void HandleAppDb(EDP_Db_Transaction _txn, AB_Object_DB_Request_Envelope _env)
         {
-            // skeleton — entity DbSet 정의 후 본체.
+            // skeleton — 칠판 ↔ EF entity 흐름 결재 후 본체.
         }
 
         // 도메인 Persona DB 처리. PERSONA_DB_LOAD_ACTIVE 1 case.
+        // 본 skeleton = 모든 case stub. handler 본체 = 칠판 ↔ EF entity 데이터 흐름 결재 후 별도 그룹.
         private void HandlePersonaDb(EDP_Db_Transaction _txn, AB_Object_DB_Request_Envelope _env)
         {
-            // skeleton — entity DbSet 정의 후 본체.
+            // skeleton — 칠판 ↔ EF entity 흐름 결재 후 본체.
+        }
+
+        // 도메인 Package DB 처리. PACKAGE_DB_INFO_* 5 case (GET_ALL / GET / ADD / SAVE / DELETE).
+        // 본 skeleton = 모든 case stub. handler 본체 = 칠판 ↔ EF entity 데이터 흐름 결재 후 별도 그룹.
+        private void HandlePackageDb(EDP_Db_Transaction _txn, AB_Object_DB_Request_Envelope _env)
+        {
+            // skeleton — 칠판 ↔ EF entity 흐름 결재 후 본체.
         }
 
         // Loop tick 매개 호출. 매 tick 단일 직렬화 (engine 안 _syncLock) 매개 dirty entry 파일 flush.
