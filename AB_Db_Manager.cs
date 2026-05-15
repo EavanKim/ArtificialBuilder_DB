@@ -1,49 +1,22 @@
 using ArtificialBuilder.Common.Base;
-using ArtificialBuilder_EDP;
-using ArtificialBuilder_EDP.Core;
+using ArtificialBuilder.DB.Object;
 using EDPFW;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace ArtificialBuilder
+namespace ArtificialBuilder.DB
 {
-    /// <summary>
-    /// 단일 DB 매니저 ([[app-logic-separation]] 5 도메인 + [[unify-entry-points]] + [[blackboard-db]]).
-    /// 5 도메인 DB (App / Persona / Circuit / Logic / ResponseUi) lifecycle + 도메인 lookup.
-    /// 외부 호출 = DDO publish (AB_DDO_Headers.{APP,PERSONA,CIRCUIT,LOGIC,RESPONSE_UI}_DB_*) 매개 중앙 처리기 dispatch.
-    /// 모듈 최상위 매니저 — AB_Manager (root 4) 후손. 별도 생존주기 / 풀 X / Loop 등록 X.
-    /// </summary>
+    // 모듈 최상위 매니저. AB_Manager (root 4) 후손 — 별도 생존주기 / 풀 X / Loop 등록 X.
+    // 5 도메인 (App / Persona / Circuit / Logic / Response_Ui) AB_Object_Db_* 단일 진입 lookup. 본체 lifecycle = 각 도메인 Object 매개 의무.
+    // 외부 호출 = DDO publish 매개 중앙 처리기 dispatch. 매니저 = lookup 진입점 만.
     public class AB_Db_Manager : AB_Manager
     {
-        /// <summary>5 도메인 DB lifecycle 본체.</summary>
-        private AB_DB m_instance = new();
-        public AB_DB Instance
+        public AB_Object_Db_App App => EDP_Container.Get<AB_Object_Db_App>();
+        public AB_Object_Db_Persona Persona => EDP_Container.Get<AB_Object_Db_Persona>();
+        public AB_Object_Db_Circuit Circuit => EDP_Container.Get<AB_Object_Db_Circuit>();
+        public AB_Object_Db_Logic Logic => EDP_Container.Get<AB_Object_Db_Logic>();
+        public AB_Object_Db_Response_Ui ResponseUi => EDP_Container.Get<AB_Object_Db_Response_Ui>();
+
+        public override void Dispose()
         {
-            get { return m_instance; }
-            private set { m_instance = value; }
         }
-
-        // --- 도메인 lifecycle 단축 ---
-
-        /// <summary>App DB (글로벌, 로직 무관 [[app-logic-separation]]).</summary>
-        public AB_App_Db App => Instance.App;
-        /// <summary>Persona DB (별도 schema 보존).</summary>
-        public AB_Persona_Db Persona => Instance.Persona;
-        /// <summary>Circuit DB (사용자 완성품 / 노드 그래프 + 자원).</summary>
-        public AB_Circuit_Db Circuit => Instance.Circuit;
-        /// <summary>Logic DB (per-logic, 노드 정보).</summary>
-        public AB_Logic_Db Logic => Instance.Logic;
-        /// <summary>Response UI DB (per-response-ui, 화면 구성).</summary>
-        public AB_Response_Ui_Db ResponseUi => Instance.ResponseUi;
-
-        /// <summary>5 도메인 DB lifecycle 초기화 + 활성 페르소나 로드.</summary>
-        public async Task InitializeAsync()
-        {
-            await Instance.InitializeAsync();
-        }
-
-        /// <summary>DB 는 Program.Main 에서 종료 처리하므로 비움.</summary>
-        public override void Dispose() { /* disposal handled by Program.Main */ }
     }
 }
