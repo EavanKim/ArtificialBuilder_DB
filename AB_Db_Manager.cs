@@ -1,3 +1,4 @@
+using ArtificialBuilder.Common.Base;
 using ArtificialBuilder_EDP;
 using ArtificialBuilder_EDP.Core;
 using EDPFW;
@@ -11,8 +12,9 @@ namespace ArtificialBuilder
     /// 단일 DB 매니저 ([[app-logic-separation]] 5 도메인 + [[unify-entry-points]] + [[blackboard-db]]).
     /// 5 도메인 DB (App / Persona / Circuit / Logic / ResponseUi) lifecycle + dirty flush + 도메인 Proxy 진입.
     /// 외부 호출 = DDO publish (AB_DDO_Headers.{APP,PERSONA,CIRCUIT,LOGIC,RESPONSE_UI}_DB_*) 또는 본 Manager 의 도메인별 Proxy 헬퍼.
+    /// 모듈 최상위 매니저 — AB_Manager (root 4) 후손. 별도 생존주기 / 풀 X / Loop 등록 X.
     /// </summary>
-    public class AB_Db_Manager : AB_Component
+    public class AB_Db_Manager : AB_Manager
     {
         /// <summary>5 도메인 DB lifecycle 본체.</summary>
         private AB_DB m_instance = new();
@@ -55,20 +57,6 @@ namespace ArtificialBuilder
         }
 
         /// <summary>DB 는 Program.Main 에서 종료 처리하므로 비움.</summary>
-        public override void OnDetach() { /* disposal handled by Program.Main */ }
-
-        /// <summary>단일 스레드 dirty 엔트리 flush. Tick 단계 — 경쟁 없음. [[blackboard-db]].</summary>
-        public override IEnumerator<EDP_Coroutine_State> run(double _deltaSec)
-        {
-            try
-            {
-                Instance.SyncDirtyToFile();
-            }
-            catch (Exception ex)
-            {
-                ArtificialBuilder_EDP.Core.AB_Engine.GetService<ArtificialBuilder_EDP.AB_Log>().Critical("DbManager", $"DB flush 실패: {ex.Message}");
-            }
-            yield break;
-        }
+        public override void Dispose() { /* disposal handled by Program.Main */ }
     }
 }
