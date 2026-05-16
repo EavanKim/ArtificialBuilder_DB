@@ -42,11 +42,17 @@ namespace ArtificialBuilder.DB
         // EDP_Db_Engine 발급 핸들. OpenDatabase 매개 1 회 발급. 0 = 미부착 (Crash-First).
         private int m_handle;
 
+        // 다형성 dispatch 등록부 (canon § "Object / Component 다형성 조립 패턴" 2026-05-17 정합).
+        // 매니저는 AB_Object_DB abstract 만 매개 동작 — 콘크리트 (Normal / Sharding_Key / Sharding_History) 노출 X.
+        // Round 1 (skeleton) = 등록 + Dispatch_ lookup 만. 매니저 안 본 dict 매개 호출 site 마이그 = round 2.
+        private readonly Dictionary<AB_DB_Object_Kind, AB_Object_DB> m_db_objects;
+
         public AB_Manager_DB()
         {
             m_engine = new EDP_Db_Engine();
             m_queue = new ConcurrentQueue<AB_Object_DB_Request_Envelope>();
             m_handle = 0;
+            m_db_objects = new Dictionary<AB_DB_Object_Kind, AB_Object_DB>();
         }
 
         public EDP_Db_Engine Engine => m_engine;
@@ -85,6 +91,50 @@ namespace ArtificialBuilder.DB
                 throw new InvalidOperationException("AB_Manager_DB.OpenDatabase: handle 발급 실패 file=" + _file_path);
             }
             m_handle = handle;
+        }
+
+        // 다형성 등록 — Program.cs 부트 시점 콘크리트 Object instance 매개 kind 등록.
+        // canon § "Object / Component 다형성 조립 패턴" 정합 — 등록 인자 = AB_Object_DB abstract typed.
+        // None / End / 중복 등록 = Crash-First throw.
+        public void RegisterDbObject_(AB_DB_Object_Kind _kind, AB_Object_DB _db_object)
+        {
+            if (_kind == AB_DB_Object_Kind.None)
+            {
+                throw new InvalidOperationException("AB_Manager_DB.RegisterDbObject_: None Kind 위반");
+            }
+            if (_kind == AB_DB_Object_Kind.End)
+            {
+                throw new InvalidOperationException("AB_Manager_DB.RegisterDbObject_: End Kind 위반");
+            }
+            if (_db_object == null)
+            {
+                throw new InvalidOperationException("AB_Manager_DB.RegisterDbObject_: db_object null Kind=" + _kind);
+            }
+            if (m_db_objects.ContainsKey(_kind))
+            {
+                throw new InvalidOperationException("AB_Manager_DB.RegisterDbObject_: 중복 등록 Kind=" + _kind);
+            }
+            m_db_objects[_kind] = _db_object;
+        }
+
+        // 다형성 dispatch — kind 매개 등록 콘크리트 instance lookup. 반환 = abstract typed (콘크리트 노출 X).
+        // 매니저 안 본 메서드 매개 호출 site 통일 = round 2 마이그 — round 1 = lookup API 만.
+        // None / End / 미등록 = Crash-First throw.
+        public AB_Object_DB Dispatch_(AB_DB_Object_Kind _kind)
+        {
+            if (_kind == AB_DB_Object_Kind.None)
+            {
+                throw new InvalidOperationException("AB_Manager_DB.Dispatch_: None Kind 위반");
+            }
+            if (_kind == AB_DB_Object_Kind.End)
+            {
+                throw new InvalidOperationException("AB_Manager_DB.Dispatch_: End Kind 위반");
+            }
+            if (!m_db_objects.TryGetValue(_kind, out AB_Object_DB? db))
+            {
+                throw new InvalidOperationException("AB_Manager_DB.Dispatch_: 미등록 Kind=" + _kind);
+            }
+            return db;
         }
 
         // App 도메인 DB 요청 큐 enqueue. caller = AB_DB_App_Command_Type typed enum 매개 호출.
@@ -412,6 +462,12 @@ namespace ArtificialBuilder.DB
 
         public override void Dispose()
         {
+            // 다형성 등록 콘크리트 Object cascade dispose — 각자 Component (File / CRUD) 매개 handle close.
+            foreach (AB_Object_DB db in m_db_objects.Values)
+            {
+                db.Dispose();
+            }
+            m_db_objects.Clear();
             if (m_handle != 0)
             {
                 m_engine.CloseAsync(m_handle).GetAwaiter().GetResult();
