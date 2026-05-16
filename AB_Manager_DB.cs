@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using ArtificialBuilder;
 using ArtificialBuilder.Common.Base;
+using ArtificialBuilder.DB.Data;
+using ArtificialBuilder.DB.Object;
 using EDPFW;
 
 namespace ArtificialBuilder.DB
@@ -14,10 +17,15 @@ namespace ArtificialBuilder.DB
     //   threading: "EF Core does not support multiple parallel operations being run on the same DbContext instance" — entry.Lock (SemaphoreSlim) 매개 직렬화.
     // CRUD 작업 = 외부 caller 가 EnqueueRequest 호출 → 내부 ConcurrentQueue 보관 → 다음 tick (e) 단계에서 DrainQueue 매개 트랜잭셔널 직렬 처리.
     //   EnqueueRequest = 도메인별 typed overload 3 (App / Persona / Package). caller = typed enum 매개 호출 → 내부 (int)cast 매개 envelope.CommandId 채움 (사용자 정본 2026-05-16 = 전송 정수형).
-    //   DrainQueue = BeginTransactionAsync 매개 단일 트랜잭션 wrap → 큐 안 모든 envelope 직렬 처리 → CommitAsync 매개 1 회 SaveChanges + dirty 마킹.
-    //   처리 안 throw = 트랜잭션 dispose (ChangeTracker.Clear 매개 rollback) + 잔여 envelope 풀 반환 후 본 tick 종료.
-    //   본 그룹 = skeleton (handle / 트랜잭션 wrap / 3 도메인 처리 split stub — App / Persona / Package). 각 typed enum 의 실 EF Core 호출 본체 = 도메인 entity DbSet 정의 후 (별도 그룹).
+    //   DrainQueue = BeginTransactionAsync 매개 단일 트랜잭션 wrap → 큐 안 모든 envelope 직렬 처리 → CommitAsync 매개 1 회 SaveChanges + dirty 마킹 → post-commit NotifyDataKey 발화.
+    //   처리 안 throw = 트랜잭션 dispose (ChangeTracker.Clear 매개 rollback) + 잔여 envelope 풀 반환 + notify X (Crash-First).
     //   storage-policy 2026-05-16 정본 매개 Circuit / Logic / Response_UI = JSON 이전 매개 본 매니저 제외.
+    //
+    // 칠판 ↔ EF entity 흐름 (db-app-entity-body 정합 2026-05-16):
+    //   envelope.DataKey = 입력 칠판 slot DataId (entity Id 또는 entity 본체)
+    //   envelope.TargetDataId = 출력 칠판 slot DataId (Read 결과). Read 외 = 0
+    //   handler 매개 m_blackboard.Lookup<T> 입력 read / Lookup<T>.Set 출력 write
+    //   NotifyDataKey 발화 = post-commit 단일 점 — HashSet<long> 매개 DrainQueue 안 모음 → CommitAsync 성공 후 발화 ([[feedback_call_via_di_queue]] 정합)
     public class AB_Manager_DB : AB_Manager
     {
         private readonly EDP_Db_Engine m_engine;
@@ -27,6 +35,9 @@ namespace ArtificialBuilder.DB
 
         // Envelope pool 매니저 ref — EnqueueRequest 시점 Acquire / DrainQueue 시점 Release 반환.
         private AB_Manager_Object_Instance_Pool? m_pool_manager;
+
+        // 칠판 ref — handler 매개 입력 read / 출력 write + post-commit NotifyDataKey 발화 site.
+        private AB_Object_Blackboard? m_blackboard;
 
         // EDP_Db_Engine 발급 핸들. OpenDatabase 매개 1 회 발급. 0 = 미부착 (Crash-First).
         private int m_handle;
@@ -46,6 +57,12 @@ namespace ArtificialBuilder.DB
         public void AttachPoolManager(AB_Manager_Object_Instance_Pool _pool_manager)
         {
             m_pool_manager = _pool_manager;
+        }
+
+        // Program.cs 부트 시점 호출 (AttachPoolManager 후 / OpenDatabase 전). 칠판 ref 등록 매개 handler 안 Lookup / Set + post-commit NotifyDataKey 발화 가능 상태 진입.
+        public void AttachBlackboard(AB_Object_Blackboard _blackboard)
+        {
+            m_blackboard = _blackboard;
         }
 
         // Program.cs 부트 시점 호출 (AttachPoolManager 후). 단일 DB 파일 open → handle 발급.
@@ -110,8 +127,8 @@ namespace ArtificialBuilder.DB
         // AB_Object_Loop.Tick (e-1) 단계 매개 매 tick 호출. 큐 안 모든 요청 batch drain → 단일 트랜잭션 wrap → 직렬 처리.
         //   큐 empty = no-op (트랜잭션 미 begin).
         //   BeginTransactionAsync = entry.Lock (SemaphoreSlim) 매개 직렬화 → 본 매개 안 다른 EF Core 작업 진입 X.
-        //   처리 안 throw = ChangeTracker.Clear (rollback) + 잔여 envelope 풀 반환 후 throw 재던지 (Crash-First).
-        //   CommitAsync = 1 회 SaveChangesAsync + Engine.MarkDirty 매개 다음 SyncDirtyToFile 대상.
+        //   처리 안 throw = ChangeTracker.Clear (rollback) + 잔여 envelope 풀 반환 후 throw 재던지 (Crash-First). notify_ids 발화 X.
+        //   CommitAsync 성공 후 notify_ids HashSet<long> 매개 칠판 NotifyDataKey 발화 — 옵저버 측 메시지 큐 enqueue ([[feedback_call_via_di_queue]] 정합).
         public void DrainQueue()
         {
             if (m_pool_manager == null)
@@ -127,6 +144,7 @@ namespace ArtificialBuilder.DB
                 throw new InvalidOperationException("AB_Manager_DB.DrainQueue: handle 미부착 — OpenDatabase 선 호출");
             }
             EDP_Db_Transaction txn = m_engine.BeginTransactionAsync(m_handle).GetAwaiter().GetResult();
+            HashSet<long> notify_ids = new HashSet<long>();
             bool committed = false;
             try
             {
@@ -135,6 +153,10 @@ namespace ArtificialBuilder.DB
                     try
                     {
                         HandleRequest(txn, env);
+                        if (env.TargetDataId != 0)
+                        {
+                            notify_ids.Add(env.TargetDataId);
+                        }
                     }
                     finally
                     {
@@ -152,13 +174,19 @@ namespace ArtificialBuilder.DB
                     txn.DisposeAsync().GetAwaiter().GetResult();
                 }
             }
+            if (m_blackboard != null)
+            {
+                foreach (long id in notify_ids)
+                {
+                    m_blackboard.NotifyDataKey(id);
+                }
+            }
         }
 
         // 1 요청 처리. envelope.DomainKind 매개 3 도메인 handler 분기 (App / Persona / Package).
-        //   각 handler = (PerDomainEnum)envelope.CommandId cast 매개 switch — 본 skeleton 단계 = case stub (entity 본체 X / 실 EF Core 호출 X).
+        //   각 handler = (PerDomainEnum)envelope.CommandId cast 매개 switch.
         //   None / End / 미등록 DomainKind = Crash-First throw.
         //   storage-policy 2026-05-16 정본 매개 Circuit / Logic / Response_UI = JSON 이전. 본 분기 제외.
-        //   APP_DB_CREDENTIAL_* = 암호화 키 운영 결재 후 별도 그룹 매개 신설 ([[feedback_no_cut_only_stub]]).
         private void HandleRequest(EDP_Db_Transaction _txn, AB_Object_DB_Request_Envelope _env)
         {
             AB_DB_Domain_Kind domain = _env.DomainKind;
@@ -188,25 +216,89 @@ namespace ArtificialBuilder.DB
             throw new InvalidOperationException("AB_Manager_DB.HandleRequest: 미등록 DomainKind=" + domain);
         }
 
-        // 도메인 App DB 처리. AB_DB_App_Command_Type 5 case (MODEL_GET_ALL / MODEL_GET / MODEL_ADD / MODEL_SAVE / MODEL_DELETE).
-        // 본 skeleton = 모든 case stub. handler 본체 = 칠판 ↔ EF entity 데이터 흐름 결재 후 별도 그룹 (db-app-entity-body).
+        // 도메인 App DB 처리. AB_DB_App_Command_Type 5 case 본체 (MODEL_GET_ALL / GET / ADD / SAVE / DELETE).
+        //   slot 타입: MODEL_GET_ALL TargetDataId = AB_Data_DB_App_Model_List / MODEL_GET DataKey = AB_Data_Long, TargetDataId = AB_Data_DB_App_Model
+        //              MODEL_ADD / SAVE DataKey = AB_Data_DB_App_Model / MODEL_DELETE DataKey = AB_Data_Long
+        //   CREDENTIAL_* = 암호화 키 운영 결재 후 별도 그룹 (db-credential-encryption) 매개 신설 ([[feedback_no_cut_only_stub]]).
         private void HandleAppDb(EDP_Db_Transaction _txn, AB_DB_App_Command_Type _command, AB_Object_DB_Request_Envelope _env)
         {
-            // skeleton — 칠판 ↔ EF entity 흐름 결재 후 본체.
+            if (m_blackboard == null)
+            {
+                throw new InvalidOperationException("AB_Manager_DB.HandleAppDb: Blackboard 미부착 — AttachBlackboard 선 호출");
+            }
+            if (_command == AB_DB_App_Command_Type.None)
+            {
+                throw new InvalidOperationException("AB_Manager_DB.HandleAppDb: None Command 위반");
+            }
+            if (_command == AB_DB_App_Command_Type.End)
+            {
+                throw new InvalidOperationException("AB_Manager_DB.HandleAppDb: End Command 위반");
+            }
+            if (_command == AB_DB_App_Command_Type.MODEL_GET_ALL)
+            {
+                List<AB_Object_DB_App_Model> all = _txn.GetAllAsync<AB_Object_DB_App_Model>().GetAwaiter().GetResult();
+                AB_Data_DB_App_Model_List target = m_blackboard.Lookup<AB_Data_DB_App_Model_List>(_env.TargetDataId);
+                target.Set(all);
+                return;
+            }
+            if (_command == AB_DB_App_Command_Type.MODEL_GET)
+            {
+                AB_Data_Long input_id = m_blackboard.Lookup<AB_Data_Long>(_env.DataKey);
+                long id = input_id.Get();
+                AB_Object_DB_App_Model? entity = _txn.GetByIdAsync<AB_Object_DB_App_Model>(id).GetAwaiter().GetResult();
+                AB_Data_DB_App_Model target = m_blackboard.Lookup<AB_Data_DB_App_Model>(_env.TargetDataId);
+                target.Set(entity);
+                return;
+            }
+            if (_command == AB_DB_App_Command_Type.MODEL_ADD)
+            {
+                AB_Data_DB_App_Model input = m_blackboard.Lookup<AB_Data_DB_App_Model>(_env.DataKey);
+                AB_Object_DB_App_Model? entity = input.Get();
+                if (entity == null)
+                {
+                    throw new InvalidOperationException("AB_Manager_DB.HandleAppDb.MODEL_ADD: 입력 entity null — DataKey=" + _env.DataKey);
+                }
+                _txn.AddAsync(entity).GetAwaiter().GetResult();
+                return;
+            }
+            if (_command == AB_DB_App_Command_Type.MODEL_SAVE)
+            {
+                AB_Data_DB_App_Model input = m_blackboard.Lookup<AB_Data_DB_App_Model>(_env.DataKey);
+                AB_Object_DB_App_Model? entity = input.Get();
+                if (entity == null)
+                {
+                    throw new InvalidOperationException("AB_Manager_DB.HandleAppDb.MODEL_SAVE: 입력 entity null — DataKey=" + _env.DataKey);
+                }
+                _txn.Update(entity);
+                return;
+            }
+            if (_command == AB_DB_App_Command_Type.MODEL_DELETE)
+            {
+                AB_Data_Long input_id = m_blackboard.Lookup<AB_Data_Long>(_env.DataKey);
+                long id = input_id.Get();
+                AB_Object_DB_App_Model? entity = _txn.GetByIdAsync<AB_Object_DB_App_Model>(id).GetAwaiter().GetResult();
+                if (entity == null)
+                {
+                    throw new InvalidOperationException("AB_Manager_DB.HandleAppDb.MODEL_DELETE: 삭제 대상 entity 미존재 id=" + id);
+                }
+                _txn.Remove(entity);
+                return;
+            }
+            throw new InvalidOperationException("AB_Manager_DB.HandleAppDb: 미등록 Command=" + _command);
         }
 
         // 도메인 Persona DB 처리. AB_DB_Persona_Command_Type 1 case (LOAD_ACTIVE).
-        // 본 skeleton = 모든 case stub. handler 본체 = 칠판 ↔ EF entity 데이터 흐름 결재 후 별도 그룹.
+        // 본 skeleton = 모든 case stub. handler 본체 = queue #5 db-persona-entity-body 매개 채움.
         private void HandlePersonaDb(EDP_Db_Transaction _txn, AB_DB_Persona_Command_Type _command, AB_Object_DB_Request_Envelope _env)
         {
-            // skeleton — 칠판 ↔ EF entity 흐름 결재 후 본체.
+            // skeleton — queue #5 db-persona-entity-body 매개 본체.
         }
 
-        // 도메인 Package DB 처리. AB_DB_Package_Command_Type 5 case (INFO_GET_ALL / INFO_GET / INFO_ADD / INFO_SAVE / INFO_DELETE).
-        // 본 skeleton = 모든 case stub. handler 본체 = 칠판 ↔ EF entity 데이터 흐름 결재 후 별도 그룹.
+        // 도메인 Package DB 처리. AB_DB_Package_Command_Type 5 case (INFO_GET_ALL / GET / ADD / SAVE / DELETE).
+        // 본 skeleton = 모든 case stub. handler 본체 = queue #6 db-package-entity-body 매개 채움.
         private void HandlePackageDb(EDP_Db_Transaction _txn, AB_DB_Package_Command_Type _command, AB_Object_DB_Request_Envelope _env)
         {
-            // skeleton — 칠판 ↔ EF entity 흐름 결재 후 본체.
+            // skeleton — queue #6 db-package-entity-body 매개 본체.
         }
 
         // Loop tick 매개 호출. 매 tick 단일 직렬화 (engine 안 _syncLock) 매개 dirty entry 파일 flush.
@@ -224,6 +316,7 @@ namespace ArtificialBuilder.DB
             }
             m_engine.DisposeAsync().GetAwaiter().GetResult();
             m_pool_manager = null;
+            m_blackboard = null;
         }
     }
 }
