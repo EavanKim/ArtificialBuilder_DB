@@ -124,7 +124,7 @@ namespace ArtificialBuilder.DB
             m_queue.Enqueue(env);
         }
 
-        // AB_Object_Loop.Tick (e-1) 단계 매개 매 tick 호출. 큐 안 모든 요청 batch drain → 단일 트랜잭션 wrap → 직렬 처리.
+        // AB_Manager_Engine.Tick (e-1) 단계 매개 매 tick 호출 (본 매니저 `Tick` override 안 직렬). 큐 안 모든 요청 batch drain → 단일 트랜잭션 wrap → 직렬 처리.
         //   큐 empty = no-op (트랜잭션 미 begin).
         //   BeginTransactionAsync = entry.Lock (SemaphoreSlim) 매개 직렬화 → 본 매개 안 다른 EF Core 작업 진입 X.
         //   처리 안 throw = ChangeTracker.Clear (rollback) + 잔여 envelope 풀 반환 후 throw 재던지 (Crash-First). notify_ids 발화 X.
@@ -393,10 +393,21 @@ namespace ArtificialBuilder.DB
             throw new InvalidOperationException("AB_Manager_DB.HandlePackageDb: 미등록 Command=" + _command);
         }
 
-        // Loop tick 매개 호출. 매 tick 단일 직렬화 (engine 안 _syncLock) 매개 dirty entry 파일 flush.
+        // Engine tick (e) 매개 호출. 매 tick 단일 직렬화 (engine 안 _syncLock) 매개 dirty entry 파일 flush.
         public void SyncDirtyToFile()
         {
             m_engine.SyncDirtyToFile();
+        }
+
+        // Tick (e) 단계 자기 본체 — DrainQueue + SyncDirtyToFile 직렬.
+        //   (e-1) DrainQueue — 내부 큐 안 지연 대기 모든 DB 요청 batch drain (트랜잭셔널 직렬).
+        //   (e-2) SyncDirtyToFile — dirty entry 파일 flush.
+        // AB_Manager_Engine.Tick (e) 매개 매 사이클 호출. m_handle 미부착 시 DrainQueue 매개 자기 throw.
+        public override void Tick(double _delta_sec)
+        {
+            base.Tick(_delta_sec);
+            DrainQueue();
+            SyncDirtyToFile();
         }
 
         public override void Dispose()
