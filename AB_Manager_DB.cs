@@ -13,9 +13,10 @@ namespace ArtificialBuilder.DB
     //   MS Learn 정본: "DbContext instance represents a session with the database... Unit Of Work + Repository patterns".
     //   threading: "EF Core does not support multiple parallel operations being run on the same DbContext instance" — entry.Lock (SemaphoreSlim) 매개 직렬화.
     // CRUD 작업 = 외부 caller 가 EnqueueRequest 호출 → 내부 ConcurrentQueue 보관 → 다음 tick (e) 단계에서 DrainQueue 매개 트랜잭셔널 직렬 처리.
+    //   EnqueueRequest = 도메인별 typed overload 3 (App / Persona / Package). caller = typed enum 매개 호출 → 내부 (int)cast 매개 envelope.CommandId 채움 (사용자 정본 2026-05-16 = 전송 정수형).
     //   DrainQueue = BeginTransactionAsync 매개 단일 트랜잭션 wrap → 큐 안 모든 envelope 직렬 처리 → CommitAsync 매개 1 회 SaveChanges + dirty 마킹.
     //   처리 안 throw = 트랜잭션 dispose (ChangeTracker.Clear 매개 rollback) + 잔여 envelope 풀 반환 후 본 tick 종료.
-    //   본 그룹 = skeleton (handle / 트랜잭션 wrap / 3 도메인 처리 split stub — App / Persona / Package). 각 Command_Type 의 실 EF Core 호출 본체 = 도메인 entity DbSet 정의 후 (별도 그룹).
+    //   본 그룹 = skeleton (handle / 트랜잭션 wrap / 3 도메인 처리 split stub — App / Persona / Package). 각 typed enum 의 실 EF Core 호출 본체 = 도메인 entity DbSet 정의 후 (별도 그룹).
     //   storage-policy 2026-05-16 정본 매개 Circuit / Logic / Response_UI = JSON 이전 매개 본 매니저 제외.
     public class AB_Manager_DB : AB_Manager
     {
@@ -69,12 +70,29 @@ namespace ArtificialBuilder.DB
             m_handle = handle;
         }
 
-        // 외부 caller 매개 DB 요청 큐 enqueue.
-        //   _command_type = CRUD / 도메인 분류 (AB_DB_Command_Type)
+        // App 도메인 DB 요청 큐 enqueue. caller = AB_DB_App_Command_Type typed enum 매개 호출.
+        //   _command = App 도메인 커맨드 (typed enum) → 내부 (int)cast 매개 envelope.CommandId 채움 (전송 정수형)
         //   _data_key = 입력 데이터 id (저장 / 조회 키)
         //   _target_data_id = 출력 데이터 id (Read 결과 슬롯). Read 외는 0
-        // Pool Manager 매개 envelope Acquire → field 채움 → m_queue.Enqueue.
-        public void EnqueueRequest(AB_DB_Command_Type _command_type, long _data_key, long _target_data_id)
+        public void EnqueueRequest(AB_DB_App_Command_Type _command, long _data_key, long _target_data_id)
+        {
+            EnqueueRequestInternal(AB_DB_Domain_Kind.App, (int)_command, _data_key, _target_data_id);
+        }
+
+        // Persona 도메인 DB 요청 큐 enqueue. caller = AB_DB_Persona_Command_Type typed enum 매개 호출.
+        public void EnqueueRequest(AB_DB_Persona_Command_Type _command, long _data_key, long _target_data_id)
+        {
+            EnqueueRequestInternal(AB_DB_Domain_Kind.Persona, (int)_command, _data_key, _target_data_id);
+        }
+
+        // Package 도메인 DB 요청 큐 enqueue. caller = AB_DB_Package_Command_Type typed enum 매개 호출.
+        public void EnqueueRequest(AB_DB_Package_Command_Type _command, long _data_key, long _target_data_id)
+        {
+            EnqueueRequestInternal(AB_DB_Domain_Kind.Package, (int)_command, _data_key, _target_data_id);
+        }
+
+        // 도메인별 typed overload 3 의 단일 내부 진입. Pool Manager 매개 envelope Acquire → field 채움 → m_queue.Enqueue.
+        private void EnqueueRequestInternal(AB_DB_Domain_Kind _domain, int _command_id, long _data_key, long _target_data_id)
         {
             if (m_pool_manager == null)
             {
@@ -82,7 +100,8 @@ namespace ArtificialBuilder.DB
             }
             AB_Object_DB_Request_Envelope? env = null;
             m_pool_manager.Acquire(ref env);
-            env!.CommandType = _command_type;
+            env!.DomainKind = _domain;
+            env.CommandId = _command_id;
             env.DataKey = _data_key;
             env.TargetDataId = _target_data_id;
             m_queue.Enqueue(env);
@@ -135,59 +154,57 @@ namespace ArtificialBuilder.DB
             }
         }
 
-        // 1 요청 처리. CommandType 매개 3 도메인 처리 메서드 분기 (App / Persona / Package).
-        //   본 skeleton 단계 = 각 도메인 처리 = case stub body (entity 본체 X / 실 EF Core 호출 X).
-        //   entity 정의 후 case 본체 = txn.AddAsync / GetByIdAsync / Update / Remove 매개 채움.
-        //   None / End / 미등록 case = Crash-First throw.
+        // 1 요청 처리. envelope.DomainKind 매개 3 도메인 handler 분기 (App / Persona / Package).
+        //   각 handler = (PerDomainEnum)envelope.CommandId cast 매개 switch — 본 skeleton 단계 = case stub (entity 본체 X / 실 EF Core 호출 X).
+        //   None / End / 미등록 DomainKind = Crash-First throw.
         //   storage-policy 2026-05-16 정본 매개 Circuit / Logic / Response_UI = JSON 이전. 본 분기 제외.
-        //   APP_DB_CREDENTIAL_* = 암호화 키 운영 (KDF / DPAPI / Keychain) 결재 후 별도 그룹 매개 신설 ([[feedback_no_cut_only_stub]]).
+        //   APP_DB_CREDENTIAL_* = 암호화 키 운영 결재 후 별도 그룹 매개 신설 ([[feedback_no_cut_only_stub]]).
         private void HandleRequest(EDP_Db_Transaction _txn, AB_Object_DB_Request_Envelope _env)
         {
-            AB_DB_Command_Type cmd = _env.CommandType;
-            if (cmd == AB_DB_Command_Type.None)
+            AB_DB_Domain_Kind domain = _env.DomainKind;
+            if (domain == AB_DB_Domain_Kind.None)
             {
-                throw new InvalidOperationException("AB_Manager_DB.HandleRequest: None CommandType 위반");
+                throw new InvalidOperationException("AB_Manager_DB.HandleRequest: None DomainKind 위반");
             }
-            if (cmd == AB_DB_Command_Type.End)
+            if (domain == AB_DB_Domain_Kind.End)
             {
-                throw new InvalidOperationException("AB_Manager_DB.HandleRequest: End CommandType 위반");
+                throw new InvalidOperationException("AB_Manager_DB.HandleRequest: End DomainKind 위반");
             }
-            string name = cmd.ToString();
-            if (name.StartsWith("APP_DB_"))
+            if (domain == AB_DB_Domain_Kind.App)
             {
-                HandleAppDb(_txn, _env);
+                HandleAppDb(_txn, (AB_DB_App_Command_Type)_env.CommandId, _env);
                 return;
             }
-            if (name.StartsWith("PERSONA_DB_"))
+            if (domain == AB_DB_Domain_Kind.Persona)
             {
-                HandlePersonaDb(_txn, _env);
+                HandlePersonaDb(_txn, (AB_DB_Persona_Command_Type)_env.CommandId, _env);
                 return;
             }
-            if (name.StartsWith("PACKAGE_DB_"))
+            if (domain == AB_DB_Domain_Kind.Package)
             {
-                HandlePackageDb(_txn, _env);
+                HandlePackageDb(_txn, (AB_DB_Package_Command_Type)_env.CommandId, _env);
                 return;
             }
-            throw new InvalidOperationException("AB_Manager_DB.HandleRequest: 미등록 도메인 prefix command=" + name);
+            throw new InvalidOperationException("AB_Manager_DB.HandleRequest: 미등록 DomainKind=" + domain);
         }
 
-        // 도메인 App DB 처리. APP_DB_MODEL_* 5 case (GET_ALL / GET / ADD / SAVE / DELETE).
-        // 본 skeleton = 모든 case stub. handler 본체 = 칠판 ↔ EF entity 데이터 흐름 결재 후 별도 그룹 (db-handler-blackboard-binding).
-        private void HandleAppDb(EDP_Db_Transaction _txn, AB_Object_DB_Request_Envelope _env)
+        // 도메인 App DB 처리. AB_DB_App_Command_Type 5 case (MODEL_GET_ALL / MODEL_GET / MODEL_ADD / MODEL_SAVE / MODEL_DELETE).
+        // 본 skeleton = 모든 case stub. handler 본체 = 칠판 ↔ EF entity 데이터 흐름 결재 후 별도 그룹 (db-app-entity-body).
+        private void HandleAppDb(EDP_Db_Transaction _txn, AB_DB_App_Command_Type _command, AB_Object_DB_Request_Envelope _env)
         {
             // skeleton — 칠판 ↔ EF entity 흐름 결재 후 본체.
         }
 
-        // 도메인 Persona DB 처리. PERSONA_DB_LOAD_ACTIVE 1 case.
+        // 도메인 Persona DB 처리. AB_DB_Persona_Command_Type 1 case (LOAD_ACTIVE).
         // 본 skeleton = 모든 case stub. handler 본체 = 칠판 ↔ EF entity 데이터 흐름 결재 후 별도 그룹.
-        private void HandlePersonaDb(EDP_Db_Transaction _txn, AB_Object_DB_Request_Envelope _env)
+        private void HandlePersonaDb(EDP_Db_Transaction _txn, AB_DB_Persona_Command_Type _command, AB_Object_DB_Request_Envelope _env)
         {
             // skeleton — 칠판 ↔ EF entity 흐름 결재 후 본체.
         }
 
-        // 도메인 Package DB 처리. PACKAGE_DB_INFO_* 5 case (GET_ALL / GET / ADD / SAVE / DELETE).
+        // 도메인 Package DB 처리. AB_DB_Package_Command_Type 5 case (INFO_GET_ALL / INFO_GET / INFO_ADD / INFO_SAVE / INFO_DELETE).
         // 본 skeleton = 모든 case stub. handler 본체 = 칠판 ↔ EF entity 데이터 흐름 결재 후 별도 그룹.
-        private void HandlePackageDb(EDP_Db_Transaction _txn, AB_Object_DB_Request_Envelope _env)
+        private void HandlePackageDb(EDP_Db_Transaction _txn, AB_DB_Package_Command_Type _command, AB_Object_DB_Request_Envelope _env)
         {
             // skeleton — 칠판 ↔ EF entity 흐름 결재 후 본체.
         }
