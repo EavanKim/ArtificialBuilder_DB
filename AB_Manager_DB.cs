@@ -288,10 +288,36 @@ namespace ArtificialBuilder.DB
         }
 
         // 도메인 Persona DB 처리. AB_DB_Persona_Command_Type 1 case (LOAD_ACTIVE).
-        // 본 skeleton = 모든 case stub. handler 본체 = queue #5 db-persona-entity-body 매개 채움.
+        //   slot 타입: LOAD_ACTIVE DataKey = 0 (미사용) / TargetDataId = AB_Data_DB_Persona (`AB_Object_DB_Persona?`, miss = null)
+        //   쿼리: FindAsync(_x => _x.IsActive) → FirstOrDefault() — is_active 다중 row 시 첫 1 row (정책 결재 = 별도 그룹).
+        //   per-persona 파일 분기 (storage-policy 정본) = 별도 그룹 매개 단일 DB skeleton 매개 처리.
         private void HandlePersonaDb(EDP_Db_Transaction _txn, AB_DB_Persona_Command_Type _command, AB_Object_DB_Request_Envelope _env)
         {
-            // skeleton — queue #5 db-persona-entity-body 매개 본체.
+            if (m_blackboard == null)
+            {
+                throw new InvalidOperationException("AB_Manager_DB.HandlePersonaDb: Blackboard 미부착 — AttachBlackboard 선 호출");
+            }
+            if (_command == AB_DB_Persona_Command_Type.None)
+            {
+                throw new InvalidOperationException("AB_Manager_DB.HandlePersonaDb: None Command 위반");
+            }
+            if (_command == AB_DB_Persona_Command_Type.End)
+            {
+                throw new InvalidOperationException("AB_Manager_DB.HandlePersonaDb: End Command 위반");
+            }
+            if (_command == AB_DB_Persona_Command_Type.LOAD_ACTIVE)
+            {
+                List<AB_Object_DB_Persona> actives = _txn.FindAsync<AB_Object_DB_Persona>(_x => _x.IsActive).GetAwaiter().GetResult();
+                AB_Object_DB_Persona? entity = null;
+                if (actives.Count > 0)
+                {
+                    entity = actives[0];
+                }
+                AB_Data_DB_Persona target = m_blackboard.Lookup<AB_Data_DB_Persona>(_env.TargetDataId);
+                target.Set(entity);
+                return;
+            }
+            throw new InvalidOperationException("AB_Manager_DB.HandlePersonaDb: 미등록 Command=" + _command);
         }
 
         // 도메인 Package DB 처리. AB_DB_Package_Command_Type 5 case (INFO_GET_ALL / GET / ADD / SAVE / DELETE).
