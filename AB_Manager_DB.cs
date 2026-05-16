@@ -320,11 +320,77 @@ namespace ArtificialBuilder.DB
             throw new InvalidOperationException("AB_Manager_DB.HandlePersonaDb: 미등록 Command=" + _command);
         }
 
-        // 도메인 Package DB 처리. AB_DB_Package_Command_Type 5 case (INFO_GET_ALL / GET / ADD / SAVE / DELETE).
-        // 본 skeleton = 모든 case stub. handler 본체 = queue #6 db-package-entity-body 매개 채움.
+        // 도메인 Package DB 처리. AB_DB_Package_Command_Type 5 case 본체 (INFO_GET_ALL / GET / ADD / SAVE / DELETE).
+        //   slot 타입: INFO_GET_ALL TargetDataId = AB_Data_DB_Package_List / INFO_GET DataKey = AB_Data_Long, TargetDataId = AB_Data_DB_Package
+        //              INFO_ADD / SAVE DataKey = AB_Data_DB_Package / INFO_DELETE DataKey = AB_Data_Long
+        //   App.Model 5 case 1:1 정합 (db-app-entity-body 2026-05-16 패턴).
+        //   Uuid unique = OnModelCreating 매개 이미 등록 — INFO_ADD 안 추가 검증 X (EF 매개 throw).
+        //   per-package 파일 분기 (storage-policy 정본) = 별도 그룹 — 본 그룹 = 단일 DB skeleton.
         private void HandlePackageDb(EDP_Db_Transaction _txn, AB_DB_Package_Command_Type _command, AB_Object_DB_Request_Envelope _env)
         {
-            // skeleton — queue #6 db-package-entity-body 매개 본체.
+            if (m_blackboard == null)
+            {
+                throw new InvalidOperationException("AB_Manager_DB.HandlePackageDb: Blackboard 미부착 — AttachBlackboard 선 호출");
+            }
+            if (_command == AB_DB_Package_Command_Type.None)
+            {
+                throw new InvalidOperationException("AB_Manager_DB.HandlePackageDb: None Command 위반");
+            }
+            if (_command == AB_DB_Package_Command_Type.End)
+            {
+                throw new InvalidOperationException("AB_Manager_DB.HandlePackageDb: End Command 위반");
+            }
+            if (_command == AB_DB_Package_Command_Type.INFO_GET_ALL)
+            {
+                List<AB_Object_DB_Package> all = _txn.GetAllAsync<AB_Object_DB_Package>().GetAwaiter().GetResult();
+                AB_Data_DB_Package_List target = m_blackboard.Lookup<AB_Data_DB_Package_List>(_env.TargetDataId);
+                target.Set(all);
+                return;
+            }
+            if (_command == AB_DB_Package_Command_Type.INFO_GET)
+            {
+                AB_Data_Long input_id = m_blackboard.Lookup<AB_Data_Long>(_env.DataKey);
+                long id = input_id.Get();
+                AB_Object_DB_Package? entity = _txn.GetByIdAsync<AB_Object_DB_Package>(id).GetAwaiter().GetResult();
+                AB_Data_DB_Package target = m_blackboard.Lookup<AB_Data_DB_Package>(_env.TargetDataId);
+                target.Set(entity);
+                return;
+            }
+            if (_command == AB_DB_Package_Command_Type.INFO_ADD)
+            {
+                AB_Data_DB_Package input = m_blackboard.Lookup<AB_Data_DB_Package>(_env.DataKey);
+                AB_Object_DB_Package? entity = input.Get();
+                if (entity == null)
+                {
+                    throw new InvalidOperationException("AB_Manager_DB.HandlePackageDb.INFO_ADD: 입력 entity null — DataKey=" + _env.DataKey);
+                }
+                _txn.AddAsync(entity).GetAwaiter().GetResult();
+                return;
+            }
+            if (_command == AB_DB_Package_Command_Type.INFO_SAVE)
+            {
+                AB_Data_DB_Package input = m_blackboard.Lookup<AB_Data_DB_Package>(_env.DataKey);
+                AB_Object_DB_Package? entity = input.Get();
+                if (entity == null)
+                {
+                    throw new InvalidOperationException("AB_Manager_DB.HandlePackageDb.INFO_SAVE: 입력 entity null — DataKey=" + _env.DataKey);
+                }
+                _txn.Update(entity);
+                return;
+            }
+            if (_command == AB_DB_Package_Command_Type.INFO_DELETE)
+            {
+                AB_Data_Long input_id = m_blackboard.Lookup<AB_Data_Long>(_env.DataKey);
+                long id = input_id.Get();
+                AB_Object_DB_Package? entity = _txn.GetByIdAsync<AB_Object_DB_Package>(id).GetAwaiter().GetResult();
+                if (entity == null)
+                {
+                    throw new InvalidOperationException("AB_Manager_DB.HandlePackageDb.INFO_DELETE: 삭제 대상 entity 미존재 id=" + id);
+                }
+                _txn.Remove(entity);
+                return;
+            }
+            throw new InvalidOperationException("AB_Manager_DB.HandlePackageDb: 미등록 Command=" + _command);
         }
 
         // Loop tick 매개 호출. 매 tick 단일 직렬화 (engine 안 _syncLock) 매개 dirty entry 파일 flush.
