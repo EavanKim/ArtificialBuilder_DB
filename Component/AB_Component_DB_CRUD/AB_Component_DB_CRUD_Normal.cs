@@ -2,41 +2,43 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EDPFW;
 
 namespace ArtificialBuilder.DB.Component
 {
     // 콘크리트 — 단일 handle 매개 CRUD. 에셋 DB (Normal File). AB_Object_DB_Normal 안 m_crud instance.
-    // 본 Component = AB_Component_DB_File_Normal 매개 handle 받아 EDP_Db_Transaction 호출 (round 2 본체).
-    // round 1 = 시그니처 + stub body.
+    // D5=b — caller 매개 txn 주입 → CRUD = 위임 만 (state X). Sharding family 는 row 매개 handle 라우팅 후 위임 (round 2b).
     public class AB_Component_DB_CRUD_Normal : AB_Component_DB_CRUD
     {
         public AB_Component_DB_CRUD_Normal()
         {
         }
 
-        public override Task AddAsync_<T>(T _row) where T : class
+        public override Task AddAsync_<T>(EDP_Db_Transaction _txn, T _row) where T : class
         {
-            throw new NotImplementedException("AB_Component_DB_CRUD_Normal.AddAsync_: round 2 본체");
+            return _txn.AddAsync(_row);
         }
 
-        public override Task<T?> GetByIdAsync_<T>(long _id) where T : class
+        public override Task<T?> GetByIdAsync_<T>(EDP_Db_Transaction _txn, long _id) where T : class
         {
-            throw new NotImplementedException("AB_Component_DB_CRUD_Normal.GetByIdAsync_: round 2 본체");
+            return _txn.GetByIdAsync<T>(_id);
         }
 
-        public override Task<List<T>> FindAsync_<T>(Expression<Func<T, bool>> _predicate) where T : class
+        public override Task<List<T>> FindAsync_<T>(EDP_Db_Transaction _txn, Expression<Func<T, bool>> _predicate) where T : class
         {
-            throw new NotImplementedException("AB_Component_DB_CRUD_Normal.FindAsync_: round 2 본체");
+            return _txn.FindAsync<T>(_predicate);
         }
 
-        public override Task UpdateAsync_<T>(T _row) where T : class
+        public override Task UpdateAsync_<T>(EDP_Db_Transaction _txn, T _row) where T : class
         {
-            throw new NotImplementedException("AB_Component_DB_CRUD_Normal.UpdateAsync_: round 2 본체");
+            _txn.Update(_row);
+            return Task.CompletedTask;
         }
 
-        public override Task RemoveAsync_<T>(T _row) where T : class
+        public override Task RemoveAsync_<T>(EDP_Db_Transaction _txn, T _row) where T : class
         {
-            throw new NotImplementedException("AB_Component_DB_CRUD_Normal.RemoveAsync_: round 2 본체");
+            _txn.Remove(_row);
+            return Task.CompletedTask;
         }
 
         public override void Dispose()

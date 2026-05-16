@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using EDPFW;
 
 namespace ArtificialBuilder.DB.Component
@@ -26,22 +27,29 @@ namespace ArtificialBuilder.DB.Component
             m_shards = new Dictionary<long, int>();
         }
 
-        // round 2 본체 — Directory.CreateDirectory(_root_path) + m_engine / m_folder_path 보관. 파일 open = lazy (AcquireHandle_ 매개 첫 시점).
-        public override void Open_(string _root_path, EDP_Db_Engine _engine)
+        // round 2b 본체 — Directory.CreateDirectory(_root_path) + m_engine / m_folder_path 보관 + m_opener 저장. 파일 open = lazy (AcquireHandle_ 매개 첫 시점).
+        public override void Open_(string _root_path, EDP_Db_Engine _engine, Func<EDP_Db_Engine, string, int> _opener)
         {
-            throw new NotImplementedException("AB_Component_DB_File_Sharding.Open_: round 2 본체");
+            throw new NotImplementedException("AB_Component_DB_File_Sharding.Open_: round 2b 본체");
         }
 
-        // round 2 본체 — m_shards 안 모든 handle EDP_Db_Engine.CloseAsync cascade.
+        // round 2b 본체 — m_shards 안 모든 handle EDP_Db_Engine.CloseAsync cascade.
         public override void Close_()
         {
-            throw new NotImplementedException("AB_Component_DB_File_Sharding.Close_: round 2 본체");
+            throw new NotImplementedException("AB_Component_DB_File_Sharding.Close_: round 2b 본체");
         }
 
-        // round 2 본체 — EDP_Db_Engine.SyncDirtyToFile 매개 (engine = 전 entry 매개 iterate, m_shards 안 entry 도 포함).
+        // round 2b 본체 — Sharding 은 row 매개 handle 선택 후 BeginTransactionAsync 호출. caller (CRUD_Sharding_*) 매개 row 정보 필요 → 본 시그니처 미부합.
+        // Sharding family = AcquireHandle_(shard_key) 매개 handle 노출 + caller 측 BeginTransactionAsync 직접 호출 패턴 (round 2b 결재).
+        public override Task<EDP_Db_Transaction> BeginTransactionAsync_()
+        {
+            throw new NotImplementedException("AB_Component_DB_File_Sharding.BeginTransactionAsync_: round 2b 본체 — Sharding family = row 매개 handle 선택 패턴 결재");
+        }
+
+        // round 2b 본체 — EDP_Db_Engine.SyncDirtyToFile 매개 (engine = 전 entry 매개 iterate, m_shards 안 entry 도 포함).
         public override void SyncDirtyToFile_()
         {
-            throw new NotImplementedException("AB_Component_DB_File_Sharding.SyncDirtyToFile_: round 2 본체");
+            throw new NotImplementedException("AB_Component_DB_File_Sharding.SyncDirtyToFile_: round 2b 본체");
         }
 
         // 키 매개 handle 발급 (lazy). round 2 본체 = m_shards lookup hit 시 반환 / miss 시 EDP_Db_Engine.OpenDatabase<TContext>($"{m_folder_path}/{_shard_key}.db", factory) → handle 캐시 + 반환.
