@@ -143,6 +143,21 @@ namespace ArtificialBuilder.DB
             EnqueueRequestInternal(AB_DB_Domain_Kind.Package, (int)_command, _data_key, _target_data_id, 0L);
         }
 
+        public void EnqueueRequest(AB_DB_Circuit_Command_Type _command, long _data_key, long _target_data_id)
+        {
+            EnqueueRequestInternal(AB_DB_Domain_Kind.Circuit, (int)_command, _data_key, _target_data_id, 0L);
+        }
+
+        public void EnqueueRequest(AB_DB_Logic_Command_Type _command, long _data_key, long _target_data_id)
+        {
+            EnqueueRequestInternal(AB_DB_Domain_Kind.Logic, (int)_command, _data_key, _target_data_id, 0L);
+        }
+
+        public void EnqueueRequest(AB_DB_Model_Command_Type _command, long _data_key, long _target_data_id)
+        {
+            EnqueueRequestInternal(AB_DB_Domain_Kind.Model, (int)_command, _data_key, _target_data_id, 0L);
+        }
+
         // Turn 도메인 — shard_key 인자 필수 (= turn_id / 100, caller 산정 W1=a).
         public void EnqueueRequest(AB_DB_Turn_Command_Type _command, long _data_key, long _target_data_id, long _shard_key)
         {
@@ -291,6 +306,18 @@ namespace ArtificialBuilder.DB
             {
                 return AB_DB_Object_Kind.Normal;
             }
+            if (_domain == AB_DB_Domain_Kind.Circuit)
+            {
+                return AB_DB_Object_Kind.Normal;
+            }
+            if (_domain == AB_DB_Domain_Kind.Logic)
+            {
+                return AB_DB_Object_Kind.Normal;
+            }
+            if (_domain == AB_DB_Domain_Kind.Model)
+            {
+                return AB_DB_Object_Kind.Normal;
+            }
             if (_domain == AB_DB_Domain_Kind.Turn)
             {
                 return AB_DB_Object_Kind.Sharding_History;
@@ -329,6 +356,21 @@ namespace ArtificialBuilder.DB
             if (domain == AB_DB_Domain_Kind.Package)
             {
                 HandlePackageDb(_db, _txn, (AB_DB_Package_Command_Type)_env.CommandId, _env);
+                return;
+            }
+            if (domain == AB_DB_Domain_Kind.Circuit)
+            {
+                HandleCircuitDb(_db, _txn, (AB_DB_Circuit_Command_Type)_env.CommandId, _env);
+                return;
+            }
+            if (domain == AB_DB_Domain_Kind.Logic)
+            {
+                HandleLogicDb(_db, _txn, (AB_DB_Logic_Command_Type)_env.CommandId, _env);
+                return;
+            }
+            if (domain == AB_DB_Domain_Kind.Model)
+            {
+                HandleModelDb(_db, _txn, (AB_DB_Model_Command_Type)_env.CommandId, _env);
                 return;
             }
             if (domain == AB_DB_Domain_Kind.Turn)
@@ -508,6 +550,141 @@ namespace ArtificialBuilder.DB
                 return;
             }
             throw new InvalidOperationException("AB_Manager_DB.HandlePackageDb: 미등록 Command=" + _command);
+        }
+
+        private void HandleCircuitDb(AB_Object_DB _db, EDP_Db_Transaction _txn, AB_DB_Circuit_Command_Type _command, AB_Object_DB_Request_Envelope _env)
+        {
+            if (m_blackboard == null) throw new InvalidOperationException("AB_Manager_DB.HandleCircuitDb: Blackboard 미부착");
+            if (_command == AB_DB_Circuit_Command_Type.None) throw new InvalidOperationException("AB_Manager_DB.HandleCircuitDb: None 위반");
+            if (_command == AB_DB_Circuit_Command_Type.End) throw new InvalidOperationException("AB_Manager_DB.HandleCircuitDb: End 위반");
+            if (_command == AB_DB_Circuit_Command_Type.INFO_GET_ALL)
+            {
+                List<AB_Object_DB_Circuit> all = _db.FindAsync_<AB_Object_DB_Circuit>(_txn, _x => true).GetAwaiter().GetResult();
+                AB_Data_DB_Circuit_List target = m_blackboard.Lookup<AB_Data_DB_Circuit_List>(_env.TargetDataId);
+                target.Set(all);
+                return;
+            }
+            if (_command == AB_DB_Circuit_Command_Type.INFO_GET)
+            {
+                AB_Data_Long input_id = m_blackboard.Lookup<AB_Data_Long>(_env.DataKey);
+                AB_Object_DB_Circuit? entity = _db.GetByIdAsync_<AB_Object_DB_Circuit>(_txn, input_id.Get()).GetAwaiter().GetResult();
+                AB_Data_DB_Circuit target = m_blackboard.Lookup<AB_Data_DB_Circuit>(_env.TargetDataId);
+                target.Set(entity);
+                return;
+            }
+            if (_command == AB_DB_Circuit_Command_Type.INFO_ADD)
+            {
+                AB_Object_DB_Circuit? entity = m_blackboard.Lookup<AB_Data_DB_Circuit>(_env.DataKey).Get();
+                if (entity == null) throw new InvalidOperationException("AB_Manager_DB.HandleCircuitDb.INFO_ADD: entity null");
+                _db.AddRowAsync_(_txn, entity).GetAwaiter().GetResult();
+                return;
+            }
+            if (_command == AB_DB_Circuit_Command_Type.INFO_SAVE)
+            {
+                AB_Object_DB_Circuit? entity = m_blackboard.Lookup<AB_Data_DB_Circuit>(_env.DataKey).Get();
+                if (entity == null) throw new InvalidOperationException("AB_Manager_DB.HandleCircuitDb.INFO_SAVE: entity null");
+                _db.UpdateAsync_(_txn, entity).GetAwaiter().GetResult();
+                return;
+            }
+            if (_command == AB_DB_Circuit_Command_Type.INFO_DELETE)
+            {
+                long id = m_blackboard.Lookup<AB_Data_Long>(_env.DataKey).Get();
+                AB_Object_DB_Circuit? entity = _db.GetByIdAsync_<AB_Object_DB_Circuit>(_txn, id).GetAwaiter().GetResult();
+                if (entity == null) throw new InvalidOperationException("AB_Manager_DB.HandleCircuitDb.INFO_DELETE: id 미존재=" + id);
+                _db.RemoveAsync_(_txn, entity).GetAwaiter().GetResult();
+                return;
+            }
+            throw new InvalidOperationException("AB_Manager_DB.HandleCircuitDb: 미등록 Command=" + _command);
+        }
+
+        private void HandleLogicDb(AB_Object_DB _db, EDP_Db_Transaction _txn, AB_DB_Logic_Command_Type _command, AB_Object_DB_Request_Envelope _env)
+        {
+            if (m_blackboard == null) throw new InvalidOperationException("AB_Manager_DB.HandleLogicDb: Blackboard 미부착");
+            if (_command == AB_DB_Logic_Command_Type.None) throw new InvalidOperationException("AB_Manager_DB.HandleLogicDb: None 위반");
+            if (_command == AB_DB_Logic_Command_Type.End) throw new InvalidOperationException("AB_Manager_DB.HandleLogicDb: End 위반");
+            if (_command == AB_DB_Logic_Command_Type.INFO_GET_ALL)
+            {
+                List<AB_Object_DB_Logic> all = _db.FindAsync_<AB_Object_DB_Logic>(_txn, _x => true).GetAwaiter().GetResult();
+                AB_Data_DB_Logic_List target = m_blackboard.Lookup<AB_Data_DB_Logic_List>(_env.TargetDataId);
+                target.Set(all);
+                return;
+            }
+            if (_command == AB_DB_Logic_Command_Type.INFO_GET)
+            {
+                AB_Data_Long input_id = m_blackboard.Lookup<AB_Data_Long>(_env.DataKey);
+                AB_Object_DB_Logic? entity = _db.GetByIdAsync_<AB_Object_DB_Logic>(_txn, input_id.Get()).GetAwaiter().GetResult();
+                AB_Data_DB_Logic target = m_blackboard.Lookup<AB_Data_DB_Logic>(_env.TargetDataId);
+                target.Set(entity);
+                return;
+            }
+            if (_command == AB_DB_Logic_Command_Type.INFO_ADD)
+            {
+                AB_Object_DB_Logic? entity = m_blackboard.Lookup<AB_Data_DB_Logic>(_env.DataKey).Get();
+                if (entity == null) throw new InvalidOperationException("AB_Manager_DB.HandleLogicDb.INFO_ADD: entity null");
+                _db.AddRowAsync_(_txn, entity).GetAwaiter().GetResult();
+                return;
+            }
+            if (_command == AB_DB_Logic_Command_Type.INFO_SAVE)
+            {
+                AB_Object_DB_Logic? entity = m_blackboard.Lookup<AB_Data_DB_Logic>(_env.DataKey).Get();
+                if (entity == null) throw new InvalidOperationException("AB_Manager_DB.HandleLogicDb.INFO_SAVE: entity null");
+                _db.UpdateAsync_(_txn, entity).GetAwaiter().GetResult();
+                return;
+            }
+            if (_command == AB_DB_Logic_Command_Type.INFO_DELETE)
+            {
+                long id = m_blackboard.Lookup<AB_Data_Long>(_env.DataKey).Get();
+                AB_Object_DB_Logic? entity = _db.GetByIdAsync_<AB_Object_DB_Logic>(_txn, id).GetAwaiter().GetResult();
+                if (entity == null) throw new InvalidOperationException("AB_Manager_DB.HandleLogicDb.INFO_DELETE: id 미존재=" + id);
+                _db.RemoveAsync_(_txn, entity).GetAwaiter().GetResult();
+                return;
+            }
+            throw new InvalidOperationException("AB_Manager_DB.HandleLogicDb: 미등록 Command=" + _command);
+        }
+
+        private void HandleModelDb(AB_Object_DB _db, EDP_Db_Transaction _txn, AB_DB_Model_Command_Type _command, AB_Object_DB_Request_Envelope _env)
+        {
+            if (m_blackboard == null) throw new InvalidOperationException("AB_Manager_DB.HandleModelDb: Blackboard 미부착");
+            if (_command == AB_DB_Model_Command_Type.None) throw new InvalidOperationException("AB_Manager_DB.HandleModelDb: None 위반");
+            if (_command == AB_DB_Model_Command_Type.End) throw new InvalidOperationException("AB_Manager_DB.HandleModelDb: End 위반");
+            if (_command == AB_DB_Model_Command_Type.INFO_GET_ALL)
+            {
+                List<AB_Object_DB_Model> all = _db.FindAsync_<AB_Object_DB_Model>(_txn, _x => true).GetAwaiter().GetResult();
+                AB_Data_DB_Model_List target = m_blackboard.Lookup<AB_Data_DB_Model_List>(_env.TargetDataId);
+                target.Set(all);
+                return;
+            }
+            if (_command == AB_DB_Model_Command_Type.INFO_GET)
+            {
+                AB_Data_Long input_id = m_blackboard.Lookup<AB_Data_Long>(_env.DataKey);
+                AB_Object_DB_Model? entity = _db.GetByIdAsync_<AB_Object_DB_Model>(_txn, input_id.Get()).GetAwaiter().GetResult();
+                AB_Data_DB_Model target = m_blackboard.Lookup<AB_Data_DB_Model>(_env.TargetDataId);
+                target.Set(entity);
+                return;
+            }
+            if (_command == AB_DB_Model_Command_Type.INFO_ADD)
+            {
+                AB_Object_DB_Model? entity = m_blackboard.Lookup<AB_Data_DB_Model>(_env.DataKey).Get();
+                if (entity == null) throw new InvalidOperationException("AB_Manager_DB.HandleModelDb.INFO_ADD: entity null");
+                _db.AddRowAsync_(_txn, entity).GetAwaiter().GetResult();
+                return;
+            }
+            if (_command == AB_DB_Model_Command_Type.INFO_SAVE)
+            {
+                AB_Object_DB_Model? entity = m_blackboard.Lookup<AB_Data_DB_Model>(_env.DataKey).Get();
+                if (entity == null) throw new InvalidOperationException("AB_Manager_DB.HandleModelDb.INFO_SAVE: entity null");
+                _db.UpdateAsync_(_txn, entity).GetAwaiter().GetResult();
+                return;
+            }
+            if (_command == AB_DB_Model_Command_Type.INFO_DELETE)
+            {
+                long id = m_blackboard.Lookup<AB_Data_Long>(_env.DataKey).Get();
+                AB_Object_DB_Model? entity = _db.GetByIdAsync_<AB_Object_DB_Model>(_txn, id).GetAwaiter().GetResult();
+                if (entity == null) throw new InvalidOperationException("AB_Manager_DB.HandleModelDb.INFO_DELETE: id 미존재=" + id);
+                _db.RemoveAsync_(_txn, entity).GetAwaiter().GetResult();
+                return;
+            }
+            throw new InvalidOperationException("AB_Manager_DB.HandleModelDb: 미등록 Command=" + _command);
         }
 
         // === Turn 도메인 핸들러 (round 3) ===

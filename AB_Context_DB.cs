@@ -18,6 +18,9 @@ namespace ArtificialBuilder.DB
         public DbSet<AB_Object_DB_App_Credential> AppCredentials { get; set; } = null!;
         public DbSet<AB_Object_DB_Persona> Personas { get; set; } = null!;
         public DbSet<AB_Object_DB_Package> Packages { get; set; } = null!;
+        public DbSet<AB_Object_DB_Circuit> Circuits { get; set; } = null!;
+        public DbSet<AB_Object_DB_Logic> Logics { get; set; } = null!;
+        public DbSet<AB_Object_DB_Model> Models { get; set; } = null!;
 
         public AB_Context_DB(DbContextOptions<AB_Context_DB> _options) : base(_options)
         {
@@ -45,6 +48,24 @@ namespace ArtificialBuilder.DB
 
             // Package — PK = Id. uuid 유일 index 매개 파일명 매칭 단일 row 보장.
             _builder.Entity<AB_Object_DB_Package>(_e =>
+            {
+                _e.HasKey(_x => _x.Id);
+                _e.HasIndex(_x => _x.Uuid).IsUnique();
+            });
+
+            _builder.Entity<AB_Object_DB_Circuit>(_e =>
+            {
+                _e.HasKey(_x => _x.Id);
+                _e.HasIndex(_x => _x.Uuid).IsUnique();
+            });
+
+            _builder.Entity<AB_Object_DB_Logic>(_e =>
+            {
+                _e.HasKey(_x => _x.Id);
+                _e.HasIndex(_x => _x.Uuid).IsUnique();
+            });
+
+            _builder.Entity<AB_Object_DB_Model>(_e =>
             {
                 _e.HasKey(_x => _x.Id);
                 _e.HasIndex(_x => _x.Uuid).IsUnique();
