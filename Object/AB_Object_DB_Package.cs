@@ -19,6 +19,12 @@ namespace ArtificialBuilder.DB.Object
         // semver 문자열.
         public string Version { get; set; } = string.Empty;
 
+        public string Description { get; set; } = string.Empty;
+
+        // 2026-05-18 Stage C — Logic / Circuit / Model 매개 ref id 묶음 매개 JSON.
+        // schema = {"logics":[id,...],"circuits":[id,...],"models":[id,...]} — 본 round 매개 long id 매개 직접 ref.
+        public string ItemsJson { get; set; } = string.Empty;
+
         public override void ReceiveMessage(int _header_id, long _data_key) { }
 
         public override void Dispose() { }
