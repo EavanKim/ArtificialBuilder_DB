@@ -125,6 +125,16 @@ namespace ArtificialBuilder.DB.Object
             return m_crud.RemoveAsync_(_txn, _row);
         }
 
+        // 13r4b 매개 raw SQL 매개 similarity 매개 — Sharding_Key (Result) 매개만 본체. Normal / Sharding_History 매개 NotSupported.
+        public virtual Task<List<T>> FindSimilarAsync_<T>(EDP_Db_Transaction _txn, string _sql, params object[] _params) where T : class
+        {
+            if (m_crud == null)
+            {
+                throw new InvalidOperationException("AB_Object_DB.FindSimilarAsync_: m_crud 미부착");
+            }
+            return m_crud.FindSimilarAsync_<T>(_txn, _sql, _params);
+        }
+
         public virtual void SyncDirtyToFile_()
         {
             if (m_file == null)

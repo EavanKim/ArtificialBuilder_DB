@@ -25,11 +25,19 @@ namespace ArtificialBuilder.DB.Object
         // 사용 노드 번호 묶음 — packed ulong[] (서킷 내부 노드, 0 = sentinel / 1~ = 정상). 폴더 노드 외 cross-node ref.
         public byte[]? NodeNumbers { get; set; }
 
-        // 페이로드 본체 (text / image / audio / video / embedding) — inline blob 단일.
+        // 페이로드 본체 (text / image / audio / video) — inline blob 단일.
         public byte[]? Payload { get; set; }
 
         // 생성 시각 (Unix ms).
         public long CreatedAt { get; set; }
+
+        // 벡터 임베딩 — 13r4b 매개. nullable BLOB (float[N] → byte[N*4] little-endian). 노드 매개 vectorize 옵션 ON + 모델 매개 set 매개 시점 매개 채워짐.
+        // sqlite-vec MATCH 매개 vec_distance_cosine(Embedding, ?) 매개 검색. dim = 노드 매개 model 매개 결정 (Result table 매개 균일).
+        public byte[]? Embedding { get; set; }
+
+        // 활성 row 여부 (selected_index match) — 13r4b 매개. 0 = 비활성 / 1 = 활성. FIND_SIMILAR 매개 WHERE IsActive=1.
+        // caller 매개 maintain — Turn.SelectedIndex 변경 매개 bucket 안 row 매개 SET_IS_ACTIVE 매개 동기.
+        public int IsActive { get; set; }
 
         public override void ReceiveMessage(int _header_id, long _data_key) { }
 

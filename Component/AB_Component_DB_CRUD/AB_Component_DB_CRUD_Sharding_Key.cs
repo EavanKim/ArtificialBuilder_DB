@@ -43,6 +43,11 @@ namespace ArtificialBuilder.DB.Component
             return Task.CompletedTask;
         }
 
+        public override Task<List<T>> FindSimilarAsync_<T>(EDP_Db_Transaction _txn, string _sql, params object[] _params) where T : class
+        {
+            return _txn.FromSqlRawAsync<T>(_sql, _params);
+        }
+
         public override void Dispose()
         {
         }

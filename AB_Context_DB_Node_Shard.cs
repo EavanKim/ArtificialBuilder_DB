@@ -24,6 +24,8 @@ namespace ArtificialBuilder.DB
             {
                 _e.HasKey(_x => _x.DataKey);
                 _e.HasIndex(_x => new { _x.TurnId, _x.ResultSeq });
+                // 13r4b 매개 IsActive 인덱스 — FIND_SIMILAR WHERE 매개 활성 row 매개 filter 매개 fast path.
+                _e.HasIndex(_x => _x.IsActive);
             });
         }
     }

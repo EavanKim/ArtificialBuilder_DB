@@ -826,7 +826,59 @@ namespace ArtificialBuilder.DB
                 target.Set(all);
                 return;
             }
+            if (_command == AB_DB_Result_Command_Type.FIND_SIMILAR)
+            {
+                // 13r4b 매개 — 입력 AB_Data_DB_Similarity_Query (QueryVector + TopK) / 출력 AB_Data_DB_Node_List.
+                // 단일 shard 안 sqlite-vec vec_distance_cosine 매개 active row 매개 ORDER BY + LIMIT TopK.
+                AB_Data_DB_Similarity_Query input = m_blackboard.Lookup<AB_Data_DB_Similarity_Query>(_env.DataKey);
+                AB_Object_DB_Similarity_Query? query = input.Get();
+                if (query == null)
+                {
+                    throw new InvalidOperationException("AB_Manager_DB.HandleResultDb.FIND_SIMILAR: 입력 query null — DataKey=" + _env.DataKey);
+                }
+                if (query.QueryVector == null || query.QueryVector.Length == 0)
+                {
+                    throw new InvalidOperationException("AB_Manager_DB.HandleResultDb.FIND_SIMILAR: QueryVector null/0 — DataKey=" + _env.DataKey);
+                }
+                if (query.TopK <= 0)
+                {
+                    throw new InvalidOperationException("AB_Manager_DB.HandleResultDb.FIND_SIMILAR: TopK <= 0 (=" + query.TopK + ") — DataKey=" + _env.DataKey);
+                }
+                byte[] query_bytes = VectorToBytes_(query.QueryVector);
+                string sql = "SELECT * FROM \"NodeRows\" WHERE \"IsActive\" = 1 AND \"Embedding\" IS NOT NULL ORDER BY vec_distance_cosine(\"Embedding\", {0}) ASC LIMIT {1}";
+                List<AB_Object_DB_Node_Row> hits = _db.FindSimilarAsync_<AB_Object_DB_Node_Row>(_txn, sql, query_bytes, query.TopK).GetAwaiter().GetResult();
+                AB_Data_DB_Node_List target = m_blackboard.Lookup<AB_Data_DB_Node_List>(_env.TargetDataId);
+                target.Set(hits);
+                return;
+            }
+            if (_command == AB_DB_Result_Command_Type.SET_IS_ACTIVE)
+            {
+                // 13r4b 매개 — 입력 AB_Data_DB_Node_Row (DataKey + IsActive 채움). 매니저 매개 GetByIdAsync_ → existing.IsActive = input.IsActive → UpdateAsync_.
+                AB_Data_DB_Node_Row input = m_blackboard.Lookup<AB_Data_DB_Node_Row>(_env.DataKey);
+                AB_Object_DB_Node_Row? input_entity = input.Get();
+                if (input_entity == null)
+                {
+                    throw new InvalidOperationException("AB_Manager_DB.HandleResultDb.SET_IS_ACTIVE: 입력 entity null — DataKey=" + _env.DataKey);
+                }
+                AB_Object_DB_Node_Row? existing = _db.GetByIdAsync_<AB_Object_DB_Node_Row>(_txn, input_entity.DataKey).GetAwaiter().GetResult();
+                if (existing == null)
+                {
+                    throw new InvalidOperationException("AB_Manager_DB.HandleResultDb.SET_IS_ACTIVE: 대상 row 미존재 DataKey=" + input_entity.DataKey);
+                }
+                existing.IsActive = input_entity.IsActive;
+                _db.UpdateAsync_(_txn, existing).GetAwaiter().GetResult();
+                return;
+            }
             throw new InvalidOperationException("AB_Manager_DB.HandleResultDb: 미등록 Command=" + _command);
+        }
+
+        // 13r4b 매개 float[] → byte[] little-endian 매개 변환. sqlite-vec vec0 매개 BLOB 매개 little-endian float32 매개 가정.
+        // 본 helper = handler 매개 매 FIND_SIMILAR 호출 시점 매개 vector → bytes 매개. 캐싱 매개 caller 책임 (반복 호출 매개 매번 변환).
+        private static byte[] VectorToBytes_(float[] _vector)
+        {
+            byte[] bytes = new byte[_vector.Length * sizeof(float)];
+            System.Buffer.BlockCopy(_vector, 0, bytes, 0, bytes.Length);
+            return bytes;
         }
 
         public void SyncDirtyToFile()

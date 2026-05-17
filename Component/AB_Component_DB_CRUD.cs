@@ -22,5 +22,8 @@ namespace ArtificialBuilder.DB.Component
         public abstract Task<List<T>> FindAsync_<T>(EDP_Db_Transaction _txn, Expression<Func<T, bool>> _predicate) where T : class;
         public abstract Task UpdateAsync_<T>(EDP_Db_Transaction _txn, T _row) where T : class;
         public abstract Task RemoveAsync_<T>(EDP_Db_Transaction _txn, T _row) where T : class;
+
+        // 13r4b 매개 raw SQL 매개 조회 — sqlite-vec vec_distance_cosine 등 LINQ 표현 X 매개 함수 매개. _sql 매개 positional ? 매개 _params 매개 바인딩.
+        public abstract Task<List<T>> FindSimilarAsync_<T>(EDP_Db_Transaction _txn, string _sql, params object[] _params) where T : class;
     }
 }

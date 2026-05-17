@@ -41,6 +41,12 @@ namespace ArtificialBuilder.DB.Component
             return Task.CompletedTask;
         }
 
+        public override Task<List<T>> FindSimilarAsync_<T>(EDP_Db_Transaction _txn, string _sql, params object[] _params) where T : class
+        {
+            // Normal = 에셋 DB 매개 vector 사용 X 매개 미지원. caller 매개 Result (Sharding_Key) 매개 Object 매개 호출.
+            throw new System.NotSupportedException("AB_Component_DB_CRUD_Normal.FindSimilarAsync_: Normal DB 매개 vector similarity 매개 미지원 — Sharding_Key (Result) 매개 사용");
+        }
+
         public override void Dispose()
         {
         }
