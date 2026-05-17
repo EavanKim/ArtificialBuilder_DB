@@ -39,25 +39,18 @@ namespace ArtificialBuilder.DB
         // 칠판 ref — handler 매개 입력 read / 출력 write + post-commit NotifyDataKey 발화 site.
         private AB_Object_Blackboard? m_blackboard;
 
-        // EDP_Db_Engine 발급 핸들. OpenDatabase 매개 1 회 발급. 0 = 미부착 (Crash-First).
-        private int m_handle;
-
         // 다형성 dispatch 등록부 (canon § "Object / Component 다형성 조립 패턴" 2026-05-17 정합).
         // 매니저는 AB_Object_DB abstract 만 매개 동작 — 콘크리트 (Normal / Sharding_Key / Sharding_History) 노출 X.
-        // Round 1 (skeleton) = 등록 + Dispatch_ lookup 만. 매니저 안 본 dict 매개 호출 site 마이그 = round 2.
+        // round 2c (2026-05-17) — 매니저 안 모든 handle 접근 = Dispatch_(Normal) 매개 통일. m_handle 필드 폐기.
+        // Sharding Object instance + Open_ 부트 = round 3 (도메인 wiring) 매개 — M1/M2 결재 후 진입.
         private readonly Dictionary<AB_DB_Object_Kind, AB_Object_DB> m_db_objects;
 
         public AB_Manager_DB()
         {
             m_engine = new EDP_Db_Engine();
             m_queue = new ConcurrentQueue<AB_Object_DB_Request_Envelope>();
-            m_handle = 0;
             m_db_objects = new Dictionary<AB_DB_Object_Kind, AB_Object_DB>();
         }
-
-        public EDP_Db_Engine Engine => m_engine;
-
-        public int Handle => m_handle;
 
         // Program.cs 부트 시점 호출. Pool Manager 등록 후 envelope pool dispense 가능 상태 진입.
         public void AttachPoolManager(AB_Manager_Object_Instance_Pool _pool_manager)
@@ -71,26 +64,19 @@ namespace ArtificialBuilder.DB
             m_blackboard = _blackboard;
         }
 
-        // Program.cs 부트 시점 호출 (AttachPoolManager 후). 단일 DB 파일 open → handle 발급.
-        // 기존 파일 = LoadFileToMemory 매개 메모리 복원 / 없음 = EnsureCreated 매개 신규.
-        // 본 매니저 lifetime 단일 호출 — 재호출 = Crash-First throw.
+        // Program.cs 부트 시점 호출 (AttachPoolManager 후). 에셋 DB 단일 파일 open.
+        // round 2c (2026-05-17) — AB_Object_DB_Normal instance 매개 file 보유 + Dispatch_(Normal) 매개 후속 접근.
+        // 본 매니저 lifetime 단일 호출 — 재호출 = Crash-First throw (Normal 중복 등록 매개).
         public void OpenDatabase(string _file_path)
         {
-            if (m_handle != 0)
-            {
-                throw new InvalidOperationException("AB_Manager_DB.OpenDatabase: 이미 발급된 handle=" + m_handle);
-            }
             string? dir = Path.GetDirectoryName(_file_path);
             if (!string.IsNullOrEmpty(dir))
             {
                 Directory.CreateDirectory(dir);
             }
-            int handle = m_engine.OpenDatabase<AB_Context_DB>(_file_path, _opts => new AB_Context_DB(_opts));
-            if (handle == 0)
-            {
-                throw new InvalidOperationException("AB_Manager_DB.OpenDatabase: handle 발급 실패 file=" + _file_path);
-            }
-            m_handle = handle;
+            AB_Object_DB_Normal normal = new AB_Object_DB_Normal();
+            RegisterDbObject_(AB_DB_Object_Kind.Normal, normal);
+            normal.Open_(_file_path, m_engine);
         }
 
         // 다형성 등록 — Program.cs 부트 시점 콘크리트 Object instance 매개 kind 등록.
@@ -189,11 +175,11 @@ namespace ArtificialBuilder.DB
             {
                 return;
             }
-            if (m_handle == 0)
-            {
-                throw new InvalidOperationException("AB_Manager_DB.DrainQueue: handle 미부착 — OpenDatabase 선 호출");
-            }
-            EDP_Db_Transaction txn = m_engine.BeginTransactionAsync(m_handle).GetAwaiter().GetResult();
+            // round 2c (2026-05-17) — Normal Object 매개 BeginTransactionAsync_ 위임 (m_handle 직접 접근 폐기).
+            // 본 round 안 큐 = 에셋 DB (App / Persona / Package) 한정 매개 Normal 단일 txn 안 batch.
+            // Sharding 도메인 (Turn / Result) 추가 시 = shard_key 별 별도 txn 매개 DrainQueue 재설계 = round 3.
+            AB_Object_DB normal_db = Dispatch_(AB_DB_Object_Kind.Normal);
+            EDP_Db_Transaction txn = normal_db.BeginTransactionAsync_().GetAwaiter().GetResult();
             HashSet<long> notify_ids = new HashSet<long>();
             bool committed = false;
             try
@@ -463,16 +449,12 @@ namespace ArtificialBuilder.DB
         public override void Dispose()
         {
             // 다형성 등록 콘크리트 Object cascade dispose — 각자 Component (File / CRUD) 매개 handle close.
+            // round 2c (2026-05-17) — m_handle 폐기 매개 Object cascade 만 매개 close 책임.
             foreach (AB_Object_DB db in m_db_objects.Values)
             {
                 db.Dispose();
             }
             m_db_objects.Clear();
-            if (m_handle != 0)
-            {
-                m_engine.CloseAsync(m_handle).GetAwaiter().GetResult();
-                m_handle = 0;
-            }
             m_engine.DisposeAsync().GetAwaiter().GetResult();
             m_pool_manager = null;
             m_blackboard = null;
