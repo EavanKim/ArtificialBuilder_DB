@@ -59,6 +59,7 @@ namespace ArtificialBuilder.DB.Object
         }
 
         // D5=b — caller 매개 batch 제어. 본 메서드 매개 발급된 txn 을 후속 CRUD 호출 site 매개 전달.
+        // Normal 콘크리트 = 단일 파일 매개 동작. Sharding 콘크리트 = NotSupportedException throw — shard_key overload 사용.
         public virtual Task<EDP_Db_Transaction> BeginTransactionAsync_()
         {
             if (m_file == null)
@@ -66,6 +67,17 @@ namespace ArtificialBuilder.DB.Object
                 throw new InvalidOperationException("AB_Object_DB.BeginTransactionAsync_: m_file 미부착");
             }
             return m_file.BeginTransactionAsync_();
+        }
+
+        // Sharding family 전용 — shard_key 매개 단일 shard 파일 안 batch 보장. Normal = NotSupportedException throw (file 콘크리트 매개).
+        // FK 최저화 룰 매개 cross-shard 무결성 = 어플리케이션 책임 — caller 매개 multi-shard 작업 = shard_key 별 별도 txn.
+        public virtual Task<EDP_Db_Transaction> BeginTransactionAsync_(long _shard_key)
+        {
+            if (m_file == null)
+            {
+                throw new InvalidOperationException("AB_Object_DB.BeginTransactionAsync_(long): m_file 미부착");
+            }
+            return m_file.BeginTransactionAsync_(_shard_key);
         }
 
         public virtual Task AddRowAsync_<T>(EDP_Db_Transaction _txn, T _row) where T : class

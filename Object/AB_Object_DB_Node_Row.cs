@@ -2,29 +2,31 @@ using ArtificialBuilder.Common.Base;
 
 namespace ArtificialBuilder.DB.Object
 {
-    // 키 샤딩 DB 안 Node 동작 페이로드 entity row.
-    // 폴더 = `runtime/node/{node_id}/` — node_id 는 폴더명 매개 식별 (본 entity 안 컬럼 X).
-    // 폴더 안 파일 = `{shard_key}.db` — shard_key 산정 정책 D2 round 2.
-    // PK = (turn_id, logic_invocation_id) — OnModelCreating 매개 등록 (AB_Context_DB_Node_Shard).
+    // Result 노드별 키 샤딩 DB 안 Result 페이로드 entity row.
+    // 폴더 = `runtime/result/{circuit_id}/{node_number}/` — circuit_id / node_number 는 폴더명 매개 식별 (본 entity 안 컬럼 X).
+    // 폴더 안 파일 = `{data_key_range_100}.db` — data_key range 매개 분할 (100 result / 파일).
+    // PK = DataKey 단일 ([[feedback_key_single]] 정합) — 조인 동작 매개 단일 키.
     //
-    // storage-policy 2026-05-17 § "키 샤딩 DB 스키마" 1:1.
+    // storage-policy 2026-05-17 round 2 § "Result 노드별 키 샤딩 DB 스키마" 1:1.
+    // FK 최저화 룰 매개 TurnId = plain column (FK 제약 X). 페이로드 = inline blob 단일 (외부 파일 X).
+    // node_numbers = 폴더 = 1 노드 매개 식별 + 본 컬럼 = 추가 ref / cross-node 조인 / 디버깅 매개.
     // EF Core POCO — AB_Context_DB_Node_Shard 매개 DbSet<AB_Object_DB_Node_Row>.
     public class AB_Object_DB_Node_Row : AB_Object
     {
-        // 턴 식별 (FK → 시계열 샤딩 DB).
+        // 단일 데이터 키 (PK).
+        public long DataKey { get; set; }
+
+        // 턴 식별 (참조 컬럼 — FK 제약 X, plain long).
         public long TurnId { get; set; }
 
-        // 로직 1 회 호출 id (재귀 / sub-logic 식별).
-        public long LogicInvocationId { get; set; }
+        // bucket 2 차원 배열 안 row index (0 = 1 차 / 1~ = refresh).
+        public int ResultSeq { get; set; }
 
-        // 페이로드 종류 enum int — "text" / "image" / "audio" / "video" / "embedding".
-        public int PayloadKind { get; set; }
+        // 사용 노드 번호 묶음 — packed ulong[] (서킷 내부 노드, 0 = sentinel / 1~ = 정상). 폴더 노드 외 cross-node ref.
+        public byte[]? NodeNumbers { get; set; }
 
-        // 작은 페이로드 inline.
-        public byte[]? PayloadInline { get; set; }
-
-        // 큰 페이로드 외부 파일 경로.
-        public string? PayloadPath { get; set; }
+        // 페이로드 본체 (text / image / audio / video / embedding) — inline blob 단일.
+        public byte[]? Payload { get; set; }
 
         // 생성 시각 (Unix ms).
         public long CreatedAt { get; set; }

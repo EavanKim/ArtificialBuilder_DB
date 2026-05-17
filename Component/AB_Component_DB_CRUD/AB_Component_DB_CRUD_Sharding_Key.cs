@@ -6,10 +6,10 @@ using EDPFW;
 
 namespace ArtificialBuilder.DB.Component
 {
-    // 콘크리트 — 키 매개 핸들 라우팅 CRUD. Node 페이로드 (폴더 안 키 샤딩 파일 N). AB_Object_DB_Sharding_Key 안 m_crud instance.
-    // 본 Component = row 안 키 데이터 (예 turn_id range / payload_kind / sub-bucket) 매개 shard_key 산정 → AB_Component_DB_File_Sharding.AcquireHandle_(shard_key) → EDP_Db_Transaction 호출 (round 2 본체).
-    // shard_key 산정 정책 D2 = round 2 결재.
-    // round 1 = 시그니처 + stub body.
+    // 콘크리트 — Result 노드별 키 샤딩 CRUD. AB_Object_DB_Sharding_Key 안 m_crud instance.
+    // shard_key (= data_key / 100) 매개 handle 라우팅 = Object 매개 BeginTransactionAsync_(shard_key) 시점 결정 — 본 Component 는 txn 직접 위임 (state X).
+    // D5=b — caller 매개 txn 주입 → CRUD = 위임 만. CRUD_Normal 패턴 1:1 (단일 shard 파일 안 동작 = Normal 과 동치).
+    // FK 최저화 룰 매개 cross-shard 조인 / 무결성 = 어플리케이션 (multi-shard 작업 = caller 매개 shard_key 별 별도 txn).
     public class AB_Component_DB_CRUD_Sharding_Key : AB_Component_DB_CRUD
     {
         public AB_Component_DB_CRUD_Sharding_Key()
@@ -18,27 +18,29 @@ namespace ArtificialBuilder.DB.Component
 
         public override Task AddAsync_<T>(EDP_Db_Transaction _txn, T _row) where T : class
         {
-            throw new NotImplementedException("AB_Component_DB_CRUD_Sharding_Key.AddAsync_: round 2b 본체");
+            return _txn.AddAsync(_row);
         }
 
         public override Task<T?> GetByIdAsync_<T>(EDP_Db_Transaction _txn, long _id) where T : class
         {
-            throw new NotImplementedException("AB_Component_DB_CRUD_Sharding_Key.GetByIdAsync_: round 2b 본체");
+            return _txn.GetByIdAsync<T>(_id);
         }
 
         public override Task<List<T>> FindAsync_<T>(EDP_Db_Transaction _txn, Expression<Func<T, bool>> _predicate) where T : class
         {
-            throw new NotImplementedException("AB_Component_DB_CRUD_Sharding_Key.FindAsync_: round 2b 본체");
+            return _txn.FindAsync<T>(_predicate);
         }
 
         public override Task UpdateAsync_<T>(EDP_Db_Transaction _txn, T _row) where T : class
         {
-            throw new NotImplementedException("AB_Component_DB_CRUD_Sharding_Key.UpdateAsync_: round 2b 본체");
+            _txn.Update(_row);
+            return Task.CompletedTask;
         }
 
         public override Task RemoveAsync_<T>(EDP_Db_Transaction _txn, T _row) where T : class
         {
-            throw new NotImplementedException("AB_Component_DB_CRUD_Sharding_Key.RemoveAsync_: round 2b 본체");
+            _txn.Remove(_row);
+            return Task.CompletedTask;
         }
 
         public override void Dispose()

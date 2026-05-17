@@ -2,36 +2,31 @@ using ArtificialBuilder.Common.Base;
 
 namespace ArtificialBuilder.DB.Object
 {
-    // 시계열 샤딩 DB 안 Turn 히스토리 entity row.
+    // 시계열 샤딩 DB 안 Turn 히스토리 entity row (= bucket).
     // 폴더 = `runtime/turn/{circuit_id}/` — circuit_id 는 폴더명 매개 식별 (본 entity 안 컬럼 X).
-    // 폴더 안 파일 = `{turn_bucket}.db` — turn_bucket 산정 정책 D1 round 2.
-    // PK = turn_id — OnModelCreating 매개 등록 (AB_Context_DB_Turn_Shard).
+    // 폴더 안 파일 = `{turn_bucket}.db` — turn_bucket = turn_id / 100 (100 turn / 파일).
+    // PK = TurnId — OnModelCreating 매개 등록 (AB_Context_DB_Turn_Shard).
     //
-    // refresh = 같은 turn 안 갈래 = BranchRootTurnId 매개 (산술 max+1 X — feedback_refresh_as_branch 정합).
-    // storage-policy 2026-05-17 § "시계열 샤딩 DB 스키마" 1:1.
-    // EF Core POCO — AB_Context_DB_Turn_Shard 매개 DbSet<AB_Object_DB_Turn_Row>.
+    // bucket 안 Result N 개 = AB_Object_DB_Node_Row 안 2 차원 배열 [result_seq] 매개 (Result 노드별 키 샤딩 DB).
+    // refresh = bucket 안 result 추가 (selected_index 갱신).
+    // storage-policy 2026-05-17 round 2 § "Turn 시계열 샤딩 DB 스키마" 1:1.
+    // FK 최저화 룰 매개 PrevTurnId = plain column (FK 제약 X).
     public class AB_Object_DB_Turn_Row : AB_Object
     {
-        // 턴 식별 (PK).
+        // 턴 식별 (PK = bucket 식별 = 입력 차수).
         public long TurnId { get; set; }
 
-        // 이전 턴 (linked list — 시계열).
+        // 이전 턴 (linked list — 시계열). FK 제약 X — plain long.
         public long? PrevTurnId { get; set; }
 
-        // refresh / 갈래 root.
-        public long? BranchRootTurnId { get; set; }
+        // 2 차원 배열 안 active result index (UI 표기 매개 — bucket 안 1 선택지만 노출, AI 채팅 ◀▶ UX).
+        public int SelectedIndex { get; set; }
 
-        // 본 턴 매개 호출된 logic id.
-        public long LogicIdInvoked { get; set; }
+        // bucket 안 result 갯수 (배열 길이).
+        public int ResultCount { get; set; }
 
-        // Unix ms 시작 시각.
-        public long StartedAt { get; set; }
-
-        // Unix ms 종료 시각 (in-progress = null).
-        public long? EndedAt { get; set; }
-
-        // enum int — None / Running / Done / Error / End.
-        public int Status { get; set; }
+        // Unix ms 생성 시각.
+        public long CreatedAt { get; set; }
 
         public override void ReceiveMessage(int _header_id, long _data_key) { }
 

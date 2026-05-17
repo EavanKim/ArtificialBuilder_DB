@@ -6,8 +6,6 @@ namespace ArtificialBuilder.DB.Component
 {
     // 콘크리트 — 단일 파일 lifecycle. 에셋 DB (App / Persona / Package) — 전체 로드.
     // canon § "Object / Component 다형성 조립 패턴" 정합. AB_Object_DB_Normal 안 m_file instance 매개 attach.
-    //
-    // round 2a 본체 — EDP_Db_Engine 매개 단일 파일 open + handle 보관 + 트랜잭션 발급 위임.
     public class AB_Component_DB_File_Normal : AB_Component_DB_File
     {
         // EDP_Db_Engine 발급 단일 핸들. 0 = 미부착 (Crash-First).
@@ -48,7 +46,6 @@ namespace ArtificialBuilder.DB.Component
             {
                 throw new InvalidOperationException("AB_Component_DB_File_Normal.Close_: m_engine 미부착 (Open_ 미경유)");
             }
-            // engine.CloseAsync = entry.Lock 매개 sync flush + dispose. 동기 close 의무 매개 wait.
             m_engine.CloseAsync(m_handle).AsTask().GetAwaiter().GetResult();
             m_handle = 0;
             m_engine = null;
@@ -65,6 +62,12 @@ namespace ArtificialBuilder.DB.Component
                 throw new InvalidOperationException("AB_Component_DB_File_Normal.BeginTransactionAsync_: m_engine 미부착");
             }
             return m_engine.BeginTransactionAsync(m_handle);
+        }
+
+        // Normal = 단일 handle. shard_key overload 사용 X.
+        public override Task<EDP_Db_Transaction> BeginTransactionAsync_(long _shard_key)
+        {
+            throw new NotSupportedException("AB_Component_DB_File_Normal.BeginTransactionAsync_(long): Normal = 단일 파일 — no-arg overload 사용");
         }
 
         public override void SyncDirtyToFile_()
