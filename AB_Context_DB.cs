@@ -21,6 +21,7 @@ namespace ArtificialBuilder.DB
         public DbSet<AB_Object_DB_Circuit> Circuits { get; set; } = null!;
         public DbSet<AB_Object_DB_Logic> Logics { get; set; } = null!;
         public DbSet<AB_Object_DB_Model> Models { get; set; } = null!;
+        public DbSet<AB_Object_DB_Chat_Turn> ChatTurns { get; set; } = null!;
 
         public AB_Context_DB(DbContextOptions<AB_Context_DB> _options) : base(_options)
         {
@@ -69,6 +70,14 @@ namespace ArtificialBuilder.DB
             {
                 _e.HasKey(_x => _x.Id);
                 _e.HasIndex(_x => _x.Uuid).IsUnique();
+            });
+
+            // ChatTurn — PK = Id. PackageId 매개 매개 (CreatedAt 매개 매개 매개 sort) index 매개 매개 매개 매개 read 매개 매개 매개 매개.
+            //   PackageId = 0 ("(선택 없음)" sentinel) 매개 매개 매개 매개 매개 매개 매개 매개 매개. FK 제약 X ([[feedback_fk_minimization_speed_customization]] 정합).
+            _builder.Entity<AB_Object_DB_Chat_Turn>(_e =>
+            {
+                _e.HasKey(_x => _x.Id);
+                _e.HasIndex(_x => _x.PackageId);
             });
         }
     }

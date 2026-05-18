@@ -170,6 +170,11 @@ namespace ArtificialBuilder.DB
             EnqueueRequestInternal(AB_DB_Domain_Kind.Result, (int)_command, _data_key, _target_data_id, _shard_key);
         }
 
+        public void EnqueueRequest(AB_DB_ChatTurn_Command_Type _command, long _data_key, long _target_data_id)
+        {
+            EnqueueRequestInternal(AB_DB_Domain_Kind.ChatTurn, (int)_command, _data_key, _target_data_id, 0L);
+        }
+
         private void EnqueueRequestInternal(AB_DB_Domain_Kind _domain, int _command_id, long _data_key, long _target_data_id, long _shard_key)
         {
             if (m_pool_manager == null)
@@ -326,6 +331,10 @@ namespace ArtificialBuilder.DB
             {
                 return AB_DB_Object_Kind.Sharding_Key;
             }
+            if (_domain == AB_DB_Domain_Kind.ChatTurn)
+            {
+                return AB_DB_Object_Kind.Normal;
+            }
             throw new InvalidOperationException("AB_Manager_DB.ObjectKindFromDomain_: 미등록 DomainKind=" + _domain);
         }
 
@@ -381,6 +390,11 @@ namespace ArtificialBuilder.DB
             if (domain == AB_DB_Domain_Kind.Result)
             {
                 HandleResultDb(_db, _txn, (AB_DB_Result_Command_Type)_env.CommandId, _env);
+                return;
+            }
+            if (domain == AB_DB_Domain_Kind.ChatTurn)
+            {
+                HandleChatTurnDb(_db, _txn, (AB_DB_ChatTurn_Command_Type)_env.CommandId, _env);
                 return;
             }
             throw new InvalidOperationException("AB_Manager_DB.HandleRequest: 미등록 DomainKind=" + domain);
@@ -595,6 +609,44 @@ namespace ArtificialBuilder.DB
                 return;
             }
             throw new InvalidOperationException("AB_Manager_DB.HandleCircuitDb: 미등록 Command=" + _command);
+        }
+
+        // ChatTurn 도메인 핸들러 — chat history 매개 매개 매개 매개 매개 매개 매개 매개 매개.
+        //   INFO_ADD               = entity 매개 INSERT (CreatedAt 매개 caller 매개 매개 매개).
+        //   INFO_GET_BY_PACKAGE    = data_key 매개 AB_Data_Long (package_id) → AB_Data_DB_Chat_Turn_List 매개 매개 매개 sort by CreatedAt.
+        //   INFO_DELETE_BY_PACKAGE = data_key 매개 AB_Data_Long (package_id) → 매개 매개 매개 매개 매개 매개 매개.
+        private void HandleChatTurnDb(AB_Object_DB _db, EDP_Db_Transaction _txn, AB_DB_ChatTurn_Command_Type _command, AB_Object_DB_Request_Envelope _env)
+        {
+            if (m_blackboard == null) throw new InvalidOperationException("AB_Manager_DB.HandleChatTurnDb: Blackboard 미부착");
+            if (_command == AB_DB_ChatTurn_Command_Type.None) throw new InvalidOperationException("AB_Manager_DB.HandleChatTurnDb: None 위반");
+            if (_command == AB_DB_ChatTurn_Command_Type.End) throw new InvalidOperationException("AB_Manager_DB.HandleChatTurnDb: End 위반");
+            if (_command == AB_DB_ChatTurn_Command_Type.INFO_ADD)
+            {
+                AB_Object_DB_Chat_Turn? entity = m_blackboard.Lookup<AB_Data_DB_Chat_Turn>(_env.DataKey).Get();
+                if (entity == null) throw new InvalidOperationException("AB_Manager_DB.HandleChatTurnDb.INFO_ADD: entity null");
+                _db.AddRowAsync_(_txn, entity).GetAwaiter().GetResult();
+                return;
+            }
+            if (_command == AB_DB_ChatTurn_Command_Type.INFO_GET_BY_PACKAGE)
+            {
+                long pkg_id = m_blackboard.Lookup<AB_Data_Long>(_env.DataKey).Get();
+                List<AB_Object_DB_Chat_Turn> rows = _db.FindAsync_<AB_Object_DB_Chat_Turn>(_txn, _x => _x.PackageId == pkg_id).GetAwaiter().GetResult();
+                rows.Sort((_a, _b) => _a.CreatedAt.CompareTo(_b.CreatedAt));
+                AB_Data_DB_Chat_Turn_List target = m_blackboard.Lookup<AB_Data_DB_Chat_Turn_List>(_env.TargetDataId);
+                target.Set(rows);
+                return;
+            }
+            if (_command == AB_DB_ChatTurn_Command_Type.INFO_DELETE_BY_PACKAGE)
+            {
+                long pkg_id = m_blackboard.Lookup<AB_Data_Long>(_env.DataKey).Get();
+                List<AB_Object_DB_Chat_Turn> rows = _db.FindAsync_<AB_Object_DB_Chat_Turn>(_txn, _x => _x.PackageId == pkg_id).GetAwaiter().GetResult();
+                foreach (AB_Object_DB_Chat_Turn row in rows)
+                {
+                    _db.RemoveAsync_(_txn, row).GetAwaiter().GetResult();
+                }
+                return;
+            }
+            throw new InvalidOperationException("AB_Manager_DB.HandleChatTurnDb: 미등록 Command=" + _command);
         }
 
         private void HandleLogicDb(AB_Object_DB _db, EDP_Db_Transaction _txn, AB_DB_Logic_Command_Type _command, AB_Object_DB_Request_Envelope _env)
