@@ -16,6 +16,13 @@ namespace ArtificialBuilder.DB.Object
         public string Content { get; set; } = string.Empty;
         public long CreatedAt { get; set; }
 
+        // 응답 매개 매개 매개 token (assistant role 매개 매개). user 매개 = 0.
+        //   ModelProvider / ModelId 매개 매개 cost 매개 매개 매개 매개 매개 매개 매개 매개 매개 매개 매개 매개 매개 매개 매개 매개.
+        public int InputTokens { get; set; }
+        public int OutputTokens { get; set; }
+        public string ModelProvider { get; set; } = string.Empty;
+        public string ModelId { get; set; } = string.Empty;
+
         public override void ReceiveMessage(int _header_id, long _data_key) { }
         public override void Dispose() { }
     }
